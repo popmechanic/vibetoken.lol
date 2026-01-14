@@ -4,9 +4,51 @@
 
 ---
 
-Token systems introduced sound economic primitives: programmable ownership, automated distribution, permissionless participation. What failed was not the mechanism but its deployment. Speculation displaced contribution. Financial games crowded out builders, referrers, and early believers who told their friends. Infrastructure meant to reward creation rewarded positioning instead.
+Token systems introduced sound economic primitives: programmable ownership, automated distribution, permissionless participation. What failed was not the mechanism but its deployment. Speculation displaced contribution. Financial games crowded out builders, referrers, and early believers who told their friends.
 
-This paper describes a different application. Vibe Token is designed for small, high-margin software businesses—the kind now trivially cheap to create but still difficult to distribute. It gives early contributors a direct stake in future revenue without speculation, venture financing, or secondary markets. The goal is not a movement. The goal is infrastructure: a way to reward the people who help software find its audience.
+This paper describes a different application. Vibe Token is designed for small, high-margin software businesses—the kind now trivially cheap to create but still difficult to distribute. It gives early contributors a direct stake in future revenue without speculation, venture financing, or secondary markets.
+
+---
+
+## The Six Rules
+
+The entire system operates on six rules. Everything else follows from these.
+
+**1. Price**
+```
+P = k * sqrt(R)
+```
+Token price equals a constant times the square root of cumulative revenue.
+
+**2. Pre-mint**
+```
+Founder receives a fixed token allocation at launch.
+```
+These tokens can be freely distributed to bootstrap early participation.
+
+**3. Earning**
+```
+tokens = floor(alpha * dR / P)
+```
+Referrers earn whole tokens based on the revenue they generate.
+
+**4. Distribution**
+```
+payout = (alpha * dR) / S
+```
+Twenty percent of each revenue event is distributed to all token holders.
+
+**5. Exit**
+```
+exit_value = tokens * P
+```
+Holders can exit by burning tokens. Exit value is calculated at current price.
+
+**6. Queue**
+```
+Exits are paid first from distributions, then remainder flows to holders.
+```
+Exit payments have priority. When the queue clears, full distributions resume.
 
 ---
 
@@ -20,90 +62,207 @@ Traditional equity solves this for venture-scale companies. Vibe Token solves it
 
 ## The Invariant
 
-Each participating application opts into a single rule:
+**20% of net revenue is continuously allocated to token holders.**
 
-**20% of net revenue is continuously allocated to contributors.**
-
-This percentage is fixed, non-configurable, and applies equally to all applications. There are no tiers, no negotiation, no exceptions.
+Fixed. Non-configurable. No tiers, no negotiation, no exceptions. This is the system's only constant. Everything else—price, supply, individual payouts—adjusts automatically.
 
 ---
 
-## Bonding Curve Design
+## Variables
 
-Vibe Token uses a revenue-indexed bonding curve to price entry and exit. Unlike speculative curves priced by demand alone, this curve anchors to realized business performance.
-
-Revenue generates tokens. Exits burn them. Price is deterministic—no order books, liquidity pools, or market-makers required.
-
-**Variables:**
-
-- **R** — cumulative net revenue (lifetime)
-- **dR** — new net revenue in a period
-- **alpha** — revenue share (fixed at 0.20)
+- **R** — cumulative net revenue (lifetime total, only increases)
+- **dR** — new revenue from a single event
+- **alpha** — revenue share, fixed at 0.20
 - **S** — total token supply outstanding
-- **P** — token price
-- **k** — global pricing constant
+- **P** — current token price
+- **k** — pricing constant (typically 0.01)
 
 ---
 
-## Token Pricing
+## Rule 1: Token Pricing
 
 ```
 P = k * sqrt(R)
 ```
 
-Price rises with cumulative revenue, but at a diminishing rate. The square root gives early revenue more weight than late. Growth never locks out participation; entering a proven business simply costs more than entering an unproven one.
+Token price is determined by cumulative revenue. The square root function means early revenue raises the price more than later revenue.
+
+**Example with k = 0.01:**
+
+| Cumulative Revenue | Price |
+|--------------------|-------|
+| $100 | $0.10 |
+| $1,000 | $0.32 |
+| $10,000 | $1.00 |
+| $100,000 | $3.16 |
+| $1,000,000 | $10.00 |
+
+Price never decreases because cumulative revenue never decreases. A business that has earned $100,000 lifetime has proven something permanent, regardless of current month's performance.
+
+**Why square root?** It rewards early contributors without locking out latecomers. The first $10,000 of revenue raises the price from $0 to $1. The next $10,000 only raises it from $1 to $1.41. Early risk earns early reward, but growth remains accessible.
 
 ---
 
-## Token Issuance
+## Rule 2: Pre-mint Allocation
 
 ```
-tokens_minted = (alpha * dR) / P
+Founder receives a fixed token allocation at launch.
 ```
 
-Revenue mints tokens; the system distributes them to contributors. No tokens exist before revenue exists. No pre-sales, no bonus schedules, no multipliers. Contribution earns tokens—referrals, purchases, verified participation. The curve handles everything else.
+Before any revenue exists, founders need tokens to distribute to early believers—the influencer who tweets about your launch, the friend who refers ten customers, the beta tester who finds critical bugs.
+
+**Pre-mint solves the cold-start problem.** No revenue means no tokens minted. But you need contributors to generate revenue. Pre-mint breaks this cycle.
+
+**Recommended quantity:** Set pre-mint equal to 100 times your expected first-year revenue. For a business expecting $10,000 in year one, pre-mint 100,000 tokens.
+
+**What happens to pre-mint over time?** Natural dilution. As revenue-backed tokens are minted for referrers, pre-mint holders' share decreases. After year one of a successful business, pre-mint might represent 50-70% of supply. After year three, perhaps 20-30%. This is correct—ongoing contributors earn ongoing share.
 
 ---
 
-## Token Exit
+## Rule 3: Token Earning
 
-When a holder exits:
+```
+tokens = floor(alpha * dR / P)
+```
 
-- Their tokens are burned
-- Their future revenue share ends
-- Total supply decreases
+Tokens are earned, not purchased. When someone refers a customer who generates revenue, the referrer earns tokens.
 
-Remaining holders receive a larger share of future distributions. The curve re-prices automatically. Exits consolidate ownership rather than destabilize it. No secondary markets exist. The curve itself defines entry and exit.
+**How it works:**
+1. Referrer brings in a customer
+2. Customer pays $X for the product
+3. Referrer earns tokens = floor(0.20 * $X / P)
+4. Tokens are whole integers; remainders are discarded
+
+**Example:** Referrer brings in a $50 sale. Current price P = $1.00.
+- Referrer value = 0.20 * $50 = $10
+- Tokens earned = floor($10 / $1.00) = 10 tokens
+
+**Why floor (round down)?** Tokens must be whole integers. If a small referral would mint 0.3 tokens, the referrer receives 0. This is acceptable—design your pricing constant k so typical transactions mint at least one token.
+
+**Why no direct token purchases?** Purchasing tokens with money creates securities law complexity. Earning tokens through contribution—marketing, referrals, sales—is compensating labor, not selling investment contracts.
 
 ---
 
-## Revenue Distribution
-
-Each period, a revenue pool is created:
+## Rule 4: Revenue Distribution
 
 ```
 D = alpha * dR
 payout_per_token = D / S
 ```
 
-Revenue accrues to holders proportionally. Payouts accumulate as balances, not instant transfers. Withdrawals occur when balances exceed practical minimums. Settlement uses traditional or stablecoin rails. The system promises no dividends, no guarantees, no fixed yields.
+Each time revenue is generated, 20% is added to a distribution pool. This pool is divided among all token holders proportionally.
+
+**Example:** Business receives $1,000 in revenue. There are 50,000 tokens outstanding.
+- Distribution pool D = $200
+- Payout per token = $200 / 50,000 = $0.004
+
+A holder with 1,000 tokens receives $4.00.
+
+**When are distributions paid?** Implementation varies. Could be per-transaction, daily, weekly, or monthly batches. The math is the same; only the frequency differs.
+
+**What about the exit queue?** If there are pending exits, the distribution pool pays those first. See Rule 6.
+
+---
+
+## Rule 5: Token Exit
+
+```
+exit_value = tokens * P
+```
+
+Holders can exit at any time by burning their tokens. Exit value is calculated at the current price.
+
+**How it works:**
+1. Holder requests exit for N tokens
+2. Exit value = N * P (at current price)
+3. Tokens are burned (supply decreases)
+4. Holder joins the exit queue
+5. Exit value is paid from future distributions
+
+**Example:** Holder has 500 tokens. Current price P = $2.00.
+- Exit value = 500 * $2.00 = $1,000
+- 500 tokens are burned
+- Holder joins queue for $1,000 payment
+
+**Why would someone exit?** Two reasons:
+1. They need liquidity now
+2. They believe future distributions are worth less than exit value today
+
+Both are legitimate. The exit mechanism provides optionality without requiring a secondary market.
+
+---
+
+## Rule 6: Exit Queue
+
+```
+Each period:
+  D = alpha * dR
+  Pay exit queue first (FIFO)
+  Remainder goes to distributions
+```
+
+Exiting holders don't receive immediate payment. They enter a queue and are paid from future distributions.
+
+**How it works:**
+1. Revenue generates distribution pool D
+2. Queue is paid first, in order (first-in-first-out)
+3. Whatever remains goes to current holders
+4. When queue is empty, 100% goes to distributions
+
+**Example:** Exit queue has $500 owed to Alice, then $300 owed to Bob. This month's distribution pool is $400.
+- Alice receives $400, still owed $100
+- Bob receives $0, still owed $300
+- Current holders receive $0 this month
+
+Next month, distribution pool is $600.
+- Alice receives $100 (complete), exits queue
+- Bob receives $300 (complete), exits queue
+- Remaining $200 goes to current holders
+
+**Why a queue?** No reserve pool is needed. Exits are funded by future business performance. If the business stops generating revenue, the queue doesn't clear—but that's honest. Tokens were always claims on future revenue.
+
+**Is this unfair to current holders?** During queue processing, they receive reduced or zero distributions. But:
+- The pause is temporary and proportional
+- Exiting holders gave up their future share
+- When queue clears, remaining holders own a larger percentage
 
 ---
 
 ## System Properties
 
-- **Revenue-indexed bonding curve** — price tracks business performance, not speculation
-- **Continuous mint/burn** — supply adjusts with each revenue event and exit
-- **Deflationary on exit** — departures strengthen remaining positions
-- **Early-weighted without lock-in** — early contributors receive more tokens, but anyone can exit
-- **Scale-agnostic** — works for a $500/month tool or a $500,000/year product
-- **Operationally conservative** — accrual and batching reduce transaction overhead
-- **Non-speculative by design** — no secondary markets, no price discovery games
+- **Revenue-indexed** — Price tracks lifetime business performance, not speculation
+- **Earned, not purchased** — Tokens represent contribution, not investment
+- **Continuous mint/burn** — Supply adjusts with each revenue event and exit
+- **Deflationary on exit** — Departures strengthen remaining positions
+- **Early-weighted** — Square root pricing rewards early contributors
+- **Self-liquidating** — Exit queue requires no reserve; funded by ongoing revenue
+- **Whole integers** — Tokens are discrete units, no fractional accounting
+- **Scale-agnostic** — Works for $500/month or $500,000/year
+
+---
+
+## Choosing k (Pricing Constant)
+
+The constant k determines the scale of token prices. Choose based on your typical transaction size.
+
+**Goal:** Ensure typical referrals mint at least 1 token.
+
+| Typical Transaction | Recommended k | Price at R=$10,000 |
+|--------------------|---------------|-------------------|
+| $50+ | 0.01 | $1.00 |
+| $10-50 | 0.005 | $0.50 |
+| $5-10 | 0.001 | $0.10 |
+
+**Example calculation:** Your typical sale is $20. Referrer value = $4. You want at least 1 token minted.
+- Need P ≤ $4
+- At mature scale (R = $100,000), P = k * 316
+- If k = 0.01, P = $3.16 ✓ (1 token minted)
+- If k = 0.1, P = $31.60 ✗ (0 tokens minted)
 
 ---
 
 ## Closing
 
-Local-first software architecture makes this possible. When applications run on user devices, with data synced rather than centralized, operational costs collapse. A single developer can serve thousands of users. Communities can have their own isolated worlds—their own databases, their own failure domains, their own economies.
+New approaches to software architecture make this possible. When applications run on user devices, with data synced rather than centralized, operational costs collapse. A single developer can serve thousands of users. Communities can have their own isolated worlds—their own databases, their own economies, their own fates.
 
 Vibe Token is infrastructure for this future. Not a movement, not a platform, not a promise. A mechanism: connect contribution to revenue, let the math handle distribution, see what people build when early support finally means something.

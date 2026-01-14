@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Token — A Revenue-Indexed Contribution System for Small Software</title>
+    <meta name="description" content="Vibe Token provides early contributors a direct stake in future revenue without speculation, venture financing, or secondary markets.">
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="assets/favicon_io/site.webmanifest">
+    <meta name="theme-color" content="#0a0a0a">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* CMU Concrete Bold Oblique - local web font */
+        @font-face {
+            font-family: 'CMU Concrete';
+            src: url('computer-modern-fontfacekit/web%20fonts/cmuconcrete_boldoblique_macroman/cmunobi-webfont.woff') format('woff');
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        :root {
+            --font-heading: 'CMU Concrete', Georgia, serif;
+            --font-body: 'Crimson Pro', Georgia, serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --text-primary: #e8e8e8;
+            --text-secondary: #888;
+            --bg: #0a0a0a;
+            --border: #222;
+            --accent: #c8c8c8;
+
+            --space-sm: 0.75rem;
+            --space-md: 1.5rem;
+            --space-lg: 2.5rem;
+            --space-xl: 4rem;
+
+            --max-width: 620px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 17px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--text-primary);
+            background: var(--bg);
+            line-height: 1.65;
+            padding: var(--space-lg) var(--space-md);
+            position: relative;
+        }
+
+        /* Subtle noise texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: var(--space-xl) var(--space-lg);
+            }
+        }
+
+        /* Container */
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Typography */
+        h1, h2 {
+            font-family: var(--font-heading);
+            font-weight: bold;
+            letter-spacing: 0.015em;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            line-height: 1.1;
+            margin-bottom: 0.25rem;
+            word-spacing: -0.4em;
+        }
+
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 4rem;
+            }
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: var(--space-sm);
+            color: var(--accent);
+        }
+
+        p {
+            margin-bottom: 1em;
+        }
+
+        p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Logo */
+        .logo {
+            position: absolute;
+            top: var(--space-md);
+            left: var(--space-md);
+            width: 70px;
+            height: auto;
+            transform: rotate(-12deg);
+            pointer-events: none;
+            image-rendering: crisp-edges;
+            z-index: 10;
+        }
+
+        @media (min-width: 768px) {
+            .logo {
+                width: 90px;
+                top: var(--space-lg);
+                left: var(--space-lg);
+            }
+        }
+
+        @media (min-width: 1000px) {
+            .logo {
+                width: 100px;
+                left: calc(50% - 400px);
+                top: var(--space-xl);
+            }
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-title {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-title .logo {
+            position: static;
+            width: 70px;
+            transform: rotate(-12deg);
+            flex-shrink: 0;
+            margin-bottom: var(--space-sm);
+        }
+
+        .header-text {
+            text-align: center;
+        }
+
+        .header-text .subtitle {
+            margin-top: 0.25rem;
+        }
+
+        @media (min-width: 768px) {
+            .header-title {
+                flex-direction: row;
+            }
+
+            .header-title .logo {
+                width: 90px;
+                margin-bottom: 0;
+                margin-right: 0.5rem;
+                margin-left: -90px;
+            }
+        }
+
+        .subtitle {
+            font-family: var(--font-body);
+            font-style: italic;
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+        }
+
+        /* Abstract */
+        .abstract {
+            margin-bottom: var(--space-lg);
+            text-align: center;
+            font-size: 1.02rem;
+        }
+
+        /* Sections */
+        section {
+            margin-bottom: var(--space-lg);
+        }
+
+        /* Divider */
+        .divider {
+            width: 50px;
+            height: 1px;
+            background: var(--border);
+            margin: var(--space-lg) auto;
+        }
+
+        /* THE INVARIANT - Hero treatment */
+        .invariant {
+            margin: var(--space-xl) 0;
+            padding: var(--space-lg) var(--space-md);
+            border: 2px solid var(--accent);
+            text-align: center;
+            position: relative;
+        }
+
+        .invariant::before {
+            content: '✦';
+            position: absolute;
+            top: -0.6em;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg);
+            padding: 0 0.5em;
+            color: var(--accent);
+            font-size: 0.9rem;
+        }
+
+        .invariant h2 {
+            margin-bottom: var(--space-md);
+        }
+
+        .invariant-rule {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            font-weight: bold;
+            line-height: 1.3;
+            margin-bottom: var(--space-md);
+            color: var(--text-primary);
+        }
+
+        @media (min-width: 768px) {
+            .invariant-rule {
+                font-size: 2rem;
+            }
+        }
+
+        .invariant-note {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        /* Chart image */
+        .chart {
+            display: block;
+            width: 100%;
+            max-width: 500px;
+            margin: var(--space-md) auto;
+            border-radius: 2px;
+        }
+
+        /* Formula display */
+        .formula {
+            font-family: var(--font-mono);
+            font-size: 1.3rem;
+            text-align: center;
+            padding: var(--space-md) 0;
+            margin: var(--space-sm) 0 var(--space-md);
+            letter-spacing: 0.03em;
+            color: var(--text-primary);
+        }
+
+        .formula code {
+            display: block;
+        }
+
+        .formula code + code {
+            margin-top: 0.5em;
+        }
+
+        /* Variables - inline flow */
+        .variables {
+            font-size: 0.9rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-md);
+        }
+
+        .variables span {
+            white-space: nowrap;
+        }
+
+        .var-name {
+            font-family: var(--font-mono);
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .var-sep {
+            margin: 0 0.75em;
+            color: var(--border);
+        }
+
+        /* Conditions list */
+        .conditions {
+            list-style: none;
+            margin: var(--space-sm) 0;
+            font-size: 0.95rem;
+        }
+
+        .conditions li {
+            padding-left: 1.5em;
+            position: relative;
+            margin-bottom: 0.3em;
+        }
+
+        .conditions li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--text-secondary);
+        }
+
+        /* System Properties - clean list */
+        .properties {
+            margin-top: var(--space-md);
+        }
+
+        .property {
+            padding: var(--space-sm) 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .property:last-child {
+            border-bottom: none;
+        }
+
+        .property-name {
+            font-family: var(--font-heading);
+            font-weight: bold;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent);
+            margin-bottom: 0.15em;
+        }
+
+        .property-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Closing */
+        .closing {
+            margin-top: var(--space-xl);
+            padding-top: var(--space-lg);
+            border-top: 1px solid var(--border);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: var(--space-xl);
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .social {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35em;
+            margin-top: var(--space-sm);
+            font-family: var(--font-heading);
+        }
+
+        .social a {
+            display: inline-flex;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+
+        .social a:hover {
+            opacity: 1;
+        }
+
+        .social img {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Print */
+        @media print {
+            body {
+                background: white;
+                color: black;
+                padding: 0;
+            }
+
+            body::before {
+                display: none;
+            }
+
+            .logo {
+                display: none;
+            }
+
+            .invariant {
+                border-color: black;
+            }
+        }
+    </style>
+</head>
+<body>
+    <article class="container">
+        <header>
+            <div class="header-title">
+                <img src="assets/vibe-token-logo.png" alt="" class="logo" aria-hidden="true">
+                <div class="header-text">
+                    <h1>Vibe Token</h1>
+                    <p class="subtitle">A Revenue-Indexed Contribution System for Small Software</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="abstract">
+            <p>Token systems introduced sound economic primitives: programmable ownership, automated distribution, permissionless participation. What failed was not the mechanism but its deployment. Speculation displaced contribution. Financial games crowded out builders, referrers, and early believers who told their friends.</p>
+            <p>This paper describes a different application. Vibe Token is designed for small, high-margin software businesses—the kind now trivially cheap to create but still difficult to distribute. It gives early contributors a direct stake in future revenue without speculation, venture financing, or secondary markets.</p>
+        </div>
+
+        <div class="divider"></div>
+
+        <section>
+            <h2>The Six Rules</h2>
+            <div class="properties">
+                <div class="property">
+                    <div class="property-name">1. Price</div>
+                    <div class="formula" style="text-align: left; padding: 0.5em 0; margin: 0;"><code>P = k × √R</code></div>
+                    <div class="property-desc">Token price equals a constant times the square root of cumulative revenue.</div>
+                </div>
+                <div class="property">
+                    <div class="property-name">2. Pre-mint</div>
+                    <div class="property-desc">Founder receives a fixed token allocation at launch, freely distributable to bootstrap early participation.</div>
+                </div>
+                <div class="property">
+                    <div class="property-name">3. Earning</div>
+                    <div class="formula" style="text-align: left; padding: 0.5em 0; margin: 0;"><code>tokens = floor(α × dR ÷ P)</code></div>
+                    <div class="property-desc">Referrers earn whole tokens based on the revenue they generate.</div>
+                </div>
+                <div class="property">
+                    <div class="property-name">4. Distribution</div>
+                    <div class="formula" style="text-align: left; padding: 0.5em 0; margin: 0;"><code>payout = (α × dR) ÷ S</code></div>
+                    <div class="property-desc">Twenty percent of each revenue event is distributed to all token holders.</div>
+                </div>
+                <div class="property">
+                    <div class="property-name">5. Exit</div>
+                    <div class="formula" style="text-align: left; padding: 0.5em 0; margin: 0;"><code>exit_value = tokens × P</code></div>
+                    <div class="property-desc">Holders can exit by burning tokens. Exit value is calculated at current price.</div>
+                </div>
+                <div class="property">
+                    <div class="property-name">6. Queue</div>
+                    <div class="property-desc">Exits are paid first from distributions (FIFO), then remainder flows to holders.</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <section>
+            <h2>The Problem</h2>
+            <p>Software creation costs have collapsed. A competent developer with access to language models can ship a working product in hours. But distribution remains expensive—not in money, but in attention and trust. The people who spread software early—referrers, evangelists, early adopters who file bug reports—create real value. They rarely capture it.</p>
+            <p>Traditional equity solves this for venture-scale companies. Vibe Token solves it for everything else: the micro-SaaS, the tool for a niche community, the app that serves six friends for one summer and then fades. Human-scale software deserves human-scale economics.</p>
+        </section>
+
+        <div class="invariant">
+            <h2>The Invariant</h2>
+            <p class="invariant-rule">20% of net revenue is continuously allocated to token holders.</p>
+            <p class="invariant-note">Fixed. Non-configurable. No tiers, no negotiation, no exceptions.</p>
+        </div>
+
+        <section>
+            <h2>Variables</h2>
+            <p class="variables">
+                <span><span class="var-name">R</span> cumulative revenue (lifetime)</span><span class="var-sep">·</span>
+                <span><span class="var-name">dR</span> new revenue event</span><span class="var-sep">·</span>
+                <span><span class="var-name">α</span> revenue share (0.20)</span><span class="var-sep">·</span>
+                <span><span class="var-name">S</span> token supply</span><span class="var-sep">·</span>
+                <span><span class="var-name">P</span> token price</span><span class="var-sep">·</span>
+                <span><span class="var-name">k</span> pricing constant</span>
+            </p>
+        </section>
+
+        <section>
+            <h2>Token Pricing</h2>
+            <img src="assets/bonding-curve-chart.png" alt="Bonding curve showing price increasing with square root of cumulative revenue" class="chart">
+            <div class="formula">
+                <code>P = k × √R</code>
+            </div>
+            <p>Price rises with cumulative revenue, but at a diminishing rate. The square root gives early revenue more weight than late. The first $10,000 raises price from $0 to $1. The next $10,000 only raises it from $1 to $1.41. Early risk earns early reward, but growth remains accessible.</p>
+        </section>
+
+        <section>
+            <h2>Pre-mint Allocation</h2>
+            <p>Before any revenue exists, founders need tokens to distribute to early believers—the influencer who tweets about your launch, the friend who refers customers, the beta tester who finds critical bugs. Pre-mint solves the cold-start problem.</p>
+            <p>As revenue-backed tokens are minted for referrers, pre-mint holders' share naturally dilutes. After year one, pre-mint might represent 50-70% of supply. After year three, perhaps 20-30%. Ongoing contributors earn ongoing share.</p>
+        </section>
+
+        <section>
+            <h2>Token Earning</h2>
+            <div class="formula">
+                <code>tokens = floor(α × dR ÷ P)</code>
+            </div>
+            <p>Tokens are earned, not purchased. When someone refers a customer who generates revenue, the referrer earns tokens. Tokens are whole integers; remainders are discarded.</p>
+            <p>Why no direct token purchases? Purchasing tokens with money creates securities law complexity. Earning tokens through contribution—marketing, referrals, sales—is compensating labor, not selling investment contracts.</p>
+        </section>
+
+        <section>
+            <h2>Revenue Distribution</h2>
+            <div class="formula">
+                <code>D = α × dR</code>
+                <code>payout = D ÷ S</code>
+            </div>
+            <p>Each time revenue is generated, 20% is added to a distribution pool. This pool is divided among all token holders proportionally. If there are pending exits, the distribution pool pays those first.</p>
+        </section>
+
+        <section>
+            <h2>Token Exit</h2>
+            <div class="formula">
+                <code>exit_value = tokens × P</code>
+            </div>
+            <p>Holders can exit at any time by burning their tokens. Exit value is calculated at current price.</p>
+            <ul class="conditions">
+                <li>Tokens are burned, supply decreases</li>
+                <li>Holder joins the exit queue</li>
+                <li>Exit value is paid from future distributions</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Exit Queue</h2>
+            <p>Exiting holders enter a queue and are paid from future distributions, first-in-first-out. When queue clears, full distributions resume.</p>
+            <p>No reserve pool is needed. Exits are funded by future business performance. If the business stops generating revenue, the queue doesn't clear—but that's honest. Tokens were always claims on future revenue.</p>
+        </section>
+
+        <div class="divider"></div>
+
+        <section>
+            <h2>System Properties</h2>
+            <div class="properties">
+                <div class="property">
+                    <div class="property-name">Revenue-indexed</div>
+                    <div class="property-desc">Price tracks lifetime business performance, not speculation</div>
+                </div>
+                <div class="property">
+                    <div class="property-name">Earned, not purchased</div>
+                    <div class="property-desc">Tokens represent contribution, not investment</div>
+                </div>
+                <div class="property">
+                    <div class="property-name">Continuous mint/burn</div>
+                    <div class="property-desc">Supply adjusts with each revenue event and exit</div>
+                </div>
+                <div class="property">
+                    <div class="property-name">Self-liquidating</div>
+                    <div class="property-desc">Exit queue requires no reserve; funded by ongoing revenue</div>
+                </div>
+                <div class="property">
+                    <div class="property-name">Early-weighted</div>
+                    <div class="property-desc">Square root pricing rewards early contributors</div>
+                </div>
+                <div class="property">
+                    <div class="property-name">Whole integers</div>
+                    <div class="property-desc">Tokens are discrete units, no fractional accounting</div>
+                </div>
+                <div class="property">
+                    <div class="property-name">Scale-agnostic</div>
+                    <div class="property-desc">Works for $500/month or $500,000/year</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="closing">
+            <h2>Closing</h2>
+            <p>New approaches to software architecture make this possible. When applications run on user devices, with data synced rather than centralized, operational costs collapse. A single developer can serve thousands of users. Communities can have their own isolated worlds—their own databases, their own economies, their own <i>fates</i>.</p>
+            <p>Vibe Token is infrastructure for this future. Not a movement, not a platform, not a promise. A mechanism: connect contribution to revenue, let the math handle distribution, see what people build when early support finally means something.</p>
+        </section>
+
+        <footer>
+            <p>2026</p>
+            <p class="social">follow us on <a href="https://x.com/vibetokenlol" target="_blank" rel="noopener"><img src="assets/X_logo.png" alt="X"></a></p>
+        </footer>
+    </article>
+</body>
+</html>

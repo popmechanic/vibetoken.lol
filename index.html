@@ -473,7 +473,7 @@
                 <div class="property">
                     <div class="property-name">4. Distribution</div>
                     <div class="formula" style="text-align: left; padding: 0.5em 0; margin: 0;"><code>payout = (α × dR) ÷ S</code></div>
-                    <div class="property-desc">Twenty percent of each revenue event is distributed to all token holders.</div>
+                    <div class="property-desc">The founder's specified share of each revenue event is distributed to all token holders.</div>
                 </div>
                 <div class="property">
                     <div class="property-name">5. Exit</div>
@@ -496,9 +496,9 @@
         </section>
 
         <div class="invariant">
-            <h2>The Invariant</h2>
-            <p class="invariant-rule">20% of net revenue is continuously allocated to token holders.</p>
-            <p class="invariant-note">Fixed. Non-configurable. No tiers, no negotiation, no exceptions.</p>
+            <h2>The Commitment</h2>
+            <p class="invariant-rule">The founder specifies α (revenue share) at launch. Once set, it cannot be changed.</p>
+            <p class="invariant-note">Typically 10-30%. No renegotiation, no gradual reduction, no bait-and-switch.</p>
         </div>
 
         <section>
@@ -506,7 +506,7 @@
             <p class="variables">
                 <span><span class="var-name">R</span> cumulative revenue (lifetime)</span><span class="var-sep">·</span>
                 <span><span class="var-name">dR</span> new revenue event</span><span class="var-sep">·</span>
-                <span><span class="var-name">α</span> revenue share (0.20)</span><span class="var-sep">·</span>
+                <span><span class="var-name">α</span> revenue share (founder-specified)</span><span class="var-sep">·</span>
                 <span><span class="var-name">S</span> token supply</span><span class="var-sep">·</span>
                 <span><span class="var-name">P</span> token price</span><span class="var-sep">·</span>
                 <span><span class="var-name">k</span> pricing constant</span>
@@ -543,7 +543,7 @@
                 <code>D = α × dR</code>
                 <code>payout = D ÷ S</code>
             </div>
-            <p>Each time revenue is generated, 20% is added to a distribution pool. This pool is divided among all token holders proportionally. If there are pending exits, the distribution pool pays those first.</p>
+            <p>Each time revenue is generated, the founder's specified share (α) is added to a distribution pool. This pool is divided among all token holders proportionally. If there are pending exits, the distribution pool pays those first.</p>
         </section>
 
         <section>

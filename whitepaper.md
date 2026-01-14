@@ -36,7 +36,7 @@ Referrers earn whole tokens based on the revenue they generate.
 ```
 payout = (alpha * dR) / S
 ```
-Twenty percent of each revenue event is distributed to all token holders.
+The founder's specified share of each revenue event is distributed to all token holders.
 
 **5. Exit**
 ```
@@ -60,11 +60,11 @@ Traditional equity solves this for venture-scale companies. Vibe Token solves it
 
 ---
 
-## The Invariant
+## The Commitment
 
-**20% of net revenue is continuously allocated to token holders.**
+**The founder specifies α (revenue share) at launch. Once set, it cannot be changed.**
 
-Fixed. Non-configurable. No tiers, no negotiation, no exceptions. This is the system's only constant. Everything else—price, supply, individual payouts—adjusts automatically.
+This is the deal between founder and contributors. The founder chooses what percentage of gross revenue flows to token holders—typically 10-30%. Contributors can see this number before participating. After launch, it's locked. No renegotiation, no gradual reduction, no bait-and-switch.
 
 ---
 
@@ -72,7 +72,7 @@ Fixed. Non-configurable. No tiers, no negotiation, no exceptions. This is the sy
 
 - **R** — cumulative net revenue (lifetime total, only increases)
 - **dR** — new revenue from a single event
-- **alpha** — revenue share, fixed at 0.20
+- **alpha** — revenue share (founder-specified, locked at launch)
 - **S** — total token supply outstanding
 - **P** — current token price
 - **k** — pricing constant (typically 0.01)
@@ -130,10 +130,10 @@ Tokens are earned, not purchased. When someone refers a customer who generates r
 **How it works:**
 1. Referrer brings in a customer
 2. Customer pays $X for the product
-3. Referrer earns tokens = floor(0.20 * $X / P)
+3. Referrer earns tokens = floor(α * $X / P)
 4. Tokens are whole integers; remainders are discarded
 
-**Example:** Referrer brings in a $50 sale. Current price P = $1.00.
+**Example:** Referrer brings in a $50 sale. α = 0.20, P = $1.00.
 - Referrer value = 0.20 * $50 = $10
 - Tokens earned = floor($10 / $1.00) = 10 tokens
 
@@ -150,9 +150,9 @@ D = alpha * dR
 payout_per_token = D / S
 ```
 
-Each time revenue is generated, 20% is added to a distribution pool. This pool is divided among all token holders proportionally.
+Each time revenue is generated, the founder's specified share (α) is added to a distribution pool. This pool is divided among all token holders proportionally.
 
-**Example:** Business receives $1,000 in revenue. There are 50,000 tokens outstanding.
+**Example:** Business receives $1,000 in revenue. α = 0.20, S = 50,000 tokens.
 - Distribution pool D = $200
 - Payout per token = $200 / 50,000 = $0.004
 
@@ -253,11 +253,27 @@ The constant k determines the scale of token prices. Choose based on your typica
 | $10-50 | 0.005 | $0.50 |
 | $5-10 | 0.001 | $0.10 |
 
-**Example calculation:** Your typical sale is $20. Referrer value = $4. You want at least 1 token minted.
+**Example calculation:** Your typical sale is $20. Referrer value (at α = 0.20) = $4. You want at least 1 token minted.
 - Need P ≤ $4
 - At mature scale (R = $100,000), P = k * 316
 - If k = 0.01, P = $3.16 ✓ (1 token minted)
 - If k = 0.1, P = $31.60 ✗ (0 tokens minted)
+
+---
+
+## Choosing α (Revenue Share)
+
+The founder specifies what percentage of gross revenue flows to token holders. This choice is permanent.
+
+**Considerations:**
+
+- **Higher α (20-30%)** — More attractive to contributors. Faster token minting. Better for businesses that depend heavily on referral-driven growth.
+
+- **Lower α (10-15%)** — More revenue retained by founder. Slower token minting. Better for businesses with established distribution or lower margins.
+
+**Typical range:** 10-30%. Most businesses choose 15-20%.
+
+**Remember:** α affects both token earning (how many tokens referrers receive) and distributions (how much cash holders receive). A higher α is more generous on both dimensions.
 
 ---
 

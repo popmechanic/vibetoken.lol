@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibe Token — A Revenue-Indexed Contribution System for Small Software</title>
+    <title>Vibe Token: A Revenue-Indexed Contribution System for Small Software</title>
     <meta name="description" content="Vibe Token provides early contributors a direct stake in future revenue without speculation, venture financing, or secondary markets.">
 
     <!-- Favicon -->
@@ -412,6 +412,269 @@
             height: 18px;
         }
 
+        /* Simulator */
+        .simulator {
+            margin-top: var(--space-xl);
+            padding-top: var(--space-lg);
+            border-top: 1px solid var(--border);
+        }
+
+        .simulator h2 {
+            margin-bottom: var(--space-md);
+        }
+
+        .sim-section {
+            margin-bottom: var(--space-lg);
+        }
+
+        .sim-section h3 {
+            font-family: var(--font-heading);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent);
+            margin-bottom: var(--space-sm);
+        }
+
+        .sim-params {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+        }
+
+        .sim-param {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .sim-param label {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .sim-param input {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.5em 0.75em;
+            width: 100px;
+        }
+
+        .sim-param input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .sim-revenue {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .sim-revenue {
+                grid-template-columns: repeat(12, 1fr);
+            }
+        }
+
+        .sim-revenue-month {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+
+        .sim-revenue-month label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .sim-revenue-month input {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.4em;
+            width: 100%;
+            text-align: center;
+        }
+
+        .sim-holders {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .sim-holders table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .sim-holders th {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: var(--text-secondary);
+            text-align: left;
+            padding: 0.5em;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sim-holders td {
+            padding: 0.4em;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sim-holders input {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.3em 0.5em;
+            width: 100%;
+        }
+
+        .sim-holders input[type="text"] {
+            width: 80px;
+        }
+
+        .sim-holders input[type="number"] {
+            width: 70px;
+        }
+
+        .sim-holders .remove-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.2em 0.5em;
+        }
+
+        .sim-holders .remove-btn:hover {
+            color: #c44;
+        }
+
+        .add-holder-btn {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 0.5em 1em;
+            cursor: pointer;
+            margin-top: var(--space-sm);
+        }
+
+        .add-holder-btn:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+
+        .run-btn {
+            font-family: var(--font-heading);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: var(--accent);
+            border: none;
+            color: var(--bg);
+            padding: 0.75em 2em;
+            cursor: pointer;
+            margin-top: var(--space-md);
+        }
+
+        .run-btn:hover {
+            background: var(--text-primary);
+        }
+
+        .sim-results {
+            display: none;
+            margin-top: var(--space-lg);
+            padding-top: var(--space-lg);
+            border-top: 1px solid var(--border);
+        }
+
+        .sim-results.visible {
+            display: block;
+        }
+
+        .sim-chart-container {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: var(--space-md);
+            margin-bottom: var(--space-md);
+            position: relative;
+        }
+
+        .sim-chart-container canvas {
+            max-height: 300px;
+        }
+
+        .sim-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
+
+        .sim-stat {
+            text-align: center;
+            padding: var(--space-sm);
+            border: 1px solid var(--border);
+        }
+
+        .sim-stat-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 0.25em;
+        }
+
+        .sim-stat-value {
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .sim-final-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .sim-final-table th {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: var(--text-secondary);
+            text-align: left;
+            padding: 0.5em;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sim-final-table td {
+            font-family: var(--font-mono);
+            padding: 0.5em;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .sim-final-table .exited {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
         /* Print */
         @media print {
             body {
@@ -447,8 +710,8 @@
         </header>
 
         <div class="abstract">
-            <p>Token systems introduced sound economic primitives: programmable ownership, automated distribution, permissionless participation. What failed was not the mechanism but its deployment. Speculation displaced contribution. Financial games crowded out builders, referrers, and early believers who told their friends.</p>
-            <p>This paper describes a different application. Vibe Token is designed for small, high-margin software businesses—the kind now trivially cheap to create but still difficult to distribute. It gives early contributors a direct stake in future revenue without speculation, venture financing, or secondary markets.</p>
+            <p>Token systems introduced sound economic primitives: programmable ownership, automated distribution, permissionless participation. What failed was not the mechanism but its deployment. Speculation displaced contribution. Financial games crowded out builders and referrers.</p>
+            <p>Vibe Token is designed for small, high-margin software businesses, the kind now cheap to create but still hard to distribute. It gives early contributors a direct stake in future revenue.</p>
         </div>
 
         <div class="divider"></div>
@@ -463,7 +726,7 @@
                 </div>
                 <div class="property">
                     <div class="property-name">2. Pre-mint</div>
-                    <div class="property-desc">Founder receives a fixed token allocation at launch, freely distributable to bootstrap early participation.</div>
+                    <div class="property-desc">Founder receives a token treasury at launch. Treasury tokens are inert until granted to contributors.</div>
                 </div>
                 <div class="property">
                     <div class="property-name">3. Earning</div>
@@ -491,8 +754,8 @@
 
         <section>
             <h2>The Problem</h2>
-            <p>Software creation costs have collapsed. A competent developer with access to language models can ship a working product in hours. But distribution remains expensive—not in money, but in attention and trust. The people who spread software early—referrers, evangelists, early adopters who file bug reports—create real value. They rarely capture it.</p>
-            <p>Traditional equity solves this for venture-scale companies. Vibe Token solves it for everything else: the micro-SaaS, the tool for a niche community, the app that serves six friends for one summer and then fades. Human-scale software deserves human-scale economics.</p>
+            <p>Software creation costs have collapsed. A developer with language models can ship a working product in hours. Distribution remains expensive: not in money, but in attention and trust. The people who spread software early create real value. They rarely capture it.</p>
+            <p>Traditional equity solves this for venture-scale companies. Vibe Token solves it for everything else: the micro-SaaS, the tool for a niche community, the app that serves six friends for one summer. Human-scale software deserves human-scale economics.</p>
         </section>
 
         <div class="invariant">
@@ -507,7 +770,7 @@
                 <span><span class="var-name">R</span> cumulative revenue (lifetime)</span><span class="var-sep">·</span>
                 <span><span class="var-name">dR</span> new revenue event</span><span class="var-sep">·</span>
                 <span><span class="var-name">α</span> revenue share (founder-specified)</span><span class="var-sep">·</span>
-                <span><span class="var-name">S</span> token supply</span><span class="var-sep">·</span>
+                <span><span class="var-name">S</span> circulating supply (issued only)</span><span class="var-sep">·</span>
                 <span><span class="var-name">P</span> token price</span><span class="var-sep">·</span>
                 <span><span class="var-name">k</span> pricing constant</span>
             </p>
@@ -523,9 +786,9 @@
         </section>
 
         <section>
-            <h2>Pre-mint Allocation</h2>
-            <p>Before any revenue exists, founders need tokens to distribute to early believers—the influencer who tweets about your launch, the friend who refers customers, the beta tester who finds critical bugs. Pre-mint solves the cold-start problem.</p>
-            <p>As revenue-backed tokens are minted for referrers, pre-mint holders' share naturally dilutes. After year one, pre-mint might represent 50-70% of supply. After year three, perhaps 20-30%. Ongoing contributors earn ongoing share.</p>
+            <h2>Pre-mint Treasury</h2>
+            <p>Pre-mint creates a treasury pool. These tokens are inert: they do not participate in distributions until the founder grants them to contributors. The founder's compensation is retained revenue (1-α), not tokens.</p>
+            <p>Before any revenue exists, founders need tokens to distribute. Pre-mint solves this cold-start problem: give tokens to the influencer who tweets your launch, the friend who refers customers, the beta tester who finds bugs.</p>
         </section>
 
         <section>
@@ -534,7 +797,7 @@
                 <code>tokens = floor(α × dR ÷ P)</code>
             </div>
             <p>Tokens are earned, not purchased. When someone refers a customer who generates revenue, the referrer earns tokens. Tokens are whole integers; remainders are discarded.</p>
-            <p>Why no direct token purchases? Purchasing tokens with money creates securities law complexity. Earning tokens through contribution—marketing, referrals, sales—is compensating labor, not selling investment contracts.</p>
+            <p>Why no direct purchases? Purchasing tokens with money triggers securities law. Earning tokens through marketing, referrals, and sales compensates labor rather than selling investment contracts.</p>
         </section>
 
         <section>
@@ -543,7 +806,7 @@
                 <code>D = α × dR</code>
                 <code>payout = D ÷ S</code>
             </div>
-            <p>Each time revenue is generated, the founder's specified share (α) is added to a distribution pool. This pool is divided among all token holders proportionally. If there are pending exits, the distribution pool pays those first.</p>
+            <p>Each revenue event adds the founder's share (α) to a distribution pool. The system divides this pool among issued token holders proportionally. Treasury tokens do not participate. Pending exits receive payment first.</p>
         </section>
 
         <section>
@@ -551,18 +814,18 @@
             <div class="formula">
                 <code>exit_value = tokens × P</code>
             </div>
-            <p>Holders can exit at any time by burning their tokens. Exit value is calculated at current price.</p>
+            <p>Holders can exit at any time by burning their tokens. The system calculates exit value at current price.</p>
             <ul class="conditions">
-                <li>Tokens are burned, supply decreases</li>
+                <li>Burning tokens decreases supply</li>
                 <li>Holder joins the exit queue</li>
-                <li>Exit value is paid from future distributions</li>
+                <li>Future distributions pay exit value</li>
             </ul>
         </section>
 
         <section>
             <h2>Exit Queue</h2>
-            <p>Exiting holders enter a queue and are paid from future distributions, first-in-first-out. When queue clears, full distributions resume.</p>
-            <p>No reserve pool is needed. Exits are funded by future business performance. If the business stops generating revenue, the queue doesn't clear—but that's honest. Tokens were always claims on future revenue.</p>
+            <p>Exiting holders enter a queue and are paid from future distributions, first-in-first-out. When the queue clears, full distributions resume.</p>
+            <p>The system needs no reserve pool. Future revenue funds exits. If the business stops generating revenue, the queue stalls. That's honest: tokens were always claims on future revenue.</p>
         </section>
 
         <div class="divider"></div>
@@ -603,8 +866,112 @@
 
         <section class="closing">
             <h2>Closing</h2>
-            <p>New approaches to software architecture make this possible. When applications run on user devices, with data synced rather than centralized, operational costs collapse. A single developer can serve thousands of users. Communities can have their own isolated worlds—their own databases, their own economies, their own <i>fates</i>.</p>
+            <p>New software architecture makes this possible. When applications run on user devices, with data synced rather than centralized, operational costs collapse. One developer can serve thousands of users. Communities can have their own isolated worlds: their own databases, their own economies, their own <i>fates</i>.</p>
             <p>Vibe Token is infrastructure for this future. Not a movement, not a platform, not a promise. A mechanism: connect contribution to revenue, let the math handle distribution, see what people build when early support finally means something.</p>
+        </section>
+
+        <section class="simulator">
+            <h2>Simulator</h2>
+            <p>Model the token economics with your own parameters. Pre-mint creates a treasury; only granted tokens participate in distributions. The founder's compensation is retained revenue (1-α), not tokens.</p>
+
+            <div class="sim-section">
+                <h3>System Parameters</h3>
+                <div class="sim-params">
+                    <div class="sim-param">
+                        <label>k (price constant)</label>
+                        <input type="number" id="sim-k" value="0.01" step="0.001" min="0.001">
+                    </div>
+                    <div class="sim-param">
+                        <label>α (revenue share)</label>
+                        <input type="number" id="sim-alpha" value="0.20" step="0.01" min="0.01" max="1">
+                    </div>
+                    <div class="sim-param">
+                        <label>Treasury (pre-mint)</label>
+                        <input type="number" id="sim-premint" value="100000" step="1000" min="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="sim-section">
+                <h3>Monthly Revenue (Year 1)</h3>
+                <div class="sim-revenue" id="sim-revenue-grid">
+                    <!-- Generated by JS -->
+                </div>
+            </div>
+
+            <div class="sim-section">
+                <h3>Token Holders</h3>
+                <div class="sim-holders">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Grant</th>
+                                <th>Referral %</th>
+                                <th>Start Month</th>
+                                <th>Exit Month</th>
+                                <th>Exit Tokens</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="sim-holders-body">
+                            <!-- Generated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <button class="add-holder-btn" onclick="addHolder()">+ Add Holder</button>
+            </div>
+
+            <button class="run-btn" onclick="runSimulation()">Run Simulation</button>
+
+            <div class="sim-results" id="sim-results">
+                <h3>Results</h3>
+
+                <div class="sim-summary" id="sim-summary" style="grid-template-columns: repeat(4, 1fr);">
+                    <div class="sim-stat">
+                        <div class="sim-stat-label">Cumulative Revenue</div>
+                        <div class="sim-stat-value" id="stat-revenue">$0</div>
+                    </div>
+                    <div class="sim-stat">
+                        <div class="sim-stat-label">Token Price</div>
+                        <div class="sim-stat-value" id="stat-price">$0.00</div>
+                    </div>
+                    <div class="sim-stat">
+                        <div class="sim-stat-label">Circulating Supply</div>
+                        <div class="sim-stat-value" id="stat-supply">0</div>
+                    </div>
+                    <div class="sim-stat">
+                        <div class="sim-stat-label">Treasury Remaining</div>
+                        <div class="sim-stat-value" id="stat-treasury">0</div>
+                    </div>
+                </div>
+
+                <div class="sim-chart-container">
+                    <canvas id="chart-price"></canvas>
+                </div>
+
+                <div class="sim-chart-container">
+                    <canvas id="chart-holders"></canvas>
+                </div>
+
+                <h3 style="margin-top: var(--space-md);">Final Holder State</h3>
+                <table class="sim-final-table">
+                    <thead>
+                        <tr>
+                            <th>Holder</th>
+                            <th>Tokens</th>
+                            <th>Value</th>
+                            <th>Distributions</th>
+                            <th>Total Return</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sim-final-body">
+                        <!-- Generated by JS -->
+                    </tbody>
+                </table>
+
+                <div id="sim-exit-queue" style="margin-top: var(--space-md); font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-secondary);"></div>
+            </div>
         </section>
 
         <footer>
@@ -612,5 +979,393 @@
             <p class="social">follow us on <a href="https://x.com/vibetokenlol" target="_blank" rel="noopener"><img src="assets/X_logo.png" alt="X"></a></p>
         </footer>
     </article>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Default monthly revenue
+        const defaultRevenue = [1000, 1000, 1000, 3000, 3000, 3000, 8000, 8000, 8000, 8000, 8000, 8000];
+
+        // Default holders (no founder - founder's compensation is retained revenue, not tokens)
+        const defaultHolders = [
+            { name: 'Alice', grant: 10000, referralPct: 0, startMonth: 1, exitMonth: 9, exitTokens: 5000 },
+            { name: 'Bob', grant: 5000, referralPct: 0.30, startMonth: 3, exitMonth: 0, exitTokens: 0 },
+            { name: 'Carol', grant: 0, referralPct: 0.20, startMonth: 8, exitMonth: 0, exitTokens: 0 }
+        ];
+
+        let holders = JSON.parse(JSON.stringify(defaultHolders));
+        let priceChart = null;
+        let holdersChart = null;
+
+        // Initialize UI
+        function initSimulator() {
+            renderRevenueGrid();
+            renderHoldersTable();
+        }
+
+        function renderRevenueGrid() {
+            const grid = document.getElementById('sim-revenue-grid');
+            grid.innerHTML = '';
+            for (let i = 0; i < 12; i++) {
+                const div = document.createElement('div');
+                div.className = 'sim-revenue-month';
+                div.innerHTML = `
+                    <label>M${i + 1}</label>
+                    <input type="number" id="rev-${i}" value="${defaultRevenue[i]}" min="0" step="100">
+                `;
+                grid.appendChild(div);
+            }
+        }
+
+        function renderHoldersTable() {
+            const tbody = document.getElementById('sim-holders-body');
+            tbody.innerHTML = '';
+            holders.forEach((h, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><input type="text" value="${h.name}" onchange="holders[${idx}].name=this.value"></td>
+                    <td><input type="number" value="${h.grant}" min="0" step="1000" onchange="holders[${idx}].grant=parseInt(this.value)||0"></td>
+                    <td><input type="number" value="${(h.referralPct * 100).toFixed(0)}" min="0" max="100" step="5" onchange="holders[${idx}].referralPct=parseFloat(this.value)/100||0">%</td>
+                    <td><input type="number" value="${h.startMonth}" min="1" max="12" onchange="holders[${idx}].startMonth=parseInt(this.value)||1"></td>
+                    <td><input type="number" value="${h.exitMonth || ''}" min="0" max="12" placeholder="-" onchange="holders[${idx}].exitMonth=parseInt(this.value)||0"></td>
+                    <td><input type="number" value="${h.exitTokens || ''}" min="0" step="100" placeholder="-" onchange="holders[${idx}].exitTokens=parseInt(this.value)||0"></td>
+                    <td><button class="remove-btn" onclick="removeHolder(${idx})">×</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function addHolder() {
+            holders.push({ name: 'New', grant: 0, referralPct: 0, startMonth: 1, exitMonth: 0, exitTokens: 0 });
+            renderHoldersTable();
+        }
+
+        function removeHolder(idx) {
+            if (holders.length > 1) {
+                holders.splice(idx, 1);
+                renderHoldersTable();
+            }
+        }
+
+        function simulate() {
+            const k = parseFloat(document.getElementById('sim-k').value) || 0.01;
+            const alpha = parseFloat(document.getElementById('sim-alpha').value) || 0.20;
+            const premint = parseInt(document.getElementById('sim-premint').value) || 100000;
+
+            const monthlyRevenue = [];
+            for (let i = 0; i < 12; i++) {
+                monthlyRevenue.push(parseFloat(document.getElementById(`rev-${i}`).value) || 0);
+            }
+
+            // Deep copy holders for simulation
+            const simHolders = holders.map(h => ({
+                ...h,
+                tokens: h.grant,
+                distributions: 0,
+                exitValue: 0
+            }));
+
+            let R = 0;
+            let treasury = premint;  // Founder's reserve (inert tokens)
+            let S = 0;               // Circulating supply (issued tokens only)
+            let exitQueue = [];
+
+            // Initialize: grants come from treasury, add to circulating supply
+            for (const holder of simHolders) {
+                if (holder.grant > 0) {
+                    treasury -= holder.grant;
+                    S += holder.grant;
+                }
+            }
+
+            const timeline = [];
+            const holderTimeline = simHolders.map(() => []);
+
+            for (let month = 1; month <= 12; month++) {
+                const dR = monthlyRevenue[month - 1];
+                R += dR;
+
+                const P = R > 0 ? k * Math.sqrt(R) : 0;
+
+                // Mint tokens for referrers
+                for (const holder of simHolders) {
+                    if (holder.referralPct > 0 && holder.startMonth <= month && P > 0) {
+                        const referralRevenue = dR * holder.referralPct;
+                        const tokensEarned = Math.floor(alpha * referralRevenue / P);
+                        holder.tokens += tokensEarned;
+                        S += tokensEarned;
+                    }
+                }
+
+                // Process distributions
+                const D = alpha * dR;
+                let remaining = D;
+
+                // Pay exit queue first (FIFO)
+                while (exitQueue.length > 0 && remaining > 0) {
+                    const exit = exitQueue[0];
+                    const payment = Math.min(exit.owed, remaining);
+                    exit.owed -= payment;
+                    exit.holder.distributions += payment;
+                    remaining -= payment;
+                    if (exit.owed <= 0) exitQueue.shift();
+                }
+
+                // Distribute remainder to holders
+                if (remaining > 0 && S > 0) {
+                    const perToken = remaining / S;
+                    for (const holder of simHolders) {
+                        holder.distributions += holder.tokens * perToken;
+                    }
+                }
+
+                // Process exits this month
+                for (const holder of simHolders) {
+                    if (holder.exitMonth === month && holder.exitTokens > 0) {
+                        const exitValue = holder.exitTokens * P;
+                        holder.tokens -= holder.exitTokens;
+                        holder.exitValue = exitValue;
+                        S -= holder.exitTokens;
+                        exitQueue.push({ holder, owed: exitValue });
+                    }
+                }
+
+                // Record timeline
+                timeline.push({
+                    month,
+                    R,
+                    P,
+                    S,
+                    D,
+                    exitQueueTotal: exitQueue.reduce((a, e) => a + e.owed, 0)
+                });
+
+                // Record holder balances
+                simHolders.forEach((h, i) => {
+                    holderTimeline[i].push(h.tokens);
+                });
+            }
+
+            return {
+                timeline,
+                holderTimeline,
+                holders: simHolders,
+                finalR: R,
+                finalP: R > 0 ? k * Math.sqrt(R) : 0,
+                finalS: S,
+                treasury: treasury,
+                exitQueueRemaining: exitQueue.reduce((a, e) => a + e.owed, 0)
+            };
+        }
+
+        function runSimulation() {
+            const results = simulate();
+
+            // Update summary stats
+            document.getElementById('stat-revenue').textContent = '$' + results.finalR.toLocaleString();
+            document.getElementById('stat-price').textContent = '$' + results.finalP.toFixed(2);
+            document.getElementById('stat-supply').textContent = Math.round(results.finalS).toLocaleString();
+            document.getElementById('stat-treasury').textContent = Math.round(results.treasury).toLocaleString();
+
+            // Render charts
+            renderPriceChart(results);
+            renderHoldersChart(results);
+
+            // Render final table
+            renderFinalTable(results);
+
+            // Show exit queue status
+            const queueDiv = document.getElementById('sim-exit-queue');
+            if (results.exitQueueRemaining > 0) {
+                queueDiv.textContent = `Exit Queue: $${results.exitQueueRemaining.toFixed(2)} remaining to be paid`;
+            } else {
+                queueDiv.textContent = 'Exit Queue: Empty (all exits paid)';
+            }
+
+            // Show results
+            document.getElementById('sim-results').classList.add('visible');
+        }
+
+        function renderPriceChart(results) {
+            const ctx = document.getElementById('chart-price').getContext('2d');
+
+            if (priceChart) priceChart.destroy();
+
+            priceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: results.timeline.map(t => 'M' + t.month),
+                    datasets: [{
+                        label: 'Token Price',
+                        data: results.timeline.map(t => t.P),
+                        borderColor: '#f5a623',
+                        backgroundColor: 'rgba(245, 166, 35, 0.1)',
+                        borderWidth: 2,
+                        pointStyle: 'rectRot',
+                        pointRadius: 6,
+                        pointBackgroundColor: '#f5a623',
+                        pointBorderColor: '#f5a623',
+                        tension: 0,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'TOKEN PRICE OVER TIME',
+                            color: '#c8c8c8',
+                            font: {
+                                family: "'JetBrains Mono', monospace",
+                                size: 11,
+                                weight: 'normal'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: '#222'
+                            },
+                            ticks: {
+                                color: '#888',
+                                font: {
+                                    family: "'JetBrains Mono', monospace",
+                                    size: 10
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: '#222'
+                            },
+                            ticks: {
+                                color: '#888',
+                                font: {
+                                    family: "'JetBrains Mono', monospace",
+                                    size: 10
+                                },
+                                callback: function(value) {
+                                    return '$' + value.toFixed(2);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderHoldersChart(results) {
+            const ctx = document.getElementById('chart-holders').getContext('2d');
+
+            if (holdersChart) holdersChart.destroy();
+
+            const colors = ['#f5a623', '#4ecdc4', '#ff6b6b', '#95e1d3', '#a8e6cf', '#dcedc1'];
+
+            const datasets = results.holders.map((h, i) => ({
+                label: h.name,
+                data: results.holderTimeline[i],
+                borderColor: colors[i % colors.length],
+                backgroundColor: 'transparent',
+                borderWidth: 2,
+                pointStyle: 'rectRot',
+                pointRadius: 4,
+                pointBackgroundColor: colors[i % colors.length],
+                tension: 0
+            }));
+
+            holdersChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: results.timeline.map(t => 'M' + t.month),
+                    datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                color: '#888',
+                                font: {
+                                    family: "'JetBrains Mono', monospace",
+                                    size: 10
+                                },
+                                usePointStyle: true
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'HOLDER TOKEN BALANCES',
+                            color: '#c8c8c8',
+                            font: {
+                                family: "'JetBrains Mono', monospace",
+                                size: 11,
+                                weight: 'normal'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: '#222'
+                            },
+                            ticks: {
+                                color: '#888',
+                                font: {
+                                    family: "'JetBrains Mono', monospace",
+                                    size: 10
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: '#222'
+                            },
+                            ticks: {
+                                color: '#888',
+                                font: {
+                                    family: "'JetBrains Mono', monospace",
+                                    size: 10
+                                },
+                                callback: function(value) {
+                                    return value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderFinalTable(results) {
+            const tbody = document.getElementById('sim-final-body');
+            tbody.innerHTML = '';
+
+            results.holders.forEach(h => {
+                const value = h.tokens * results.finalP;
+                const totalReturn = h.distributions + (h.exitValue || 0);
+                const tr = document.createElement('tr');
+                const exited = h.exitMonth > 0 ? ' (exited M' + h.exitMonth + ')' : '';
+                tr.innerHTML = `
+                    <td>${h.name}${exited ? '<span class="exited">' + exited + '</span>' : ''}</td>
+                    <td>${Math.round(h.tokens).toLocaleString()}</td>
+                    <td>$${value.toFixed(2)}</td>
+                    <td>$${h.distributions.toFixed(2)}</td>
+                    <td>$${totalReturn.toFixed(2)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Initialize on load
+        initSimulator();
+    </script>
 </body>
 </html>

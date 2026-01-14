@@ -4,9 +4,9 @@
 
 ---
 
-Token systems introduced sound economic primitives: programmable ownership, automated distribution, permissionless participation. What failed was not the mechanism but its deployment. Speculation displaced contribution. Financial games crowded out builders, referrers, and early believers who told their friends.
+Token systems introduced sound economic primitives: programmable ownership, automated distribution, permissionless participation. What failed was not the mechanism but its deployment. Speculation displaced contribution. Financial games crowded out builders and referrers.
 
-This paper describes a different application. Vibe Token is designed for small, high-margin software businesses—the kind now trivially cheap to create but still difficult to distribute. It gives early contributors a direct stake in future revenue without speculation, venture financing, or secondary markets.
+Vibe Token is designed for small, high-margin software businesses, the kind now cheap to create but still hard to distribute. It gives early contributors a direct stake in future revenue.
 
 ---
 
@@ -22,9 +22,9 @@ Token price equals a constant times the square root of cumulative revenue.
 
 **2. Pre-mint**
 ```
-Founder receives a fixed token allocation at launch.
+Founder receives a token treasury at launch.
 ```
-These tokens can be freely distributed to bootstrap early participation.
+Treasury tokens are inert until granted to contributors.
 
 **3. Earning**
 ```
@@ -54,9 +54,9 @@ Exit payments have priority. When the queue clears, full distributions resume.
 
 ## The Problem
 
-Software creation costs have collapsed. A competent developer with access to language models can ship a working product in hours. But distribution remains expensive—not in money, but in attention and trust. The people who spread software early—referrers, evangelists, early adopters who file bug reports—create real value. They rarely capture it.
+Software creation costs have collapsed. A developer with language models can ship a working product in hours. Distribution remains expensive: not in money, but in attention and trust. The people who spread software early create real value. They rarely capture it.
 
-Traditional equity solves this for venture-scale companies. Vibe Token solves it for everything else: the micro-SaaS, the tool for a niche community, the app that serves six friends for one summer and then fades. Human-scale software deserves human-scale economics.
+Traditional equity solves this for venture-scale companies. Vibe Token solves it for everything else: the micro-SaaS, the tool for a niche community, the app that serves six friends for one summer. Human-scale software deserves human-scale economics.
 
 ---
 
@@ -64,18 +64,18 @@ Traditional equity solves this for venture-scale companies. Vibe Token solves it
 
 **The founder specifies α (revenue share) at launch. Once set, it cannot be changed.**
 
-This is the deal between founder and contributors. The founder chooses what percentage of gross revenue flows to token holders—typically 10-30%. Contributors can see this number before participating. After launch, it's locked. No renegotiation, no gradual reduction, no bait-and-switch.
+This is the deal between founder and contributors. The founder chooses what percentage of gross revenue flows to token holders, typically 10-30%. Contributors can see this number before participating. After launch, it's locked. No renegotiation, no gradual reduction, no bait-and-switch.
 
 ---
 
 ## Variables
 
-- **R** — cumulative net revenue (lifetime total, only increases)
-- **dR** — new revenue from a single event
-- **alpha** — revenue share (founder-specified, locked at launch)
-- **S** — total token supply outstanding
-- **P** — current token price
-- **k** — pricing constant (typically 0.01)
+- **R** - cumulative net revenue (lifetime total, only increases)
+- **dR** - new revenue from a single event
+- **alpha** - revenue share (founder-specified, locked at launch)
+- **S** - circulating supply (issued tokens only; excludes treasury)
+- **P** - current token price
+- **k** - pricing constant (typically 0.01)
 
 ---
 
@@ -103,19 +103,21 @@ Price never decreases because cumulative revenue never decreases. A business tha
 
 ---
 
-## Rule 2: Pre-mint Allocation
+## Rule 2: Pre-mint Treasury
 
 ```
-Founder receives a fixed token allocation at launch.
+Founder receives a token treasury at launch.
 ```
 
-Before any revenue exists, founders need tokens to distribute to early believers—the influencer who tweets about your launch, the friend who refers ten customers, the beta tester who finds critical bugs.
+Pre-mint creates a treasury pool. These tokens are inert: they do not participate in distributions until the founder grants them to contributors. Only issued tokens circulate.
 
-**Pre-mint solves the cold-start problem.** No revenue means no tokens minted. But you need contributors to generate revenue. Pre-mint breaks this cycle.
+**Why a treasury?** Before any revenue exists, founders need tokens to distribute. Pre-mint solves this cold-start problem: give tokens to the influencer who tweets your launch, the friend who refers customers, the beta tester who finds bugs. No revenue means no tokens minted, but you need contributors to generate revenue.
+
+**The founder's compensation is retained revenue (1-α), not tokens.** The founder does not hold tokens for personal distributions. The treasury exists solely as a pool to reward early contributors.
 
 **Recommended quantity:** Set pre-mint equal to 100 times your expected first-year revenue. For a business expecting $10,000 in year one, pre-mint 100,000 tokens.
 
-**What happens to pre-mint over time?** Natural dilution. As revenue-backed tokens are minted for referrers, pre-mint holders' share decreases. After year one of a successful business, pre-mint might represent 50-70% of supply. After year three, perhaps 20-30%. This is correct—ongoing contributors earn ongoing share.
+**What happens to treasury over time?** As founders grant tokens to contributors and referrers earn revenue-backed tokens, the treasury depletes. After year one of a successful business, treasury might be 30-50% depleted. Ungranted treasury tokens remain available for future contributors.
 
 ---
 
@@ -137,9 +139,9 @@ Tokens are earned, not purchased. When someone refers a customer who generates r
 - Referrer value = 0.20 * $50 = $10
 - Tokens earned = floor($10 / $1.00) = 10 tokens
 
-**Why floor (round down)?** Tokens must be whole integers. If a small referral would mint 0.3 tokens, the referrer receives 0. This is acceptable—design your pricing constant k so typical transactions mint at least one token.
+**Why floor (round down)?** Tokens must be whole integers. If a small referral would mint 0.3 tokens, the referrer receives 0. Design your pricing constant k so typical transactions mint at least one token.
 
-**Why no direct token purchases?** Purchasing tokens with money creates securities law complexity. Earning tokens through contribution—marketing, referrals, sales—is compensating labor, not selling investment contracts.
+**Why no direct purchases?** Purchasing tokens with money triggers securities law. Earning tokens through marketing, referrals, and sales compensates labor rather than selling investment contracts.
 
 ---
 
@@ -150,9 +152,12 @@ D = alpha * dR
 payout_per_token = D / S
 ```
 
-Each time revenue is generated, the founder's specified share (α) is added to a distribution pool. This pool is divided among all token holders proportionally.
+Each revenue event adds the founder's share (α) to a distribution pool. The system divides this pool among issued token holders proportionally. Treasury tokens do not participate.
 
-**Example:** Business receives $1,000 in revenue. α = 0.20, S = 50,000 tokens.
+**S counts only issued tokens.** If the founder has granted 1 token and $1,000 revenue comes in, that single token receives the full α × $1,000. Treasury tokens are inert.
+
+**Example:** Business receives $1,000 in revenue. α = 0.20. Founder has issued 50,000 tokens from treasury.
+- S = 50,000 (issued tokens only)
 - Distribution pool D = $200
 - Payout per token = $200 / 50,000 = $0.004
 
@@ -160,7 +165,7 @@ A holder with 1,000 tokens receives $4.00.
 
 **When are distributions paid?** Implementation varies. Could be per-transaction, daily, weekly, or monthly batches. The math is the same; only the frequency differs.
 
-**What about the exit queue?** If there are pending exits, the distribution pool pays those first. See Rule 6.
+**What about the exit queue?** Pending exits receive payment first. See Rule 6.
 
 ---
 
@@ -170,14 +175,14 @@ A holder with 1,000 tokens receives $4.00.
 exit_value = tokens * P
 ```
 
-Holders can exit at any time by burning their tokens. Exit value is calculated at the current price.
+Holders can exit at any time by burning their tokens. The system calculates exit value at current price.
 
 **How it works:**
 1. Holder requests exit for N tokens
 2. Exit value = N * P (at current price)
-3. Tokens are burned (supply decreases)
+3. Burning tokens decreases supply
 4. Holder joins the exit queue
-5. Exit value is paid from future distributions
+5. Future distributions pay exit value
 
 **Example:** Holder has 500 tokens. Current price P = $2.00.
 - Exit value = 500 * $2.00 = $1,000
@@ -219,7 +224,7 @@ Next month, distribution pool is $600.
 - Bob receives $300 (complete), exits queue
 - Remaining $200 goes to current holders
 
-**Why a queue?** No reserve pool is needed. Exits are funded by future business performance. If the business stops generating revenue, the queue doesn't clear—but that's honest. Tokens were always claims on future revenue.
+**Why a queue?** The system needs no reserve pool. Future revenue funds exits. If the business stops generating revenue, the queue stalls. That's honest: tokens were always claims on future revenue.
 
 **Is this unfair to current holders?** During queue processing, they receive reduced or zero distributions. But:
 - The pause is temporary and proportional
@@ -230,14 +235,14 @@ Next month, distribution pool is $600.
 
 ## System Properties
 
-- **Revenue-indexed** — Price tracks lifetime business performance, not speculation
-- **Earned, not purchased** — Tokens represent contribution, not investment
-- **Continuous mint/burn** — Supply adjusts with each revenue event and exit
-- **Deflationary on exit** — Departures strengthen remaining positions
-- **Early-weighted** — Square root pricing rewards early contributors
-- **Self-liquidating** — Exit queue requires no reserve; funded by ongoing revenue
-- **Whole integers** — Tokens are discrete units, no fractional accounting
-- **Scale-agnostic** — Works for $500/month or $500,000/year
+- **Revenue-indexed** - Price tracks lifetime business performance, not speculation
+- **Earned, not purchased** - Tokens represent contribution, not investment
+- **Continuous mint/burn** - Supply adjusts with each revenue event and exit
+- **Deflationary on exit** - Departures strengthen remaining positions
+- **Early-weighted** - Square root pricing rewards early contributors
+- **Self-liquidating** - Exit queue requires no reserve; funded by ongoing revenue
+- **Whole integers** - Tokens are discrete units, no fractional accounting
+- **Scale-agnostic** - Works for $500/month or $500,000/year
 
 ---
 
@@ -267,9 +272,9 @@ The founder specifies what percentage of gross revenue flows to token holders. T
 
 **Considerations:**
 
-- **Higher α (20-30%)** — More attractive to contributors. Faster token minting. Better for businesses that depend heavily on referral-driven growth.
+- **Higher α (20-30%)** - More attractive to contributors. Faster token minting. Better for businesses that depend heavily on referral-driven growth.
 
-- **Lower α (10-15%)** — More revenue retained by founder. Slower token minting. Better for businesses with established distribution or lower margins.
+- **Lower α (10-15%)** - More revenue retained by founder. Slower token minting. Better for businesses with established distribution or lower margins.
 
 **Typical range:** 10-30%. Most businesses choose 15-20%.
 
@@ -279,6 +284,6 @@ The founder specifies what percentage of gross revenue flows to token holders. T
 
 ## Closing
 
-New approaches to software architecture make this possible. When applications run on user devices, with data synced rather than centralized, operational costs collapse. A single developer can serve thousands of users. Communities can have their own isolated worlds—their own databases, their own economies, their own fates.
+New software architecture makes this possible. When applications run on user devices, with data synced rather than centralized, operational costs collapse. One developer can serve thousands of users. Communities can have their own isolated worlds: their own databases, their own economies, their own fates.
 
 Vibe Token is infrastructure for this future. Not a movement, not a platform, not a promise. A mechanism: connect contribution to revenue, let the math handle distribution, see what people build when early support finally means something.

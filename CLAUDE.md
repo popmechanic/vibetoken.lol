@@ -12,8 +12,8 @@ This is a **writing project**, not a codebase. The repository contains planning 
 ## Key Documents
 
 - `whitepaper.md` - **Authoritative source** for Vibe Token economics (bonding curve formula, token mechanics). The website (`index.html`) should be updated FROM this file, not vice versa. When updating HTML, translate plaintext to symbols: `alpha` → `α`, `sqrt()` → `√`, `*` → `×`, `/` → `÷`.
-- `Vibe coding content outlines.md` - Four-act structure with 12 essay outlines on vibe coding philosophy
-- `sample_Vibe_Token_Model.xlsx` - Economic model spreadsheet
+- `corpus/Vibe coding content outlines.md` - Four-act structure with 12 essay outlines on vibe coding philosophy
+- `corpus/sample_Vibe_Token_Model.xlsx` - Economic model spreadsheet
 
 ## Writing Guidelines
 
@@ -21,7 +21,7 @@ This is a **writing project**, not a codebase. The repository contains planning 
 - Use Bitcoin white paper tone: pragmatic, neutral, minimal
 - ASCII math only (use `*`, `sqrt()`, not LaTeX)
 - Fixed variables: R, dR, alpha (0.20), S, P, k
-- Core formula: `P = k * sqrt(R)`
+- Core formula: `P = k * sqrt(S)` (supply-based pricing)
 - One page maximum, no appendices or FAQs
 
 ### Vibe Coding Essays
@@ -47,3 +47,9 @@ node simulator/run.js --preset startup-mixed --runs 100
 - `summary.json` - Aggregate statistics
 
 **Index page:** The simulation index at `simulator/output/index.html` is automatically updated after each run. No manual action needed.
+
+**Running tests:**
+```bash
+cd simulator && node tests/economics.test.js  # Run one test file
+cd simulator && for t in tests/*.test.js; do node "$t"; done  # Run all tests
+```

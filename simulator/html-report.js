@@ -661,7 +661,7 @@ function generateIndexPage(outputDir) {
     // Generate table rows
     const rows = simulations.map(sim => `
             <tr>
-                <td><a href="${sim.dirname}/index.html">${sim.timestamp}</a></td>
+                <td><a href="output/${sim.dirname}/index.html">${sim.timestamp}</a></td>
                 <td>${sim.name}</td>
                 <td>${sim.runs}</td>
                 <td>${(sim.survivalRate * 100).toFixed(0)}%</td>

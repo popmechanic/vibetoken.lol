@@ -1,0 +1,51 @@
+{
+  "meta": {
+    "name": "Micro Business + Rational Actors",
+    "description": "Small, spiky business with economically rational participants. Tests whether rational actors can navigate high-variance revenue.",
+    "version": "1.0"
+  },
+  "runs": 10,
+  "survivalRate": 0.9,
+  "priceStats": {
+    "mean": 0.2529822128134703,
+    "median": 0.25298221281347033,
+    "min": 0.25298221281347033,
+    "max": 0.25298221281347033,
+    "stddev": 5.551115123125783e-17,
+    "count": 10
+  },
+  "revenueStats": {
+    "mean": 267571.0078801458,
+    "median": 32619.34719622883,
+    "min": 5355.849806860178,
+    "max": 1429533.745810788,
+    "stddev": 425218.64427743066,
+    "count": 10
+  },
+  "participantStats": {
+    "Founder's Friend": {
+      "mean": 4.201968060367082,
+      "median": 4.20666817238891,
+      "min": 4.174552250689377,
+      "max": 4.228031145525281,
+      "stddev": 0.01501344438617357,
+      "count": 10
+    },
+    "Early Adopter": {
+      "mean": 3.0865252819710216,
+      "median": 3.0919130112843143,
+      "min": 3.0562620678404486,
+      "max": 3.1154675954844073,
+      "stddev": 0.016595273633841428,
+      "count": 10
+    },
+    "Conservative Holder": {
+      "mean": 2.029580579198444,
+      "median": 2.0238790471106056,
+      "min": 2,
+      "max": 2.1165685115299246,
+      "stddev": 0.033067024804120944,
+      "count": 10
+    }
+  }
+}

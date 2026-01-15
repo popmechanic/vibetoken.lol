@@ -354,8 +354,9 @@ async function main() {
     // Regenerate simulation index
     const outputRoot = path.join(__dirname, 'output');
     const indexHTML = generateIndexPage(outputRoot);
-    fs.writeFileSync(path.join(outputRoot, 'index.html'), indexHTML);
-    console.log(`  Updated: ${path.join(outputRoot, 'index.html')}`);
+    const simulatorIndexPath = path.join(__dirname, 'index.html');
+    fs.writeFileSync(simulatorIndexPath, indexHTML);
+    console.log(`  Updated: ${simulatorIndexPath}`);
 
     // Copy config
     const configCopyPath = path.join(outputDir, 'config.json');

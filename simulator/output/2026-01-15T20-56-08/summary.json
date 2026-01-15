@@ -1,0 +1,59 @@
+{
+  "meta": {
+    "name": "90% Rev Share Micro Business",
+    "description": "Stress test: What happens when founder gives 90% of revenue to token holders? Tests extreme generosity on low-revenue business.",
+    "version": "1.0"
+  },
+  "runs": 100,
+  "survivalRate": 0.99,
+  "priceStats": {
+    "mean": 1.0630012241035656,
+    "median": 1.0904815450066085,
+    "min": 0.7652450587883597,
+    "max": 1.0952511127590787,
+    "stddev": 0.07033596202740974,
+    "count": 100
+  },
+  "revenueStats": {
+    "mean": 274537.43421735143,
+    "median": 140771.72591997305,
+    "min": 10057.208825541335,
+    "max": 2927800.880909213,
+    "stddev": 446344.51324286475,
+    "count": 100
+  },
+  "participantStats": {
+    "Founder's Friend": {
+      "mean": 83.53107445048937,
+      "median": 49.0167533626339,
+      "min": 8.40022241622756,
+      "max": 840.7984482592049,
+      "stddev": 118.19312576243001,
+      "count": 100
+    },
+    "Early Adopter": {
+      "mean": 121.84833426134983,
+      "median": 74.81818964082994,
+      "min": 10.073396598398883,
+      "max": 1160.624433342068,
+      "stddev": 169.54834374430658,
+      "count": 100
+    },
+    "Hustler": {
+      "mean": 267.70332069508856,
+      "median": 165.62611058716175,
+      "min": 15.528332308371734,
+      "max": 2095.7204425299774,
+      "stddev": 356.2024109804082,
+      "count": 100
+    },
+    "Rational Actor": {
+      "mean": 4.913972808313492,
+      "median": 4.928792326375619,
+      "min": 4.358898943540674,
+      "max": 5.671110089994681,
+      "stddev": 0.23935028446319057,
+      "count": 100
+    }
+  }
+}

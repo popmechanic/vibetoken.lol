@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibe Token: A Revenue-Indexed Contribution System for Small Software</title>
+    <title>Vibe Token: A Market-Priced Contribution System for Small Software</title>
     <meta name="description" content="Vibe Token provides early contributors a direct stake in future revenue without speculation, venture financing, or secondary markets.">
 
     <!-- Favicon -->
@@ -842,7 +842,7 @@
                 <img src="assets/vibe-token-logo.png" alt="" class="logo" aria-hidden="true">
                 <div class="header-text">
                     <h1>Vibe Token</h1>
-                    <p class="subtitle">A Revenue-Indexed Contribution System for Small Software</p>
+                    <p class="subtitle">A Market-Priced Contribution System for Small Software</p>
                 </div>
             </div>
         </header>
@@ -859,8 +859,8 @@
             <div class="properties">
                 <div class="property">
                     <div class="property-name">1. Price</div>
-                    <div class="formula" style="text-align: left; padding: 0.5em 0; margin: 0;"><code>P = k × √R</code></div>
-                    <div class="property-desc">Token price equals a constant times the square root of cumulative revenue.</div>
+                    <div class="formula" style="text-align: left; padding: 0.5em 0; margin: 0;"><code>P = k × √S</code></div>
+                    <div class="property-desc">Token price equals a constant times the square root of circulating supply. Minimum supply floor (S<sub>min</sub> = 1,000) prevents P = $0.</div>
                 </div>
                 <div class="property">
                     <div class="property-name">2. Pre-mint</div>
@@ -916,11 +916,11 @@
 
         <section>
             <h2>Token Pricing</h2>
-            <img src="assets/bonding-curve-chart.png" alt="Bonding curve showing price increasing with square root of cumulative revenue" class="chart">
+            <img src="assets/bonding-curve-chart.png" alt="Bonding curve showing price increasing with square root of circulating supply" class="chart">
             <div class="formula">
-                <code>P = k × √R</code>
+                <code>P = k × √S</code>
             </div>
-            <p>Price rises with cumulative revenue, but at a diminishing rate. The square root gives early revenue more weight than late. The first $10,000 raises price from $0 to $1. The next $10,000 only raises it from $1 to $1.41. Early risk earns early reward, but growth remains accessible.</p>
+            <p>Price is determined by circulating supply. When tokens are minted (through referral earnings), supply increases and price rises. When tokens are burned (through exits), supply decreases and price falls. The square root dampens volatility: doubling supply increases price by ~41%, not 100%.</p>
         </section>
 
         <section>
@@ -995,8 +995,8 @@
             <h2>System Properties</h2>
             <div class="properties">
                 <div class="property">
-                    <div class="property-name">Revenue-indexed</div>
-                    <div class="property-desc">Price tracks lifetime business performance, not speculation</div>
+                    <div class="property-name">Supply-based pricing</div>
+                    <div class="property-desc">Price reflects market expectations through minting and burning</div>
                 </div>
                 <div class="property">
                     <div class="property-name">Earned, not purchased</div>

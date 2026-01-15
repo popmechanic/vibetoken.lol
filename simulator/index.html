@@ -23,7 +23,7 @@
             --space-md: 1.5rem;
             --space-lg: 2.5rem;
             --space-xl: 4rem;
-            --max-width: 900px;
+            --max-width: 1100px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -108,6 +108,38 @@
             color: #f5a623;
         }
 
+        /* Tooltips */
+        .has-tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .has-tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 4px 8px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px dashed #888;
+            color: #c8c8c8;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: normal;
+            text-transform: none;
+            letter-spacing: normal;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s;
+            z-index: 100;
+        }
+
+        .has-tooltip:hover::after {
+            opacity: 1;
+        }
+
         .count {
             margin-top: var(--space-lg);
             text-align: center;
@@ -144,39 +176,111 @@
                 <tr>
                     <th>Date</th>
                     <th>Name</th>
-                    <th>Runs</th>
-                    <th>Survival</th>
-                    <th>Price</th>
-                    <th>Revenue</th>
+                    <th class="has-tooltip" data-tooltip="Monte Carlo run count">Runs</th>
+                    <th class="has-tooltip" data-tooltip="% where business survived">Survival</th>
+                    <th class="has-tooltip" data-tooltip="Average final token price">Price</th>
+                    <th class="has-tooltip" data-tooltip="Average cumulative revenue">Revenue</th>
+                    <th class="has-tooltip" data-tooltip="StdDev of returns — higher = more variance">ROI Spread</th>
+                    <th class="has-tooltip" data-tooltip="ROI advantage of holding vs early exit">Timing</th>
+                    <th class="has-tooltip" data-tooltip="Non-HOLD actions per simulation">Decisions</th>
                 </tr>
             </thead>
             <tbody>
 
             <tr>
-                <td><a href="output/2026-01-15T22-36-09/index.html">2026:01:15 22:36</a></td>
+                <td><a href="output/2026-01-15T23-29-22/index.html">2026:01:15 23:29</a></td>
+                <td>Stress Test - Adversarial Conditions</td>
+                <td>100</td>
+                <td>37%</td>
+                <td>$2.36</td>
+                <td>$143.5M</td>
+                <td>18594.74x</td>
+                <td>+2368.57x</td>
+                <td>165.3</td>
+            </tr>
+
+            <tr>
+                <td><a href="output/2026-01-15T23-29-17/index.html">2026:01:15 23:29</a></td>
                 <td>Growth to $1K MRR</td>
+                <td>100</td>
+                <td>99%</td>
+                <td>$1.05</td>
+                <td>$460K</td>
+                <td>33.54x</td>
+                <td>+28.49x</td>
+                <td>168.4</td>
+            </tr>
+
+            <tr>
+                <td><a href="output/2026-01-15T23-29-11/index.html">2026:01:15 23:29</a></td>
+                <td>Startup + Mixed Behaviors</td>
+                <td>100</td>
+                <td>65%</td>
+                <td>$1.80</td>
+                <td>$81K</td>
+                <td>3.18x</td>
+                <td>+1.90x</td>
+                <td>149.9</td>
+            </tr>
+
+            <tr>
+                <td><a href="output/2026-01-15T23-15-11/index.html">2026:01:15 23:15</a></td>
+                <td>Micro Business + Diamond Hands</td>
                 <td>10</td>
                 <td>100%</td>
-                <td>$1.03</td>
-                <td>$331K</td>
+                <td>$1.33</td>
+                <td>$1.8M</td>
+                <td>235.26x</td>
+                <td>+104.33x</td>
+                <td>72.2</td>
+            </tr>
+
+            <tr>
+                <td><a href="output/2026-01-15T23-07-40/index.html">2026:01:15 23:07</a></td>
+                <td>Startup + Mixed Behaviors</td>
+                <td>100</td>
+                <td>63%</td>
+                <td>$1.79</td>
+                <td>$73K</td>
+                <td>2.74x</td>
+                <td>+1.55x</td>
+                <td>149.5</td>
+            </tr>
+
+            <tr>
+                <td><a href="output/2026-01-15T22-36-09/index.html">2026:01:15 22:36</a></td>
+                <td>Growth to $1K MRR</td>
+                <td>100</td>
+                <td>100%</td>
+                <td>$1.04</td>
+                <td>$736K</td>
+                <td>134.30x</td>
+                <td>+43.25x</td>
+                <td>170.9</td>
             </tr>
 
             <tr>
                 <td><a href="output/2026-01-15T22-35-39/index.html">2026:01:15 22:35</a></td>
                 <td>Micro Business + Diamond Hands</td>
-                <td>10</td>
-                <td>90%</td>
-                <td>$1.50</td>
-                <td>$1.3M</td>
+                <td>100</td>
+                <td>99%</td>
+                <td>$1.46</td>
+                <td>$641K</td>
+                <td>102.24x</td>
+                <td>+45.57x</td>
+                <td>87.9</td>
             </tr>
 
             <tr>
                 <td><a href="output/2026-01-15T20-56-08/index.html">2026:01:15 20:56</a></td>
                 <td>90% Rev Share Micro Business</td>
                 <td>100</td>
-                <td>99%</td>
+                <td>97%</td>
                 <td>$1.06</td>
-                <td>$275K</td>
+                <td>$326K</td>
+                <td>229.96x</td>
+                <td>+177.97x</td>
+                <td>66.0</td>
             </tr>
 
             <tr>
@@ -185,93 +289,123 @@
                 <td>100</td>
                 <td>100%</td>
                 <td>$1.04</td>
-                <td>$554K</td>
+                <td>$469K</td>
+                <td>31.60x</td>
+                <td>+28.80x</td>
+                <td>165.8</td>
             </tr>
 
             <tr>
                 <td><a href="output/2026-01-15T18-12-48/index.html">2026:01:15 18:12</a></td>
                 <td>Micro Business + Diamond Hands</td>
                 <td>100</td>
-                <td>97%</td>
-                <td>$1.44</td>
-                <td>$634K</td>
+                <td>94%</td>
+                <td>$1.39</td>
+                <td>$1.9M</td>
+                <td>411.08x</td>
+                <td>+106.25x</td>
+                <td>80.9</td>
             </tr>
 
             <tr>
                 <td><a href="output/2026-01-15T17-58-43/index.html">2026:01:15 17:58</a></td>
                 <td>Micro Business + Rational Actors</td>
-                <td>20</td>
-                <td>100%</td>
+                <td>100</td>
+                <td>95%</td>
                 <td>$0.25</td>
-                <td>$229K</td>
+                <td>$1.3M</td>
+                <td>72.03x</td>
+                <td>+437.72x</td>
+                <td>6.7</td>
             </tr>
 
             <tr>
                 <td><a href="output/2026-01-15T03-50-32/index.html">2026:01:15 03:50</a></td>
                 <td>Startup + Mixed Behaviors</td>
                 <td>100</td>
-                <td>64%</td>
-                <td>$1.82</td>
-                <td>$95K</td>
+                <td>61%</td>
+                <td>$1.79</td>
+                <td>$82K</td>
+                <td>3.59x</td>
+                <td>+2.05x</td>
+                <td>146.3</td>
             </tr>
 
             <tr>
                 <td><a href="output/2026-01-15T03-39-55/index.html">2026:01:15 03:39</a></td>
                 <td>Micro Business + Rational Actors</td>
-                <td>10</td>
-                <td>90%</td>
+                <td>100</td>
+                <td>93%</td>
                 <td>$0.25</td>
-                <td>$268K</td>
+                <td>$876K</td>
+                <td>41.97x</td>
+                <td>+308.71x</td>
+                <td>7.2</td>
             </tr>
 
             <tr>
                 <td><a href="output/2026-01-15T03-35-56/index.html">2026:01:15 03:35</a></td>
                 <td>Startup + Mixed Behaviors</td>
                 <td>100</td>
-                <td>65%</td>
+                <td>63%</td>
                 <td>$1.82</td>
-                <td>$91K</td>
+                <td>$90K</td>
+                <td>4.08x</td>
+                <td>+2.18x</td>
+                <td>153.5</td>
             </tr>
 
             <tr>
                 <td><a href="output/2026-01-15T03-25-17/index.html">2026:01:15 03:25</a></td>
                 <td>Micro Business + Rational Actors</td>
                 <td>100</td>
-                <td>96%</td>
+                <td>93%</td>
                 <td>$0.25</td>
-                <td>$1.4M</td>
+                <td>$1.8M</td>
+                <td>15.31x</td>
+                <td>+146.00x</td>
+                <td>7.2</td>
             </tr>
 
             <tr>
                 <td><a href="output/2026-01-15T03-25-08/index.html">2026:01:15 03:25</a></td>
                 <td>Stress Test - Adversarial Conditions</td>
                 <td>100</td>
-                <td>42%</td>
-                <td>$2.34</td>
-                <td>$415.4M</td>
+                <td>35%</td>
+                <td>$2.29</td>
+                <td>$5.2M</td>
+                <td>702.17x</td>
+                <td>+103.94x</td>
+                <td>130.2</td>
             </tr>
 
             <tr>
                 <td><a href="output/2026-01-15T03-23-57/index.html">2026:01:15 03:23</a></td>
                 <td>Enterprise + Sophisticated Actors</td>
-                <td>50</td>
+                <td>100</td>
                 <td>100%</td>
-                <td>$5.42</td>
-                <td>$2.0M</td>
+                <td>$5.43</td>
+                <td>$2.1M</td>
+                <td>9.34x</td>
+                <td>+11.33x</td>
+                <td>124.5</td>
             </tr>
 
             <tr>
                 <td><a href="output/2026-01-15T03-16-03/index.html">2026:01:15 03:16</a></td>
                 <td>Startup + Mixed Behaviors</td>
-                <td>50</td>
-                <td>66%</td>
-                <td>$1.78</td>
-                <td>$82K</td>
+                <td>100</td>
+                <td>63%</td>
+                <td>$1.81</td>
+                <td>$95K</td>
+                <td>5.00x</td>
+                <td>+2.46x</td>
+                <td>151.2</td>
             </tr>
             </tbody>
         </table>
 
-        <p class="count">13 simulations recorded</p>
+        <p class="count">18 simulations recorded</p>
 
         <footer>
             <a href="../index.html">← Back to Vibe Token</a>

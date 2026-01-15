@@ -4,7 +4,7 @@ This analysis covers 100 simulations of a startup business model over 36 months.
 
 **Quick Summary:**
 - Business survival rate: 63%
-- Mean final token price: $1.79
+- Mean final token price: $1.82
 - Revenue share (α): 20%
 - Initial participant count: 5
 
@@ -13,50 +13,50 @@ This analysis covers 100 simulations of a startup business model over 36 months.
 The startup achieved breakthrough in 63% of simulations, exceeding typical startup success rates. Failed businesses (37%) typically exhausted their runway before finding product-market fit.
 
 **Revenue Distribution:**
-- Mean: $81,670
-- Median: $21,043
-- Range: $298 - $691,911
+- Mean: $89,628
+- Median: $29,175
+- Range: $287 - $682,006
 
 The significant gap between mean and median revenue indicates a right-skewed distribution with occasional extreme successes.
 
 ### Participant Performance
 
 **ROI Rankings (Mean):**
-- WoM Entrant #2: 15.31x ██████████
-- WoM Entrant #3: 14.90x ██████████
-- Price Chaser #5: 14.40x ██████████
-- WoM Entrant #8: 13.15x ██████████
-- WoM Entrant #7: 11.89x ██████████
-- WoM Entrant #6: 11.54x ██████████
-- WoM Entrant #4: 10.92x ██████████
-- WoM Entrant #5: 9.98x █████████
-- Price Chaser #1: 7.37x ███████
-- Price Chaser #2: 7.34x ███████
-- Momentum Trader: 7.27x ███████
-- Price Chaser #4: 7.24x ███████
-- Price Chaser #3: 7.23x ███████
-- Skeptical Tester: 7.16x ███████
-- True Believer: 6.63x ██████
-- Life Event Lisa: 6.11x ██████
+- Price Chaser #5: 15.02x ██████████
+- WoM Entrant #3: 14.38x ██████████
+- WoM Entrant #4: 11.13x ██████████
+- WoM Entrant #7: 10.75x ██████████
+- WoM Entrant #6: 10.66x ██████████
+- WoM Entrant #5: 10.49x ██████████
+- WoM Entrant #8: 10.40x ██████████
+- Price Chaser #4: 9.04x █████████
+- WoM Entrant #2: 7.80x ███████
+- Price Chaser #1: 7.65x ███████
+- Price Chaser #2: 7.64x ███████
+- Momentum Trader: 7.49x ███████
+- Price Chaser #3: 7.36x ███████
+- Skeptical Tester: 7.28x ███████
+- True Believer: 6.80x ██████
+- Life Event Lisa: 6.10x ██████
 - Angel Referrer: 6.01x ██████
 
 **Behavior Analysis:**
 
-**Diamond hands outperformed** in this scenario, achieving 6.63x average ROI. Their refusal to exit captured full upside when the business succeeded.
+**Diamond hands outperformed** in this scenario, achieving 6.80x average ROI. Their refusal to exit captured full upside when the business succeeded.
 
 **Rational actors** achieved 6.01x average ROI. Their conservative approach may have triggered premature exits in some successful scenarios.
 
-**Trend followers** achieved 7.27x average ROI. Momentum-based decisions led to variable outcomes depending on price trajectory timing.
+**Trend followers** achieved 7.49x average ROI. Momentum-based decisions led to variable outcomes depending on price trajectory timing.
 
-**Skeptics** achieved 7.16x average ROI. Their early exits may have left money on the table in successful scenarios.
+**Skeptics** achieved 7.28x average ROI. Their early exits may have left money on the table in successful scenarios.
 
 
 
 ### Economic Observations
 
 **Token Price Dynamics:**
-- Final price range: $1.46 - $2.59
-- Coefficient of variation: 14.0%
+- Final price range: $1.44 - $2.63
+- Coefficient of variation: 13.6%
 
 The square root pricing function (P = k×√S) delivered relatively stable prices despite varying revenue conditions. A 14% coefficient of variation suggests the bonding curve effectively dampened volatility.
 
@@ -70,7 +70,7 @@ In failed scenarios, exit queues froze when revenue stopped. Participants who ex
 
 1. **Mixed outcomes favor balanced strategies.** Neither pure conviction nor pure caution dominated. Risk management mattered.
 
-2. **WoM Entrant #2** achieved highest returns (15.31x), while **Angel Referrer** achieved lowest (6.01x).
+2. **Price Chaser #5** achieved highest returns (15.02x), while **Angel Referrer** achieved lowest (6.01x).
 
 3. **The tokenomics performed as designed.** Supply-based pricing provided price discovery, distributions rewarded holders, and the exit queue enabled liquidity without secondary markets.
 

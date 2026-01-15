@@ -13,7 +13,7 @@ const fs = require('fs');
 const path = require('path');
 const { runBatch, runSimulation } = require('./engine.js');
 const { generateNarrative } = require('./narrative.js');
-const { generateHTMLReport, generateIndexPage } = require('./html-report.js');
+const { generateHTMLReport, generateIndexPage, calculateEngagementMetrics } = require('./html-report.js');
 
 // Parse command line arguments
 function parseArgs(args) {
@@ -311,13 +311,15 @@ async function main() {
 
         // Summary stats only (smaller file)
         const summaryPath = path.join(outputDir, 'summary.json');
+        const engagementMetrics = calculateEngagementMetrics(batchResult.results);
         fs.writeFileSync(summaryPath, JSON.stringify({
             meta: config.meta,
             runs: batchResult.runs,
             survivalRate: batchResult.survivalRate,
             priceStats: batchResult.priceStats,
             revenueStats: batchResult.revenueStats,
-            participantStats: batchResult.participantStats
+            participantStats: batchResult.participantStats,
+            engagementMetrics
         }, null, 2));
         console.log(`  Saved: ${summaryPath}`);
     }

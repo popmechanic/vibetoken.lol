@@ -13,31 +13,31 @@ This analysis covers 100 simulations of a micro business model over 36 months.
 Despite high revenue volatility, the micro business survived in 97% of cases. The square root pricing function helped dampen price swings during spiky revenue periods.
 
 **Revenue Distribution:**
-- Mean: $194,003
-- Median: $111,690
-- Range: $3,947 - $1,797,025
+- Mean: $325,502
+- Median: $168,851
+- Range: $7,408 - $2,130,267
 
 ### Participant Performance
 
 **ROI Rankings (Mean):**
-- Hustler: 203.70x ██████████
-- Early Adopter: 91.69x ██████████
-- Founder's Friend: 62.33x ██████████
-- Rational Actor: 4.84x ████
+- Hustler: 311.18x ██████████
+- Early Adopter: 141.79x ██████████
+- Founder's Friend: 95.70x ██████████
+- Rational Actor: 4.92x ████
 
 **Behavior Analysis:**
 
-**Diamond hands outperformed** in this scenario, achieving 77.01x average ROI. Their refusal to exit captured full upside when the business succeeded.
+**Diamond hands outperformed** in this scenario, achieving 118.75x average ROI. Their refusal to exit captured full upside when the business succeeded.
 
-**Rational actors** achieved 4.84x average ROI. Their conservative approach may have triggered premature exits in some successful scenarios.
+**Rational actors** achieved 4.92x average ROI. Their conservative approach may have triggered premature exits in some successful scenarios.
 
 
 
 ### Economic Observations
 
 **Token Price Dynamics:**
-- Final price range: $0.69 - $1.10
-- Coefficient of variation: 7.1%
+- Final price range: $0.73 - $1.09
+- Coefficient of variation: 6.9%
 
 The square root pricing function (P = k×√S) delivered relatively stable prices despite varying revenue conditions. A 7% coefficient of variation suggests the bonding curve effectively dampened volatility.
 
@@ -51,7 +51,7 @@ With high survival rate, exit queues typically cleared quickly. The FIFO queue p
 
 1. **High survival rate rewards patience.** Diamond hands and long-term holders outperformed reactive strategies in this scenario.
 
-2. **Hustler** achieved highest returns (203.70x), while **Rational Actor** achieved lowest (4.84x).
+2. **Hustler** achieved highest returns (311.18x), while **Rational Actor** achieved lowest (4.92x).
 
 3. **The tokenomics performed as designed.** Supply-based pricing provided price discovery, distributions rewarded holders, and the exit queue enabled liquidity without secondary markets.
 

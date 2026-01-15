@@ -4,48 +4,59 @@
     "description": "Small, spiky business with committed holders who never exit. Tests whether patience pays off in high-variance environments.",
     "version": "1.0"
   },
-  "runs": 10,
-  "survivalRate": 0.9,
+  "runs": 100,
+  "survivalRate": 0.99,
   "priceStats": {
-    "mean": 1.4958870652036427,
-    "median": 1.277923315383204,
-    "min": 1.0515664505869327,
-    "max": 2.2052011246142604,
-    "stddev": 0.4965789848115127,
-    "count": 10
+    "mean": 1.4631377129954155,
+    "median": 1.3373885000253292,
+    "min": 1.0465944773406748,
+    "max": 2.2052881897838206,
+    "stddev": 0.38936157079319533,
+    "count": 100
   },
   "revenueStats": {
-    "mean": 1280252.7347132522,
-    "median": 124261.19164315776,
-    "min": 4427.18012622497,
-    "max": 8058224.128454037,
-    "stddev": 2389583.35158925,
-    "count": 10
+    "mean": 641205.8295016215,
+    "median": 163384.3698554483,
+    "min": 1754.9362663455504,
+    "max": 16934477.71592571,
+    "stddev": 1821872.270722618,
+    "count": 100
   },
   "participantStats": {
     "Founder's Friend": {
-      "mean": 63.69655121145827,
-      "median": 12.616930039689207,
-      "min": 4.419970122528255,
-      "max": 334.80572938977497,
-      "stddev": 99.58065712913886,
-      "count": 10
+      "mean": 38.53765128382946,
+      "median": 15.229121477485913,
+      "min": 4.243939959791578,
+      "max": 698.0678113523529,
+      "stddev": 77.84296084077452,
+      "count": 100
     },
     "Early Adopter": {
-      "mean": 109.5332487273071,
-      "median": 15.972335423582614,
-      "min": 4.489698064317604,
-      "max": 598.6724627324236,
-      "stddev": 179.35301914848887,
-      "count": 10
+      "mean": 62.2145273664702,
+      "median": 20.00661333128963,
+      "min": 4.273639935868756,
+      "max": 1266.1578401480785,
+      "stddev": 140.4046160293861,
+      "count": 100
     },
     "Committed Holder": {
-      "mean": 70.2174655416296,
-      "median": 12.161085159293272,
-      "min": 4.329633834955628,
-      "max": 417.98827449921254,
-      "stddev": 122.3108416739668,
-      "count": 10
+      "mean": 35.964455618730746,
+      "median": 14.585900209039718,
+      "min": 4.137027918687521,
+      "max": 644.5164275315708,
+      "stddev": 71.86680715057659,
+      "count": 100
     }
+  },
+  "engagementMetrics": {
+    "totalExitRequests": 0,
+    "partialExits": 0,
+    "fullExits": 0,
+    "exitRate": 0,
+    "decisionDensity": "87.9",
+    "roiStdDev": "102.24",
+    "timingSpread": "45.57",
+    "highVariance": true,
+    "timingMatters": true
   }
 }

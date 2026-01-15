@@ -3,32 +3,32 @@
 This analysis covers 100 simulations of a micro business model over 36 months.
 
 **Quick Summary:**
-- Business survival rate: 96%
+- Business survival rate: 93%
 - Mean final token price: $0.25
 - Revenue share (α): 20%
 - Initial participant count: 3
 
 ### Business Outcomes
 
-Despite high revenue volatility, the micro business survived in 96% of cases. The square root pricing function helped dampen price swings during spiky revenue periods.
+Despite high revenue volatility, the micro business survived in 93% of cases. The square root pricing function helped dampen price swings during spiky revenue periods.
 
 **Revenue Distribution:**
-- Mean: $1,174,017
-- Median: $81,345
-- Range: $4,887 - $62,341,992
+- Mean: $1,821,411
+- Median: $109,956
+- Range: $1,021 - $85,779,167
 
 The significant gap between mean and median revenue indicates a right-skewed distribution with occasional extreme successes.
 
 ### Participant Performance
 
 **ROI Rankings (Mean):**
-- Conservative Holder: 11.76x ██████████
+- Conservative Holder: 6.10x ██████
 - Founder's Friend: 4.20x ████
 - Early Adopter: 3.09x ███
 
 **Behavior Analysis:**
 
-**Rational actors** achieved 6.35x average ROI. Their conservative approach may have triggered premature exits in some successful scenarios.
+**Rational actors** achieved 4.46x average ROI. Their conservative approach may have triggered premature exits in some successful scenarios.
 
 
 
@@ -50,7 +50,7 @@ With high survival rate, exit queues typically cleared quickly. The FIFO queue p
 
 1. **High survival rate rewards patience.** Diamond hands and long-term holders outperformed reactive strategies in this scenario.
 
-2. **Conservative Holder** achieved highest returns (11.76x), while **Early Adopter** achieved lowest (3.09x).
+2. **Conservative Holder** achieved highest returns (6.10x), while **Early Adopter** achieved lowest (3.09x).
 
 3. **The tokenomics performed as designed.** Supply-based pricing provided price discovery, distributions rewarded holders, and the exit queue enabled liquidity without secondary markets.
 

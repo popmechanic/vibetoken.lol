@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation Report: Micro Business + Diamond Hands</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --font-heading: Georgia, serif;
+            --font-body: 'Crimson Pro', Georgia, serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --text-primary: #e8e8e8;
+            --text-secondary: #a0a0a0;
+            --bg: #0a0a0a;
+            --border: #222;
+            --accent: #c8c8c8;
+
+            --chart-orange: #f5a623;
+            --chart-teal: #4ecdc4;
+            --chart-red: #ff6b6b;
+
+            --space-sm: 0.75rem;
+            --space-md: 1.5rem;
+            --space-lg: 2.5rem;
+            --space-xl: 4rem;
+
+            --max-width: 720px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 18px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--text-primary);
+            background: var(--bg);
+            line-height: 1.65;
+            padding: var(--space-lg) var(--space-md);
+            position: relative;
+        }
+
+        /* Noise texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            font-family: var(--font-heading);
+            font-weight: bold;
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            line-height: 1.1;
+            margin-bottom: 0.25rem;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-top: var(--space-lg);
+            margin-bottom: var(--space-sm);
+            color: var(--accent);
+        }
+
+        h3 {
+            font-size: 1rem;
+            margin-top: var(--space-md);
+            margin-bottom: var(--space-sm);
+            color: var(--text-primary);
+        }
+
+        p {
+            margin-bottom: 1em;
+        }
+
+        strong {
+            color: var(--text-primary);
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .subtitle {
+            font-family: var(--font-body);
+            font-style: italic;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+        }
+
+        .stat {
+            text-align: center;
+            padding: var(--space-md) var(--space-sm);
+            border: 1px solid var(--border);
+        }
+
+        .stat-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 0.5em;
+        }
+
+        .stat-value {
+            font-family: var(--font-mono);
+            font-size: 1.3rem;
+            color: var(--text-primary);
+        }
+
+        /* Chart Grid */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+        }
+
+        .chart-container {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: var(--space-md);
+            position: relative;
+        }
+
+        .chart-container canvas {
+            width: 100% !important;
+            height: 240px !important;
+        }
+
+        .chart-container.tall canvas {
+            height: 320px !important;
+        }
+
+        .chart-container.full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Conditions list (from narrative) */
+        .conditions {
+            list-style: none;
+            margin: var(--space-sm) 0;
+        }
+
+        .conditions li {
+            padding-left: 1.5em;
+            position: relative;
+            margin-bottom: 0.5em;
+        }
+
+        .conditions li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--text-secondary);
+        }
+
+        /* Narrative section */
+        .narrative {
+            margin-top: var(--space-xl);
+            padding-top: var(--space-lg);
+            border-top: 1px solid var(--border);
+        }
+
+        .narrative p {
+            color: var(--text-secondary);
+        }
+
+        .narrative strong {
+            color: var(--text-primary);
+        }
+
+        /* Divider */
+        .divider {
+            width: 50px;
+            height: 1px;
+            background: var(--border);
+            margin: var(--space-lg) auto;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: var(--space-xl);
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container canvas {
+                height: 200px !important;
+            }
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: var(--space-xl) var(--space-lg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <article class="container">
+        <header>
+            <h1>Micro Business + Diamond Hands</h1>
+            <p class="subtitle">Monte Carlo Simulation Report</p>
+        </header>
+
+        <!-- Summary Stats -->
+        <div class="stats-grid">
+            <div class="stat">
+                <div class="stat-label">Simulations</div>
+                <div class="stat-value">10</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Survival Rate</div>
+                <div class="stat-value">100%</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Mean Price</div>
+                <div class="stat-value">$1.33</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Mean Revenue</div>
+                <div class="stat-value">$1.8M</div>
+            </div>
+        </div>
+
+        <!-- Engagement/"Fun" Metrics -->
+        <div class="stats-grid">
+            <div class="stat">
+                <div class="stat-label">Decisions/Run</div>
+                <div class="stat-value">72.2</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">ROI Spread</div>
+                <div class="stat-value">235.26x</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Exit Events</div>
+                <div class="stat-value">0</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Timing Edge</div>
+                <div class="stat-value">+104.33x</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="chart-grid">
+            <div class="chart-container">
+                <canvas id="chart-survival"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="chart-price-dist"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="chart-price-time"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="chart-revenue-time"></canvas>
+            </div>
+            <div class="chart-container full-width tall">
+                <canvas id="chart-roi"></canvas>
+            </div>
+            <div class="chart-container full-width tall">
+                <canvas id="chart-balances"></canvas>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Narrative Content -->
+        <section class="narrative">
+            <h2>Simulation Results: Micro Business + Diamond Hands</h2>
+
+<p>This analysis covers 10 simulations of a micro business model over 36 months.</p>
+
+<ul class="conditions">
+<li>Business survival rate: 100%</li>
+<li>Mean final token price: $1.33</li>
+<li>Revenue share (α): 20%</li>
+<li>Initial participant count: 3</li>
+</ul>
+
+<h3>Business Outcomes</h3>
+
+<p>Despite high revenue volatility, the micro business survived in 100% of cases. The square root pricing function helped dampen price swings during spiky revenue periods.</p>
+
+<ul class="conditions">
+<li>Mean: $1,813,522</li>
+<li>Median: $33,053</li>
+<li>Range: $2,789 - $13,986,488</li>
+</ul>
+
+<p>The significant gap between mean and median revenue indicates a right-skewed distribution with occasional extreme successes.</p>
+
+<h3>Participant Performance</h3>
+
+<ul class="conditions">
+<li>Early Adopter: 137.32x ██████████</li>
+<li>Committed Holder: 97.04x ██████████</li>
+<li>Founder's Friend: 78.61x ██████████</li>
+</ul>
+
+<p><strong>Behavior Analysis:</strong></p>
+
+<p><strong>Diamond hands outperformed</strong> in this scenario, achieving 104.33x average ROI. Their refusal to exit captured full upside when the business succeeded.</p>
+
+<h3>Economic Observations</h3>
+
+<ul class="conditions">
+<li>Final price range: $1.05 - $2.20</li>
+<li>Coefficient of variation: 32.6%</li>
+</ul>
+
+<p>Price variation of 33% reflects the underlying business uncertainty. The bonding curve dampened but did not eliminate price swings.</p>
+
+<p><strong>Supply Floor (S_min = 1000):</strong> The minimum supply floor prevented price collapse in failure scenarios. Floor price: $0.25. No simulation reached the floor, indicating adequate supply cushion.</p>
+
+<p><strong>Exit Queue Mechanism:</strong> With high survival rate, exit queues typically cleared quickly. The FIFO queue processed exits from ongoing revenue without delays.</p>
+
+<h3>Key Findings</h3>
+
+<p>1. <strong>High survival rate rewards patience.</strong> Diamond hands and long-term holders outperformed reactive strategies in this scenario.</p>
+
+<p>2. <strong>Early Adopter</strong> achieved highest returns (137.32x), while <strong>Founder's Friend</strong> achieved lowest (78.61x).</p>
+
+<p>3. <strong>The tokenomics performed as designed.</strong> Supply-based pricing provided price discovery, distributions rewarded holders, and the exit queue enabled liquidity without secondary markets.</p>
+
+<p><strong>Implication:</strong> For micro businesses with similar parameters, the token system creates meaningful value for early contributors.</p>
+        </section>
+
+        <footer>
+            Generated 2026-01-15 23:15:11 | 10 simulations × 36 months
+        </footer>
+    </article>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const DATA = {
+  "runs": 10,
+  "survivalRate": 1,
+  "priceStats": {
+    "mean": 1.3327103362956574,
+    "median": 1.1146443378943798,
+    "min": 1.048396871418453,
+    "max": 2.195908923430114,
+    "stddev": 0.43452406093416224,
+    "count": 10
+  },
+  "revenueStats": {
+    "mean": 1813522.380072593,
+    "median": 33053.31983189505,
+    "min": 2789.2456594307323,
+    "max": 13986487.5328477,
+    "stddev": 4214102.562054507,
+    "count": 10
+  },
+  "participantStats": {
+    "Early Adopter": {
+      "mean": 137.32154131747717,
+      "median": 7.095482932266484,
+      "min": 4.353383871717651,
+      "max": 990.1646996396639,
+      "stddev": 299.41014448129135,
+      "count": 10
+    },
+    "Committed Holder": {
+      "mean": 97.0444997942993,
+      "median": 6.233258869491011,
+      "min": 4.215204536005507,
+      "max": 726.2492585807305,
+      "stddev": 216.93971449151937,
+      "count": 10
+    },
+    "Founder's Friend": {
+      "mean": 78.61259646896664,
+      "median": 6.425219226951117,
+      "min": 4.310018179120723,
+      "max": 551.2027565821622,
+      "stddev": 165.93953408321056,
+      "count": 10
+    }
+  },
+  "priceBins": [
+    {
+      "min": 1.048396871418453,
+      "max": 1.1440228757527582,
+      "count": 6
+    },
+    {
+      "min": 1.1440228757527582,
+      "max": 1.239648880087063,
+      "count": 1
+    },
+    {
+      "min": 1.239648880087063,
+      "max": 1.3352748844213682,
+      "count": 1
+    },
+    {
+      "min": 1.3352748844213682,
+      "max": 1.4309008887556733,
+      "count": 0
+    },
+    {
+      "min": 1.4309008887556733,
+      "max": 1.5265268930899785,
+      "count": 0
+    },
+    {
+      "min": 1.5265268930899785,
+      "max": 1.6221528974242836,
+      "count": 0
+    },
+    {
+      "min": 1.6221528974242836,
+      "max": 1.7177789017585885,
+      "count": 0
+    },
+    {
+      "min": 1.7177789017585885,
+      "max": 1.8134049060928936,
+      "count": 0
+    },
+    {
+      "min": 1.8134049060928936,
+      "max": 1.9090309104271987,
+      "count": 0
+    },
+    {
+      "min": 1.9090309104271987,
+      "max": 2.0046569147615036,
+      "count": 0
+    },
+    {
+      "min": 2.0046569147615036,
+      "max": 2.1002829190958088,
+      "count": 0
+    },
+    {
+      "min": 2.1002829190958088,
+      "max": 2.195908923430114,
+      "count": 2
+    }
+  ],
+  "revenueBins": [
+    {
+      "min": 2789.2456594307323,
+      "max": 1168097.4362584532,
+      "count": 8
+    },
+    {
+      "min": 1168097.4362584532,
+      "max": 2333405.6268574754,
+      "count": 0
+    },
+    {
+      "min": 2333405.6268574754,
+      "max": 3498713.817456498,
+      "count": 0
+    },
+    {
+      "min": 3498713.817456498,
+      "max": 4664022.00805552,
+      "count": 1
+    },
+    {
+      "min": 4664022.00805552,
+      "max": 5829330.198654543,
+      "count": 0
+    },
+    {
+      "min": 5829330.198654543,
+      "max": 6994638.389253565,
+      "count": 0
+    },
+    {
+      "min": 6994638.389253565,
+      "max": 8159946.579852588,
+      "count": 0
+    },
+    {
+      "min": 8159946.579852588,
+      "max": 9325254.77045161,
+      "count": 0
+    },
+    {
+      "min": 9325254.77045161,
+      "max": 10490562.961050633,
+      "count": 0
+    },
+    {
+      "min": 10490562.961050633,
+      "max": 11655871.151649656,
+      "count": 0
+    },
+    {
+      "min": 11655871.151649656,
+      "max": 12821179.342248678,
+      "count": 0
+    },
+    {
+      "min": 12821179.342248678,
+      "max": 13986487.5328477,
+      "count": 1
+    }
+  ],
+  "monthLabels": [
+    "M1",
+    "M2",
+    "M3",
+    "M4",
+    "M5",
+    "M6",
+    "M7",
+    "M8",
+    "M9",
+    "M10",
+    "M11",
+    "M12",
+    "M13",
+    "M14",
+    "M15",
+    "M16",
+    "M17",
+    "M18",
+    "M19",
+    "M20",
+    "M21",
+    "M22",
+    "M23",
+    "M24",
+    "M25",
+    "M26",
+    "M27",
+    "M28",
+    "M29",
+    "M30",
+    "M31",
+    "M32",
+    "M33",
+    "M34",
+    "M35",
+    "M36"
+  ],
+  "priceTimeSeries": {
+    "means": [
+      1.0447705184346514,
+      1.0468950366841414,
+      1.0488599529379667,
+      1.0524484017121039,
+      1.0565953662600909,
+      1.0609027905842952,
+      1.0684376777219466,
+      1.0753596679862336,
+      1.0803132197457948,
+      1.0853727452292357,
+      1.0970693540681933,
+      1.1263878219396184,
+      1.150139625626318,
+      1.1525086141267455,
+      1.1738676616370498,
+      1.182027538882489,
+      1.1841987680271626,
+      1.1873334544025034,
+      1.1907035133957173,
+      1.1953712712415716,
+      1.2017430331095837,
+      1.2085525055147321,
+      1.2104287522734147,
+      1.2190620798101777,
+      1.2255465531395344,
+      1.2335662262639329,
+      1.241726273514,
+      1.2497838640258927,
+      1.2589913978553633,
+      1.2718501125247745,
+      1.301907795016207,
+      1.3259694588397526,
+      1.3301581533469977,
+      1.331414616223062,
+      1.3320151940516063,
+      1.3327103362956574
+    ],
+    "p10": [
+      1.0444826470554693,
+      1.0450952109736222,
+      1.0460745671318081,
+      1.0463192629403322,
+      1.0463192629403322,
+      1.046563901536834,
+      1.0469001862641922,
+      1.0472363630050285,
+      1.0476029782317346,
+      1.048396871418453,
+      1.048396871418453,
+      1.048396871418453,
+      1.048396871418453,
+      1.048396871418453,
+      1.048396871418453,
+      1.048396871418453,
+      1.0491291626868446,
+      1.0497694985090775,
+      1.050348513589656,
+      1.051140333162038,
+      1.05211406225751,
+      1.0534818460704485,
+      1.0538766531240742,
+      1.0542106051449114,
+      1.0545141061171255,
+      1.0548478563281058,
+      1.0554240853799008,
+      1.0559696965348957,
+      1.0559696965348957,
+      1.0559696965348957,
+      1.0565453137466465,
+      1.0566058867903396,
+      1.0566664563617034,
+      1.0567573042094387,
+      1.0568784225255052,
+      1.057120617526685
+    ],
+    "p90": [
+      1.0454931850566984,
+      1.052387761236323,
+      1.0529653365614655,
+      1.0725371788427662,
+      1.093632479400644,
+      1.1231099679016299,
+      1.189823516325005,
+      1.2490252199215195,
+      1.2874533001239306,
+      1.325153576005438,
+      1.4336303568214508,
+      1.7100175437696539,
+      1.9382301204965318,
+      1.9382301204965318,
+      2.1198641465905306,
+      2.1874697712197078,
+      2.1874697712197078,
+      2.1874697712197078,
+      2.1874697712197078,
+      2.1874697712197078,
+      2.1874697712197078,
+      2.1874697712197078,
+      2.1874697712197078,
+      2.1874697712197078,
+      2.1874697712197078,
+      2.1874697712197078,
+      2.1874697712197078,
+      2.1874697712197078,
+      2.1874697712197078,
+      2.1874697712197078,
+      2.1874697712197078,
+      2.1874697712197078,
+      2.195908923430114,
+      2.195908923430114,
+      2.195908923430114,
+      2.195908923430114
+    ]
+  },
+  "revenueTimeSeries": {
+    "means": [
+      838.0022843812434,
+      1049.7410262853887,
+      852.8231826926724,
+      1575.9258655856775,
+      1859.8673571886866,
+      2006.5587895554745,
+      3777.921176892163,
+      3814.4860745361534,
+      2886.8731358500604,
+      3065.92227121951,
+      8130.523392414152,
+      25091.98220541166,
+      28235.895722624748,
+      1083.4586359043424,
+      29395.081121876894,
+      97121.49957870386,
+      77085.05671011514,
+      60193.80763769621,
+      1571.6772336332358,
+      75560.62660340776,
+      80861.58382448436,
+      109022.68015165985,
+      69659.81099380326,
+      52863.24267913471,
+      64829.60026336838,
+      87085.4370254005,
+      5648.378770354034,
+      97838.05158587694,
+      98935.50311495306,
+      55646.58688742939,
+      82229.12684118871,
+      95450.50442540103,
+      113594.69281410538,
+      53542.38307449515,
+      150527.75880836148,
+      170589.30880660177
+    ],
+    "p10": [
+      703.8684467950475,
+      0,
+      0,
+      0,
+      120.63405479887,
+      73.87243225230975,
+      0,
+      7.537523649943252,
+      129.02903663537074,
+      172.58688600563374,
+      0,
+      0,
+      13.667771005617213,
+      0,
+      65.35233552298648,
+      0,
+      78.55042837157691,
+      11.945193172739556,
+      14.627682998417773,
+      7.801286642110287,
+      8.843187408647822,
+      7.195019248281335,
+      0,
+      9.211855302038094,
+      0,
+      0,
+      0,
+      6.920983112986776,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0.5525010571956068,
+      0.3873095383536162
+    ],
+    "p90": [
+      1194.1312260219388,
+      3388.3460942171314,
+      3383.79239992249,
+      8823.092570406418,
+      9595.845272593813,
+      13980.773062181153,
+      33873.13519980728,
+      33574.39227689945,
+      23801.128859058354,
+      24796.84906876619,
+      77482.4298954112,
+      243306.22550219737,
+      278092.13974606496,
+      5809.999341610532,
+      279057.2371750786,
+      964572.1123047728,
+      760642.229108863,
+      587131.6328129383,
+      5462.065517703897,
+      733770.7523201037,
+      777882.4056606109,
+      1055456.9851457365,
+      687496.251795692,
+      481530.8410290205,
+      610335.2912889989,
+      820695.3389393295,
+      48146.618855019224,
+      919120.5499988912,
+      916100.7000031052,
+      441093.0146014555,
+      487747.9299672447,
+      587325.7032625739,
+      687556.3162569111,
+      527955.4648201115,
+      804317.5633221971,
+      1069131.6018623156
+    ]
+  },
+  "balancesByBehavior": {
+    "diamond_hands": [
+      5351.8,
+      5374.966666666666,
+      5396.433333333333,
+      5436,
+      5482.2,
+      5531.2,
+      5621.1,
+      5707.366666666667,
+      5770.4,
+      5835.966666666666,
+      6001.233333333334,
+      6472.5,
+      6916.466666666666,
+      6943.1,
+      7363.2,
+      7530.766666666666,
+      7555.366666666667,
+      7591.1,
+      7629.366666666667,
+      7682.666666666667,
+      7756.6,
+      7838.1,
+      7859.766666666666,
+      7966.733333333334,
+      8049.766666666666,
+      8156.133333333333,
+      8270.133333333333,
+      8385.766666666666,
+      8523.3,
+      8728.366666666667,
+      9275.8,
+      9785.066666666668,
+      9868.533333333333,
+      9884.5,
+      9892,
+      9900.666666666666
+    ]
+  },
+  "engagementMetrics": {
+    "totalExitRequests": 0,
+    "partialExits": 0,
+    "fullExits": 0,
+    "exitRate": 0,
+    "decisionDensity": "72.2",
+    "roiStdDev": "235.26",
+    "timingSpread": "104.33",
+    "highVariance": true,
+    "timingMatters": true
+  }
+};
+
+        // Chart defaults
+        Chart.defaults.color = '#888';
+        Chart.defaults.borderColor = '#222';
+        Chart.defaults.font.family = "'JetBrains Mono', monospace";
+
+        // Tooltip styling (dark theme with dashed border)
+        Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+        Chart.defaults.plugins.tooltip.titleColor = '#e8e8e8';
+        Chart.defaults.plugins.tooltip.bodyColor = '#e8e8e8';
+        Chart.defaults.plugins.tooltip.borderColor = '#888';
+        Chart.defaults.plugins.tooltip.borderWidth = 1;
+        Chart.defaults.plugins.tooltip.padding = 10;
+        Chart.defaults.plugins.tooltip.cornerRadius = 0;
+        Chart.defaults.plugins.tooltip.displayColors = true;
+        Chart.defaults.plugins.tooltip.boxPadding = 4;
+
+        // Colors
+        const ORANGE = '#f5a623';
+        const TEAL = '#4ecdc4';
+        const RED = '#ff6b6b';
+
+        // 1. Survival Doughnut
+        new Chart(document.getElementById('chart-survival'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Survived', 'Failed'],
+                datasets: [{
+                    data: [
+                        Math.round(DATA.survivalRate * DATA.runs),
+                        Math.round((1 - DATA.survivalRate) * DATA.runs)
+                    ],
+                    backgroundColor: [TEAL, RED],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'BUSINESS OUTCOMES',
+                        font: { size: 11, weight: 'normal' },
+                        padding: { bottom: 15 }
+                    },
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15,
+                            font: { size: 10 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. Price Distribution Histogram
+        new Chart(document.getElementById('chart-price-dist'), {
+            type: 'bar',
+            data: {
+                labels: DATA.priceBins.map(b => '$' + b.min.toFixed(2)),
+                datasets: [{
+                    data: DATA.priceBins.map(b => b.count),
+                    backgroundColor: TEAL,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'FINAL PRICE DISTRIBUTION',
+                        font: { size: 11, weight: 'normal' },
+                        padding: { bottom: 15 }
+                    },
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 9 }, maxRotation: 45 }
+                    },
+                    y: {
+                        grid: { color: '#222' },
+                        ticks: { font: { size: 9 } },
+                        title: { display: true, text: 'Runs', font: { size: 9 } }
+                    }
+                }
+            }
+        });
+
+        // 3. ROI by Participant (Horizontal Bar)
+        const participants = Object.entries(DATA.participantStats).sort((a, b) => a[1].mean - b[1].mean);
+        new Chart(document.getElementById('chart-roi'), {
+            type: 'bar',
+            data: {
+                labels: participants.map(([name]) => name),
+                datasets: [{
+                    data: participants.map(([_, stats]) => stats.mean),
+                    backgroundColor: ORANGE,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'MEAN ROI BY PARTICIPANT',
+                        font: { size: 11, weight: 'normal' },
+                        padding: { bottom: 15 }
+                    },
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { color: '#222' },
+                        ticks: {
+                            font: { size: 9 },
+                            callback: function(value) { return value.toFixed(1) + 'x'; }
+                        },
+                        title: { display: true, text: 'ROI', font: { size: 9 } }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { font: { size: 9 } }
+                    }
+                }
+            }
+        });
+
+        // 4. Token Price Over Time (with percentile bands)
+        if (DATA.priceTimeSeries && DATA.priceTimeSeries.means) {
+            new Chart(document.getElementById('chart-price-time'), {
+                type: 'line',
+                data: {
+                    labels: DATA.monthLabels,
+                    datasets: [
+                        {
+                            label: '90th percentile',
+                            data: DATA.priceTimeSeries.p90,
+                            borderColor: 'transparent',
+                            backgroundColor: 'rgba(245, 166, 35, 0.15)',
+                            fill: '+1',
+                            pointRadius: 0,
+                            tension: 0
+                        },
+                        {
+                            label: 'Mean Price',
+                            data: DATA.priceTimeSeries.means,
+                            borderColor: ORANGE,
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            tension: 0
+                        },
+                        {
+                            label: '10th percentile',
+                            data: DATA.priceTimeSeries.p10,
+                            borderColor: 'transparent',
+                            backgroundColor: 'transparent',
+                            fill: false,
+                            pointRadius: 0,
+                            tension: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'TOKEN PRICE OVER TIME',
+                            font: { size: 11, weight: 'normal' },
+                            padding: { bottom: 15 }
+                        },
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.datasetIndex === 1) {
+                                        return 'Mean: $' + context.parsed.y.toFixed(2);
+                                    } else if (context.datasetIndex === 0) {
+                                        return '90th %: $' + context.parsed.y.toFixed(2);
+                                    } else {
+                                        return '10th %: $' + context.parsed.y.toFixed(2);
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: '#222' },
+                            ticks: { font: { size: 9 }, maxTicksLimit: 12 }
+                        },
+                        y: {
+                            grid: { color: '#222' },
+                            ticks: {
+                                font: { size: 9 },
+                                callback: function(value) { return '$' + value.toFixed(2); }
+                            },
+                            title: { display: true, text: 'Price', font: { size: 9 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 5. Monthly Revenue Over Time (with percentile bands)
+        function formatRevenue(n) {
+            if (n >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M';
+            if (n >= 1000) return '$' + (n / 1000).toFixed(0) + 'K';
+            return '$' + n.toFixed(0);
+        }
+
+        if (DATA.revenueTimeSeries && DATA.revenueTimeSeries.means) {
+            new Chart(document.getElementById('chart-revenue-time'), {
+                type: 'line',
+                data: {
+                    labels: DATA.monthLabels,
+                    datasets: [
+                        {
+                            label: '90th percentile',
+                            data: DATA.revenueTimeSeries.p90,
+                            borderColor: 'transparent',
+                            backgroundColor: 'rgba(78, 205, 196, 0.15)',
+                            fill: '+1',
+                            pointRadius: 0,
+                            tension: 0
+                        },
+                        {
+                            label: 'Mean Revenue',
+                            data: DATA.revenueTimeSeries.means,
+                            borderColor: TEAL,
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            tension: 0
+                        },
+                        {
+                            label: '10th percentile',
+                            data: DATA.revenueTimeSeries.p10,
+                            borderColor: 'transparent',
+                            backgroundColor: 'transparent',
+                            fill: false,
+                            pointRadius: 0,
+                            tension: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'MONTHLY REVENUE OVER TIME',
+                            font: { size: 11, weight: 'normal' },
+                            padding: { bottom: 15 }
+                        },
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.datasetIndex === 1) {
+                                        return 'Mean: ' + formatRevenue(context.parsed.y);
+                                    } else if (context.datasetIndex === 0) {
+                                        return '90th %: ' + formatRevenue(context.parsed.y);
+                                    } else {
+                                        return '10th %: ' + formatRevenue(context.parsed.y);
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: '#222' },
+                            ticks: { font: { size: 9 }, maxTicksLimit: 12 }
+                        },
+                        y: {
+                            grid: { color: '#222' },
+                            ticks: {
+                                font: { size: 9 },
+                                callback: function(value) { return formatRevenue(value); }
+                            },
+                            title: { display: true, text: 'Revenue', font: { size: 9 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 6. Token Balances by Behavior Type
+        const BEHAVIOR_COLORS = {
+            'diamond_hands': '#f5a623',
+            'rational': '#4ecdc4',
+            'hustler': '#ff6b6b',
+            'skeptic': '#95e1d3',
+            'trend_follower': '#a8e6cf'
+        };
+
+        if (DATA.balancesByBehavior && Object.keys(DATA.balancesByBehavior).length > 0) {
+            const behaviorDatasets = Object.entries(DATA.balancesByBehavior).map(([behavior, balances]) => ({
+                label: behavior.replace('_', ' '),
+                data: balances,
+                borderColor: BEHAVIOR_COLORS[behavior] || '#888',
+                backgroundColor: 'transparent',
+                borderWidth: 2,
+                pointRadius: 0,
+                tension: 0
+            }));
+
+            new Chart(document.getElementById('chart-balances'), {
+                type: 'line',
+                data: {
+                    labels: DATA.monthLabels,
+                    datasets: behaviorDatasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'TOKEN BALANCES BY BEHAVIOR TYPE',
+                            font: { size: 11, weight: 'normal' },
+                            padding: { bottom: 15 }
+                        },
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 15,
+                                font: { size: 10 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + Math.round(context.parsed.y).toLocaleString() + ' tokens';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: '#222' },
+                            ticks: { font: { size: 9 }, maxTicksLimit: 12 }
+                        },
+                        y: {
+                            grid: { color: '#222' },
+                            ticks: {
+                                font: { size: 9 },
+                                callback: function(value) { return value.toLocaleString(); }
+                            },
+                            title: { display: true, text: 'Tokens', font: { size: 9 } }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

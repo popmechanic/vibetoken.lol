@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation Report: Startup + Mixed Behaviors</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --font-heading: Georgia, serif;
+            --font-body: 'Crimson Pro', Georgia, serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --text-primary: #e8e8e8;
+            --text-secondary: #a0a0a0;
+            --bg: #0a0a0a;
+            --border: #222;
+            --accent: #c8c8c8;
+
+            --chart-orange: #f5a623;
+            --chart-teal: #4ecdc4;
+            --chart-red: #ff6b6b;
+
+            --space-sm: 0.75rem;
+            --space-md: 1.5rem;
+            --space-lg: 2.5rem;
+            --space-xl: 4rem;
+
+            --max-width: 720px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 18px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--text-primary);
+            background: var(--bg);
+            line-height: 1.65;
+            padding: var(--space-lg) var(--space-md);
+            position: relative;
+        }
+
+        /* Noise texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            font-family: var(--font-heading);
+            font-weight: bold;
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            line-height: 1.1;
+            margin-bottom: 0.25rem;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-top: var(--space-lg);
+            margin-bottom: var(--space-sm);
+            color: var(--accent);
+        }
+
+        h3 {
+            font-size: 1rem;
+            margin-top: var(--space-md);
+            margin-bottom: var(--space-sm);
+            color: var(--text-primary);
+        }
+
+        p {
+            margin-bottom: 1em;
+        }
+
+        strong {
+            color: var(--text-primary);
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .subtitle {
+            font-family: var(--font-body);
+            font-style: italic;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+        }
+
+        .stat {
+            text-align: center;
+            padding: var(--space-md) var(--space-sm);
+            border: 1px solid var(--border);
+        }
+
+        .stat-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 0.5em;
+        }
+
+        .stat-value {
+            font-family: var(--font-mono);
+            font-size: 1.3rem;
+            color: var(--text-primary);
+        }
+
+        /* Tooltips */
+        .has-tooltip {
+            position: relative;
+            cursor: help;
+            border-bottom: 1px dotted #666;
+        }
+
+        .has-tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 4px 8px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px dashed #888;
+            color: #c8c8c8;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s;
+            z-index: 100;
+        }
+
+        .has-tooltip:hover::after {
+            opacity: 1;
+        }
+
+        /* Chart tooltip (external) */
+        .chart-tooltip {
+            position: fixed;
+            padding: 6px 10px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px dashed #888;
+            color: #c8c8c8;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            z-index: 100;
+        }
+
+        /* Chart Grid */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+        }
+
+        .chart-container {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: var(--space-md);
+            position: relative;
+        }
+
+        .chart-container canvas {
+            width: 100% !important;
+            height: 240px !important;
+        }
+
+        .chart-container.tall canvas {
+            height: 320px !important;
+        }
+
+        .chart-container.full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Conditions list (from narrative) */
+        .conditions {
+            list-style: none;
+            margin: var(--space-sm) 0;
+        }
+
+        .conditions li {
+            padding-left: 1.5em;
+            position: relative;
+            margin-bottom: 0.5em;
+        }
+
+        .conditions li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--text-secondary);
+        }
+
+        /* Narrative section */
+        .narrative {
+            margin-top: var(--space-xl);
+            padding-top: var(--space-lg);
+            border-top: 1px solid var(--border);
+        }
+
+        .narrative p {
+            color: var(--text-secondary);
+        }
+
+        .narrative strong {
+            color: var(--text-primary);
+        }
+
+        /* Divider */
+        .divider {
+            width: 50px;
+            height: 1px;
+            background: var(--border);
+            margin: var(--space-lg) auto;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: var(--space-xl);
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container canvas {
+                height: 200px !important;
+            }
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: var(--space-xl) var(--space-lg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <article class="container">
+        <header>
+            <h1>Startup + Mixed Behaviors</h1>
+            <p class="subtitle">Monte Carlo Simulation Report</p>
+        </header>
+
+        <!-- Summary Stats -->
+        <div class="stats-grid">
+            <div class="stat">
+                <div class="stat-label has-tooltip" data-tooltip="Monte Carlo run count">Simulations</div>
+                <div class="stat-value">100</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label has-tooltip" data-tooltip="% where business survived">Survival Rate</div>
+                <div class="stat-value">65%</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label has-tooltip" data-tooltip="Average final token price">Mean Price</div>
+                <div class="stat-value">$1.80</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label has-tooltip" data-tooltip="Average cumulative revenue">Mean Revenue</div>
+                <div class="stat-value">$81K</div>
+            </div>
+        </div>
+
+        <!-- Engagement/"Fun" Metrics -->
+        <div class="stats-grid">
+            <div class="stat">
+                <div class="stat-label has-tooltip" data-tooltip="Non-HOLD actions per simulation">Decisions/Run</div>
+                <div class="stat-value">149.9</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label has-tooltip" data-tooltip="StdDev of returns — higher = more variance">ROI Spread</div>
+                <div class="stat-value">3.18x</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label has-tooltip" data-tooltip="Total exit requests across all runs">Exit Events</div>
+                <div class="stat-value">495</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label has-tooltip" data-tooltip="ROI advantage of holding vs early exit">Timing Edge</div>
+                <div class="stat-value">+1.90x</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="chart-grid">
+            <div class="chart-container">
+                <canvas id="chart-survival"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="chart-price-dist"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="chart-price-time"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="chart-revenue-time"></canvas>
+            </div>
+            <div class="chart-container full-width tall">
+                <canvas id="chart-roi"></canvas>
+            </div>
+            <div class="chart-container full-width tall">
+                <canvas id="chart-balances"></canvas>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Narrative Content -->
+        <section class="narrative">
+            <h2>Simulation Results: Startup + Mixed Behaviors</h2>
+
+<p>This analysis covers 100 simulations of a startup business model over 36 months.</p>
+
+<ul class="conditions">
+<li>Business survival rate: 65%</li>
+<li>Mean final token price: $1.80</li>
+<li>Revenue share (α): 20%</li>
+<li>Initial participant count: 5</li>
+</ul>
+
+<h3>Business Outcomes</h3>
+
+<p>The startup achieved breakthrough in 65% of simulations, exceeding typical startup success rates. Failed businesses (35%) typically exhausted their runway before finding product-market fit.</p>
+
+<ul class="conditions">
+<li>Mean: $81,149</li>
+<li>Median: $30,458</li>
+<li>Range: $424 - $457,642</li>
+</ul>
+
+<p>The significant gap between mean and median revenue indicates a right-skewed distribution with occasional extreme successes.</p>
+
+<h3>Participant Performance</h3>
+
+<ul class="conditions">
+<li>WoM Entrant #1: 24.29x ██████████</li>
+<li>WoM Entrant #3: 15.21x ██████████</li>
+<li>Price Chaser #4: 14.82x ██████████</li>
+<li>Price Chaser #5: 13.10x ██████████</li>
+<li>WoM Entrant #7: 10.56x ██████████</li>
+<li>WoM Entrant #5: 10.34x ██████████</li>
+<li>WoM Entrant #6: 10.26x ██████████</li>
+<li>WoM Entrant #8: 10.12x ██████████</li>
+<li>WoM Entrant #4: 9.84x █████████</li>
+<li>Price Chaser #2: 7.41x ███████</li>
+<li>Price Chaser #1: 7.24x ███████</li>
+<li>Momentum Trader: 7.22x ███████</li>
+<li>Price Chaser #3: 7.00x ███████</li>
+<li>Skeptical Tester: 6.94x ██████</li>
+<li>True Believer: 6.61x ██████</li>
+<li>Life Event Lisa: 6.08x ██████</li>
+<li>Angel Referrer: 6.01x ██████</li>
+</ul>
+
+<p><strong>Behavior Analysis:</strong></p>
+
+<p><strong>Diamond hands outperformed</strong> in this scenario, achieving 6.61x average ROI. Their refusal to exit captured full upside when the business succeeded.</p>
+
+<p><strong>Rational actors</strong> achieved 6.01x average ROI. Their conservative approach may have triggered premature exits in some successful scenarios.</p>
+
+<p><strong>Trend followers</strong> achieved 7.22x average ROI. Momentum-based decisions led to variable outcomes depending on price trajectory timing.</p>
+
+<p><strong>Skeptics</strong> achieved 6.94x average ROI. Their early exits may have left money on the table in successful scenarios.</p>
+
+<h3>Economic Observations</h3>
+
+<ul class="conditions">
+<li>Final price range: $1.46 - $2.46</li>
+<li>Coefficient of variation: 13.5%</li>
+</ul>
+
+<p>The square root pricing function (P = k×√S) delivered relatively stable prices despite varying revenue conditions. A 14% coefficient of variation suggests the bonding curve effectively dampened volatility.</p>
+
+<p><strong>Supply Floor (S_min = 1000):</strong> The minimum supply floor prevented price collapse in failure scenarios. Floor price: $0.32. No simulation reached the floor, indicating adequate supply cushion.</p>
+
+<p><strong>Exit Queue Mechanism:</strong> In failed scenarios, exit queues froze when revenue stopped. Participants who exited early captured value; late exits risked queue freeze.</p>
+
+<h3>Key Findings</h3>
+
+<p>1. <strong>Mixed outcomes favor balanced strategies.</strong> Neither pure conviction nor pure caution dominated. Risk management mattered.</p>
+
+<p>2. <strong>WoM Entrant #1</strong> achieved highest returns (24.29x), while <strong>Angel Referrer</strong> achieved lowest (6.01x).</p>
+
+<p>3. <strong>The tokenomics performed as designed.</strong> Supply-based pricing provided price discovery, distributions rewarded holders, and the exit queue enabled liquidity without secondary markets.</p>
+
+<p><strong>Implication:</strong> For startup businesses with similar parameters, the token system creates meaningful value for early contributors.</p>
+        </section>
+
+        <footer>
+            Generated 2026-01-15 23:29:11 | 100 simulations × 36 months
+        </footer>
+    </article>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const DATA = {
+  "runs": 100,
+  "survivalRate": 0.65,
+  "priceStats": {
+    "mean": 1.8019181866810419,
+    "median": 1.7035844563742653,
+    "min": 1.462292720353897,
+    "max": 2.4649543606322615,
+    "stddev": 0.24369006649451788,
+    "count": 100
+  },
+  "revenueStats": {
+    "mean": 81149.34237877773,
+    "median": 30458.402365804654,
+    "min": 424.3099315381806,
+    "max": 457641.98115279886,
+    "stddev": 106227.17761944156,
+    "count": 100
+  },
+  "participantStats": {
+    "WoM Entrant #1": {
+      "mean": 24.285358963956813,
+      "median": 24.285358963956813,
+      "min": 24.285358963956813,
+      "max": 24.285358963956813,
+      "stddev": 0,
+      "count": 1
+    },
+    "WoM Entrant #3": {
+      "mean": 15.205362784946184,
+      "median": 15.731390709551997,
+      "min": 8.825010265829722,
+      "max": 24.135630646197008,
+      "stddev": 4.800186666174373,
+      "count": 6
+    },
+    "Price Chaser #4": {
+      "mean": 14.822084758504436,
+      "median": 16.034522724182203,
+      "min": 10.167690623751863,
+      "max": 19.73606227781832,
+      "stddev": 3.5159427077996415,
+      "count": 4
+    },
+    "Price Chaser #5": {
+      "mean": 13.103310895386201,
+      "median": 12.158462994810492,
+      "min": 8.43997491391743,
+      "max": 18.711494777430683,
+      "stddev": 4.246220534628693,
+      "count": 3
+    },
+    "WoM Entrant #7": {
+      "mean": 10.555686888874986,
+      "median": 9.573012935864378,
+      "min": 6.772739475278817,
+      "max": 17.358375323005454,
+      "stddev": 3.231681406985945,
+      "count": 22
+    },
+    "WoM Entrant #5": {
+      "mean": 10.337263509411015,
+      "median": 8.904268501105738,
+      "min": 5.613911292494744,
+      "max": 18.78889446304078,
+      "stddev": 3.738867975711299,
+      "count": 32
+    },
+    "WoM Entrant #6": {
+      "mean": 10.262462982586333,
+      "median": 9.139275347704004,
+      "min": 6.229205406791463,
+      "max": 18.016453159100074,
+      "stddev": 3.389529412603273,
+      "count": 30
+    },
+    "WoM Entrant #8": {
+      "mean": 10.122253973495647,
+      "median": 10.325019661520852,
+      "min": 6.60060603278214,
+      "max": 14.969298373522285,
+      "stddev": 2.500054176912679,
+      "count": 16
+    },
+    "WoM Entrant #4": {
+      "mean": 9.841812696186357,
+      "median": 8.932014804202913,
+      "min": 5.473303719692522,
+      "max": 19.17260828863531,
+      "stddev": 3.8220624082878554,
+      "count": 37
+    },
+    "Price Chaser #2": {
+      "mean": 7.413994043730908,
+      "median": 5.520293060461833,
+      "min": 4.6858297024113025,
+      "max": 22.81900746071904,
+      "stddev": 3.4282379079570475,
+      "count": 100
+    },
+    "Price Chaser #1": {
+      "mean": 7.240312602160759,
+      "median": 5.577762399679771,
+      "min": 4.765246733591032,
+      "max": 18.876429242393574,
+      "stddev": 2.9986588986350378,
+      "count": 99
+    },
+    "Momentum Trader": {
+      "mean": 7.217692639546798,
+      "median": 5.460966339394521,
+      "min": 4.642672304610783,
+      "max": 20.404732421042137,
+      "stddev": 3.187298616768871,
+      "count": 100
+    }
+  },
+  "priceBins": [
+    {
+      "min": 1.462292720353897,
+      "max": 1.5458478570437606,
+      "count": 12
+    },
+    {
+      "min": 1.5458478570437606,
+      "max": 1.6294029937336243,
+      "count": 9
+    },
+    {
+      "min": 1.6294029937336243,
+      "max": 1.712958130423488,
+      "count": 31
+    },
+    {
+      "min": 1.712958130423488,
+      "max": 1.7965132671133517,
+      "count": 15
+    },
+    {
+      "min": 1.7965132671133517,
+      "max": 1.8800684038032154,
+      "count": 3
+    },
+    {
+      "min": 1.8800684038032154,
+      "max": 1.9636235404930793,
+      "count": 2
+    },
+    {
+      "min": 1.9636235404930793,
+      "max": 2.0471786771829428,
+      "count": 7
+    },
+    {
+      "min": 2.0471786771829428,
+      "max": 2.1307338138728067,
+      "count": 7
+    },
+    {
+      "min": 2.1307338138728067,
+      "max": 2.21428895056267,
+      "count": 6
+    },
+    {
+      "min": 2.21428895056267,
+      "max": 2.297844087252534,
+      "count": 3
+    },
+    {
+      "min": 2.297844087252534,
+      "max": 2.3813992239423976,
+      "count": 3
+    },
+    {
+      "min": 2.3813992239423976,
+      "max": 2.4649543606322615,
+      "count": 2
+    }
+  ],
+  "revenueBins": [
+    {
+      "min": 424.3099315381806,
+      "max": 38525.78253330991,
+      "count": 56
+    },
+    {
+      "min": 38525.78253330991,
+      "max": 76627.25513508164,
+      "count": 9
+    },
+    {
+      "min": 76627.25513508164,
+      "max": 114728.72773685335,
+      "count": 5
+    },
+    {
+      "min": 114728.72773685335,
+      "max": 152830.2003386251,
+      "count": 9
+    },
+    {
+      "min": 152830.2003386251,
+      "max": 190931.67294039682,
+      "count": 4
+    },
+    {
+      "min": 190931.67294039682,
+      "max": 229033.14554216852,
+      "count": 6
+    },
+    {
+      "min": 229033.14554216852,
+      "max": 267134.6181439403,
+      "count": 2
+    },
+    {
+      "min": 267134.6181439403,
+      "max": 305236.090745712,
+      "count": 3
+    },
+    {
+      "min": 305236.090745712,
+      "max": 343337.5633474837,
+      "count": 3
+    },
+    {
+      "min": 343337.5633474837,
+      "max": 381439.03594925546,
+      "count": 2
+    },
+    {
+      "min": 381439.03594925546,
+      "max": 419540.50855102716,
+      "count": 0
+    },
+    {
+      "min": 419540.50855102716,
+      "max": 457641.98115279886,
+      "count": 1
+    }
+  ],
+  "monthLabels": [
+    "M1",
+    "M2",
+    "M3",
+    "M4",
+    "M5",
+    "M6",
+    "M7",
+    "M8",
+    "M9",
+    "M10",
+    "M11",
+    "M12",
+    "M13",
+    "M14",
+    "M15",
+    "M16",
+    "M17",
+    "M18",
+    "M19",
+    "M20",
+    "M21",
+    "M22",
+    "M23",
+    "M24",
+    "M25",
+    "M26",
+    "M27",
+    "M28",
+    "M29",
+    "M30",
+    "M31",
+    "M32",
+    "M33",
+    "M34",
+    "M35",
+    "M36"
+  ],
+  "priceTimeSeries": {
+    "means": [
+      1.6871509298594105,
+      1.6991681151769353,
+      1.7126746390142114,
+      1.722427071457154,
+      1.7333527609017036,
+      1.7405696000431667,
+      1.7490871720258436,
+      1.7179751704752768,
+      1.7248160518788813,
+      1.7314740287828898,
+      1.7388399328841846,
+      1.744149170174311,
+      1.7472021923178658,
+      1.7513872964114054,
+      1.7512408992373998,
+      1.7564629843474335,
+      1.7602898122869128,
+      1.7654511690899335,
+      1.7694052054780365,
+      1.7731341058938568,
+      1.7804104709252966,
+      1.7862665177204817,
+      1.7944437254920351,
+      1.701594094936917,
+      1.7040455710089244,
+      1.708704791053276,
+      1.7152893137943352,
+      1.726397668504346,
+      1.7339142211934142,
+      1.743447223912625,
+      1.7534882134927607,
+      1.762321809072215,
+      1.772661879653701,
+      1.7821544939689642,
+      1.79145105893061,
+      1.8019181866810419
+    ],
+    "p10": [
+      1.6734096928128508,
+      1.6736188335460378,
+      1.6738876903783,
+      1.674126637981727,
+      1.6744551352604224,
+      1.6749626861515452,
+      1.6763949415337664,
+      1.6287418457201868,
+      1.6292329483533041,
+      1.6295704955601031,
+      1.6510299815569673,
+      1.6516052797203091,
+      1.65269476915733,
+      1.6736188335460378,
+      1.6735889578985634,
+      1.6739474304768356,
+      1.674007168443433,
+      1.6745447142432477,
+      1.6745447142432477,
+      1.674007168443433,
+      1.6742759629165078,
+      1.6745447142432477,
+      1.6746342884343435,
+      1.5442150109359774,
+      1.5421413683576484,
+      1.5414279094398153,
+      1.5374329253661767,
+      1.5318616125486009,
+      1.5390256658028807,
+      1.541557653803451,
+      1.5251557297535225,
+      1.5208878985645193,
+      1.5233187453714343,
+      1.5258767971235423,
+      1.5287903715029083,
+      1.531763689346369
+    ],
+    "p90": [
+      1.7175855146105536,
+      1.7607100840286,
+      1.7611359970201053,
+      1.7819652072922187,
+      1.8031916148873364,
+      1.8033857047232023,
+      1.8033857047232023,
+      1.8044112613259762,
+      1.8052700628991776,
+      1.8077610461562668,
+      1.8125948251057102,
+      1.8178283747372854,
+      1.8213456563760764,
+      1.8273478048800673,
+      1.8522688789697892,
+      1.8860540819393277,
+      1.8950461735799473,
+      1.9093192504136127,
+      1.9532280972789635,
+      1.9659348921060433,
+      1.9763602910400724,
+      1.985170017907786,
+      2.019628678742704,
+      1.900342074469752,
+      1.928237537234456,
+      1.9258504614844842,
+      1.967079052809012,
+      1.9923353131438493,
+      2.0091789367798976,
+      2.026622806542944,
+      2.063298330343918,
+      2.087151168459055,
+      2.113788068847017,
+      2.1390652163971065,
+      2.1606943328476613,
+      2.185497654997598
+    ]
+  },
+  "revenueTimeSeries": {
+    "means": [
+      185.63258323352784,
+      209.2650335356593,
+      189.8688609264791,
+      244.36414664828445,
+      308.99604803352855,
+      363.59902189973116,
+      434.15483059287203,
+      549.0074072048842,
+      631.5110089496145,
+      729.0487727931063,
+      828.2481964246306,
+      931.1073217920685,
+      1071.9814579633683,
+      1174.3798976152743,
+      1257.8599265288374,
+      1378.8489036105527,
+      1514.757241283566,
+      1668.8355809936415,
+      1811.3599705787587,
+      1990.3719935668507,
+      2178.897045865185,
+      2379.1788201310455,
+      2584.588316134463,
+      2835.6773474092847,
+      3132.024715496538,
+      3342.1841842347176,
+      3542.4580722265105,
+      3786.515022941322,
+      4082.390324700813,
+      4247.564378733919,
+      4544.554527929896,
+      4829.580062035647,
+      5125.0686007349295,
+      5365.870891411307,
+      5685.9006171081655,
+      6013.6912475087365
+    ],
+    "p10": [
+      39.54213773831725,
+      39.52650874853134,
+      37.2019755654037,
+      24.882910128375386,
+      24.89816025958917,
+      23.088312182307607,
+      21.949680879753693,
+      22.12402135442081,
+      19.916124215387597,
+      20.871624589001282,
+      19.350703337982956,
+      15.224194858125335,
+      16.852450370933976,
+      14.414686443101528,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "p90": [
+      347.640070412308,
+      365.83077143877745,
+      354.77791326120496,
+      428.09113957367424,
+      895.6341872180063,
+      1350.8182247978607,
+      1488.0223172622775,
+      1817.3487346140412,
+      2048.027869226007,
+      2334.136979585578,
+      2905.993795664138,
+      3152.336322163998,
+      3426.5286527324015,
+      3706.394375768489,
+      3969.2668928605945,
+      4496.444866819129,
+      4941.436613853327,
+      5504.903012590082,
+      5941.514311088032,
+      6572.474040487981,
+      7231.812449510175,
+      7350.3832188769,
+      7656.468685554184,
+      9365.282916515684,
+      10495.787896734062,
+      11063.283656160507,
+      11222.623611777059,
+      11994.548358460015,
+      12619.500007413477,
+      13502.652084174273,
+      14212.673336867465,
+      15023.670448637293,
+      17186.91095316834,
+      16192.876718038164,
+      16967.774091840893,
+      18301.717416652475
+    ]
+  },
+  "balancesByBehavior": {
+    "diamond_hands": [
+      15002.46,
+      15005.69,
+      15008.51,
+      15012.34,
+      15017.2,
+      15022.96,
+      15029.96,
+      15038.88,
+      15049.27,
+      15061.24,
+      15074.74,
+      15089.82,
+      15107.2,
+      15126.18,
+      15146.62,
+      15168.92,
+      15193.28,
+      15219.95,
+      15248.76,
+      15280.22,
+      15467.153846153846,
+      15524.153846153846,
+      15585.615384615385,
+      15652.246153846154,
+      15731.507692307692,
+      15815.615384615385,
+      15904.046153846153,
+      15997.430769230768,
+      16096.615384615385,
+      16198.953846153847,
+      16307.307692307691,
+      16420.815384615384,
+      16539.923076923078,
+      16663.184615384616,
+      16792.415384615386,
+      16927.4
+    ],
+    "rational": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "skeptic": [
+      3000,
+      3000.83,
+      3001.46,
+      3002.46,
+      3003.78,
+      3005.44,
+      3007.51,
+      1719.11,
+      1692.12,
+      1665.4,
+      1669.41,
+      1613.67,
+      1588.36,
+      1593.57,
+      1388.31,
+      1394.49,
+      1401.18,
+      1408.48,
+      1416.32,
+      1424.92,
+      2206.5538461538463,
+      2222.0153846153844,
+      2238.6153846153848,
+      2256.753846153846,
+      2278.0923076923077,
+      2300.723076923077,
+      2324.353846153846,
+      2349.276923076923,
+      2375.8615384615387,
+      2403.0461538461536,
+      2431.892307692308,
+      2462.0615384615385,
+      2493.876923076923,
+      2527.0923076923077,
+      2561.892307692308,
+      2598.476923076923
+    ],
+    "life_event": [
+      5001.48,
+      5003.53,
+      5005.3,
+      5007.7,
+      5010.8,
+      5014.54,
+      5019.06,
+      5024.92,
+      5031.67,
+      5039.5,
+      5048.32,
+      5058.21,
+      5069.67,
+      5082.19,
+      5095.73,
+      5110.51,
+      5126.66,
+      5144.31,
+      5163.39,
+      5184.27,
+      5308.415384615385,
+      5346.307692307692,
+      5387.107692307693,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "trend_follower": [
+      4000,
+      4000,
+      4001.32,
+      4003.16,
+      4005.55,
+      4008.48,
+      4012.05,
+      4016.62,
+      4021.97,
+      3969.097087378641,
+      3920.6603773584907,
+      3893.8333333333335,
+      3886.9174311926604,
+      3847.75,
+      3781.230769230769,
+      3736.3553719008264,
+      3683.063492063492,
+      3636.5725190839694,
+      3607.637037037037,
+      3571.95,
+      3355.3274336283184,
+      3343.675213675214,
+      3273.6377952755906,
+      3257.4285714285716,
+      3261.210144927536,
+      3260.0555555555557,
+      3272.536912751678,
+      3241.41875,
+      3265.7939393939396,
+      3276.5581395348836,
+      3277.839779005525,
+      3305.7914438502676,
+      3323.9641025641026,
+      3379.540404040404,
+      3423.6059113300494,
+      3463.9808612440193
+    ],
+    "speculator": [
+      1500,
+      1500.2931034482758,
+      1475.4666666666667,
+      1467.787610619469,
+      1458.5323741007194,
+      1442.9299363057326,
+      1436.050847457627,
+      1422.2319587628865,
+      1401.8551401869158,
+      1384.5633187772926,
+      1377.5454545454545,
+      1368.046875,
+      1344.703007518797,
+      1330.764705882353,
+      1322.2446043165467,
+      1321.1099290780141,
+      1294.520979020979,
+      1277.9037800687286,
+      1261.4455782312925,
+      1237.6993243243244,
+      1250.6443298969073,
+      1260.025641025641,
+      1259.3641025641025,
+      1255.1641025641027,
+      1190.625641025641,
+      1152.7230769230769,
+      1152.3076923076924,
+      1168.0205128205127,
+      1172.0307692307692,
+      1189.5333333333333,
+      1195.0871794871796,
+      1199.753846153846,
+      1205.7384615384615,
+      1238.2307692307693,
+      1246.7692307692307,
+      1259.676923076923
+    ]
+  },
+  "engagementMetrics": {
+    "totalExitRequests": 495,
+    "partialExits": 275,
+    "fullExits": 220,
+    "exitRate": "56",
+    "decisionDensity": "149.9",
+    "roiStdDev": "3.18",
+    "timingSpread": "1.90",
+    "highVariance": false,
+    "timingMatters": false
+  }
+};
+
+        // Chart defaults
+        Chart.defaults.color = '#888';
+        Chart.defaults.borderColor = '#222';
+        Chart.defaults.font.family = "'JetBrains Mono', monospace";
+
+        // Tooltip styling (dark theme with dashed border)
+        Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+        Chart.defaults.plugins.tooltip.titleColor = '#e8e8e8';
+        Chart.defaults.plugins.tooltip.bodyColor = '#e8e8e8';
+        Chart.defaults.plugins.tooltip.borderColor = '#888';
+        Chart.defaults.plugins.tooltip.borderWidth = 1;
+        Chart.defaults.plugins.tooltip.padding = 10;
+        Chart.defaults.plugins.tooltip.cornerRadius = 0;
+        Chart.defaults.plugins.tooltip.displayColors = true;
+        Chart.defaults.plugins.tooltip.boxPadding = 4;
+
+        // Colors
+        const ORANGE = '#f5a623';
+        const TEAL = '#4ecdc4';
+        const RED = '#ff6b6b';
+
+        // External tooltip handler for dashed-border CSS styling
+        function externalTooltipHandler(context) {
+            const tooltip = document.getElementById('chart-tooltip');
+            const tooltipModel = context.tooltip;
+
+            if (tooltipModel.opacity === 0) {
+                tooltip.style.opacity = 0;
+                return;
+            }
+
+            // Build content
+            let html = '';
+            if (tooltipModel.title && tooltipModel.title.length > 0) {
+                html += '<div style="margin-bottom:4px;font-weight:500">' + tooltipModel.title.join(' ') + '</div>';
+            }
+            if (tooltipModel.body) {
+                tooltipModel.body.forEach((item, i) => {
+                    const colors = tooltipModel.labelColors[i];
+                    const color = colors ? colors.borderColor || colors.backgroundColor : '#888';
+                    html += '<div style="display:flex;align-items:center;gap:6px">';
+                    html += '<span style="width:8px;height:8px;background:' + color + ';display:inline-block"></span>';
+                    html += item.lines.join(' ');
+                    html += '</div>';
+                });
+            }
+            tooltip.innerHTML = html;
+
+            // Position relative to viewport
+            const canvas = context.chart.canvas;
+            const rect = canvas.getBoundingClientRect();
+            tooltip.style.left = (rect.left + window.scrollX + tooltipModel.caretX) + 'px';
+            tooltip.style.top = (rect.top + window.scrollY + tooltipModel.caretY - tooltip.offsetHeight - 10) + 'px';
+            tooltip.style.opacity = 1;
+        }
+
+        // 1. Survival Doughnut
+        new Chart(document.getElementById('chart-survival'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Survived', 'Failed'],
+                datasets: [{
+                    data: [
+                        Math.round(DATA.survivalRate * DATA.runs),
+                        Math.round((1 - DATA.survivalRate) * DATA.runs)
+                    ],
+                    backgroundColor: [TEAL, RED],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'BUSINESS OUTCOMES',
+                        font: { size: 11, weight: 'normal' },
+                        padding: { bottom: 15 }
+                    },
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15,
+                            font: { size: 10 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. Price Distribution Histogram
+        new Chart(document.getElementById('chart-price-dist'), {
+            type: 'bar',
+            data: {
+                labels: DATA.priceBins.map(b => '$' + b.min.toFixed(2)),
+                datasets: [{
+                    data: DATA.priceBins.map(b => b.count),
+                    backgroundColor: TEAL,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'FINAL PRICE DISTRIBUTION',
+                        font: { size: 11, weight: 'normal' },
+                        padding: { bottom: 15 }
+                    },
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 9 }, maxRotation: 45 }
+                    },
+                    y: {
+                        grid: { color: '#222' },
+                        ticks: { font: { size: 9 } },
+                        title: { display: true, text: 'Runs', font: { size: 9 } }
+                    }
+                }
+            }
+        });
+
+        // 3. ROI by Participant (Horizontal Bar)
+        const participants = Object.entries(DATA.participantStats).sort((a, b) => a[1].mean - b[1].mean);
+        new Chart(document.getElementById('chart-roi'), {
+            type: 'bar',
+            data: {
+                labels: participants.map(([name]) => name),
+                datasets: [{
+                    data: participants.map(([_, stats]) => stats.mean),
+                    backgroundColor: ORANGE,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'MEAN ROI BY PARTICIPANT',
+                        font: { size: 11, weight: 'normal' },
+                        padding: { bottom: 15 }
+                    },
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { color: '#222' },
+                        ticks: {
+                            font: { size: 9 },
+                            callback: function(value) { return value.toFixed(1) + 'x'; }
+                        },
+                        title: { display: true, text: 'ROI', font: { size: 9 } }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { font: { size: 9 } }
+                    }
+                }
+            }
+        });
+
+        // 4. Token Price Over Time (with percentile bands)
+        if (DATA.priceTimeSeries && DATA.priceTimeSeries.means) {
+            new Chart(document.getElementById('chart-price-time'), {
+                type: 'line',
+                data: {
+                    labels: DATA.monthLabels,
+                    datasets: [
+                        {
+                            label: '90th percentile',
+                            data: DATA.priceTimeSeries.p90,
+                            borderColor: 'transparent',
+                            backgroundColor: 'rgba(245, 166, 35, 0.15)',
+                            fill: '+1',
+                            pointRadius: 0,
+                            tension: 0
+                        },
+                        {
+                            label: 'Mean Price',
+                            data: DATA.priceTimeSeries.means,
+                            borderColor: ORANGE,
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            tension: 0
+                        },
+                        {
+                            label: '10th percentile',
+                            data: DATA.priceTimeSeries.p10,
+                            borderColor: 'transparent',
+                            backgroundColor: 'transparent',
+                            fill: false,
+                            pointRadius: 0,
+                            tension: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'TOKEN PRICE OVER TIME',
+                            font: { size: 11, weight: 'normal' },
+                            padding: { bottom: 15 }
+                        },
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: false,
+                            external: externalTooltipHandler,
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.datasetIndex === 1) {
+                                        return 'Mean: $' + context.parsed.y.toFixed(2);
+                                    } else if (context.datasetIndex === 0) {
+                                        return '90th %: $' + context.parsed.y.toFixed(2);
+                                    } else {
+                                        return '10th %: $' + context.parsed.y.toFixed(2);
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: '#222' },
+                            ticks: { font: { size: 9 }, maxTicksLimit: 12 }
+                        },
+                        y: {
+                            grid: { color: '#222' },
+                            ticks: {
+                                font: { size: 9 },
+                                callback: function(value) { return '$' + value.toFixed(2); }
+                            },
+                            title: { display: true, text: 'Price', font: { size: 9 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 5. Monthly Revenue Over Time (with percentile bands)
+        function formatRevenue(n) {
+            if (n >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M';
+            if (n >= 1000) return '$' + (n / 1000).toFixed(0) + 'K';
+            return '$' + n.toFixed(0);
+        }
+
+        if (DATA.revenueTimeSeries && DATA.revenueTimeSeries.means) {
+            new Chart(document.getElementById('chart-revenue-time'), {
+                type: 'line',
+                data: {
+                    labels: DATA.monthLabels,
+                    datasets: [
+                        {
+                            label: '90th percentile',
+                            data: DATA.revenueTimeSeries.p90,
+                            borderColor: 'transparent',
+                            backgroundColor: 'rgba(78, 205, 196, 0.15)',
+                            fill: '+1',
+                            pointRadius: 0,
+                            tension: 0
+                        },
+                        {
+                            label: 'Mean Revenue',
+                            data: DATA.revenueTimeSeries.means,
+                            borderColor: TEAL,
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            tension: 0
+                        },
+                        {
+                            label: '10th percentile',
+                            data: DATA.revenueTimeSeries.p10,
+                            borderColor: 'transparent',
+                            backgroundColor: 'transparent',
+                            fill: false,
+                            pointRadius: 0,
+                            tension: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'MONTHLY REVENUE OVER TIME',
+                            font: { size: 11, weight: 'normal' },
+                            padding: { bottom: 15 }
+                        },
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: false,
+                            external: externalTooltipHandler,
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.datasetIndex === 1) {
+                                        return 'Mean: ' + formatRevenue(context.parsed.y);
+                                    } else if (context.datasetIndex === 0) {
+                                        return '90th %: ' + formatRevenue(context.parsed.y);
+                                    } else {
+                                        return '10th %: ' + formatRevenue(context.parsed.y);
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: '#222' },
+                            ticks: { font: { size: 9 }, maxTicksLimit: 12 }
+                        },
+                        y: {
+                            grid: { color: '#222' },
+                            ticks: {
+                                font: { size: 9 },
+                                callback: function(value) { return formatRevenue(value); }
+                            },
+                            title: { display: true, text: 'Revenue', font: { size: 9 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 6. Token Balances by Behavior Type
+        const BEHAVIOR_COLORS = {
+            'diamond_hands': '#f5a623',
+            'rational': '#4ecdc4',
+            'hustler': '#ff6b6b',
+            'skeptic': '#95e1d3',
+            'trend_follower': '#a8e6cf'
+        };
+
+        if (DATA.balancesByBehavior && Object.keys(DATA.balancesByBehavior).length > 0) {
+            const behaviorDatasets = Object.entries(DATA.balancesByBehavior).map(([behavior, balances]) => ({
+                label: behavior.replace('_', ' '),
+                data: balances,
+                borderColor: BEHAVIOR_COLORS[behavior] || '#888',
+                backgroundColor: 'transparent',
+                borderWidth: 2,
+                pointRadius: 0,
+                tension: 0
+            }));
+
+            new Chart(document.getElementById('chart-balances'), {
+                type: 'line',
+                data: {
+                    labels: DATA.monthLabels,
+                    datasets: behaviorDatasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'TOKEN BALANCES BY BEHAVIOR TYPE',
+                            font: { size: 11, weight: 'normal' },
+                            padding: { bottom: 15 }
+                        },
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 15,
+                                font: { size: 10 }
+                            }
+                        },
+                        tooltip: {
+                            enabled: false,
+                            external: externalTooltipHandler,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + Math.round(context.parsed.y).toLocaleString() + ' tokens';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: '#222' },
+                            ticks: { font: { size: 9 }, maxTicksLimit: 12 }
+                        },
+                        y: {
+                            grid: { color: '#222' },
+                            ticks: {
+                                font: { size: 9 },
+                                callback: function(value) { return value.toLocaleString(); }
+                            },
+                            title: { display: true, text: 'Tokens', font: { size: 9 } }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+    <div id="chart-tooltip" class="chart-tooltip"></div>
+</body>
+</html>

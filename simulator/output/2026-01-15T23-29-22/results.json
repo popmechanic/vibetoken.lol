@@ -1,0 +1,766 @@
+{
+  "config": {
+    "meta": {
+      "name": "Stress Test - Adversarial Conditions",
+      "description": "Extreme scenario with volatile business, mass dynamic entry, and adversarial participant behaviors. Tests economic robustness under pressure.",
+      "version": "1.0"
+    },
+    "simulation": {
+      "runs": 100,
+      "duration_months": 36,
+      "seed": null,
+      "parallel_batches": 5
+    },
+    "business": {
+      "archetype": "micro",
+      "base_mrr": 2000,
+      "params": {
+        "growth_mean": 0.05,
+        "growth_stddev": 0.5,
+        "spike_probability": 0.15,
+        "spike_multiplier": 4,
+        "zero_probability": 0.18,
+        "failure_threshold": 2
+      }
+    },
+    "tokenomics": {
+      "alpha": 0.25,
+      "k": 0.008,
+      "treasury": 200000,
+      "s_min": 1000
+    },
+    "participants": [
+      {
+        "id": "panic_seller_1",
+        "name": "Panic Seller",
+        "behavior": "trend_follower",
+        "grant": 10000,
+        "referral_share": 0.1,
+        "start_month": 1,
+        "params": {
+          "lookback_window": 2,
+          "panic_threshold": -0.1,
+          "fomo_threshold": 0.5
+        }
+      },
+      {
+        "id": "impatient_skeptic",
+        "name": "Impatient Skeptic",
+        "behavior": "skeptic",
+        "grant": 8000,
+        "referral_share": 0.08,
+        "start_month": 1,
+        "params": {
+          "patience": 3,
+          "validation_threshold": 0.25
+        }
+      },
+      {
+        "id": "bad_speculator",
+        "name": "Bad Speculator",
+        "behavior": "speculator",
+        "grant": 6000,
+        "referral_share": 0.05,
+        "start_month": 1,
+        "params": {
+          "timing_skill": 0.3,
+          "trade_frequency": 0.4,
+          "exit_portion": 0.8
+        }
+      },
+      {
+        "id": "desperate_hustler",
+        "name": "Desperate Hustler",
+        "behavior": "hustler",
+        "grant": 5000,
+        "referral_share": 0.25,
+        "start_month": 1,
+        "params": {
+          "labor_intensity": 0.7,
+          "exit_aversion": 0.5,
+          "desperation_threshold": -0.3
+        }
+      },
+      {
+        "id": "early_exit_emily",
+        "name": "Early Exit Emily",
+        "behavior": "life_event",
+        "grant": 4000,
+        "referral_share": 0.05,
+        "start_month": 1,
+        "params": {
+          "trigger_month": 6
+        }
+      },
+      {
+        "id": "diamond_anchor",
+        "name": "Diamond Anchor",
+        "behavior": "diamond_hands",
+        "grant": 20000,
+        "referral_share": 0.15,
+        "start_month": 1,
+        "params": {
+          "labor_intensity": 0.3
+        }
+      },
+      {
+        "id": "rational_observer",
+        "name": "Rational Observer",
+        "behavior": "rational",
+        "grant": 5000,
+        "referral_share": 0.02,
+        "start_month": 1,
+        "params": {
+          "discount_rate": 0.1,
+          "forecast_horizon": 6,
+          "confidence": 0.4,
+          "exit_threshold": 0.8
+        }
+      }
+    ],
+    "entry_pool": {
+      "treasury": 80000,
+      "templates": [
+        {
+          "id": "fomo_wave_1",
+          "name": "FOMO Wave",
+          "behavior": "trend_follower",
+          "grant": 3000,
+          "referral_share": 0.04,
+          "maxSpawns": 10,
+          "entry_conditions": {
+            "type": "price_signal",
+            "params": {
+              "price_threshold": 0.8,
+              "probability": 0.35
+            }
+          },
+          "params": {
+            "lookback_window": 2,
+            "panic_threshold": -0.15
+          }
+        },
+        {
+          "id": "hype_chasers",
+          "name": "Hype Chaser",
+          "behavior": "speculator",
+          "grant": 2000,
+          "referral_share": 0.03,
+          "maxSpawns": 8,
+          "entry_conditions": {
+            "type": "word_of_mouth",
+            "params": {
+              "revenue_threshold": 4000,
+              "probability_per_month": 0.3
+            }
+          },
+          "params": {
+            "timing_skill": 0.35,
+            "trade_frequency": 0.35
+          }
+        },
+        {
+          "id": "referral_chain_spawn",
+          "name": "Friend of Hustler",
+          "behavior": "hustler",
+          "grant": 1500,
+          "referral_share": 0.06,
+          "maxSpawns": 5,
+          "entry_conditions": {
+            "type": "referral_chain",
+            "params": {
+              "trigger_participant_id": "desperate_hustler",
+              "tokens_earned_threshold": 50,
+              "probability": 0.4
+            }
+          },
+          "params": {
+            "labor_intensity": 0.5,
+            "exit_aversion": 0.6
+          }
+        }
+      ]
+    }
+  },
+  "baseSeed": 1768519762878,
+  "runs": 100,
+  "survivalRate": 0.37,
+  "priceStats": {
+    "mean": 2.358933340210099,
+    "median": 2.1103478386275567,
+    "min": 1.2739105149106824,
+    "max": 3.375507073018808,
+    "stddev": 0.5662546922059234,
+    "count": 100
+  },
+  "revenueStats": {
+    "mean": 143477783.83689952,
+    "median": 35685.86470546395,
+    "min": 0,
+    "max": 12107483048.757484,
+    "stddev": 1214600550.7499638,
+    "count": 100
+  },
+  "participantStats": {
+    "Panic Seller": {
+      "mean": 2897.3366339396457,
+      "median": 8.545708240418795,
+      "min": 6.2488398923320165,
+      "max": 257532.61404313144,
+      "stddev": 25704.344174784397,
+      "count": 100
+    },
+    "Impatient Skeptic": {
+      "mean": 7.975493196219175,
+      "median": 7.676093147164341,
+      "min": 7.014271166700073,
+      "max": 24.36612169189575,
+      "stddev": 1.9799243298294975,
+      "count": 100
+    },
+    "Bad Speculator": {
+      "mean": 377.40459667486886,
+      "median": 7.894715448955821,
+      "min": 6.570269673118922,
+      "max": 32955.406088913885,
+      "stddev": 3280.3926532284195,
+      "count": 100
+    },
+    "Desperate Hustler": {
+      "mean": 3888.3502003822696,
+      "median": 10.20009307246321,
+      "min": 5.108477154799728,
+      "max": 301270.70737292327,
+      "stddev": 30627.278270766095,
+      "count": 100
+    },
+    "Early Exit Emily": {
+      "mean": 7.431291071933867,
+      "median": 7.2656566296909055,
+      "min": 5.519444638620595,
+      "max": 16.299757711750928,
+      "stddev": 1.2192682748325046,
+      "count": 100
+    },
+    "Diamond Anchor": {
+      "mean": 1378.177926922866,
+      "median": 8.579056121984337,
+      "min": 5.054673693350001,
+      "max": 112458.09480664937,
+      "stddev": 11319.865174812501,
+      "count": 100
+    },
+    "Rational Observer": {
+      "mean": 7.693946113721952,
+      "median": 7.708377828802351,
+      "min": 7.362064927722385,
+      "max": 7.870736766103543,
+      "stddev": 0.08577811602381363,
+      "count": 100
+    },
+    "FOMO Wave #1": {
+      "mean": 4092.8675398400983,
+      "median": 8.471364951857261,
+      "min": 5.03557345294456,
+      "max": 316173.1576348063,
+      "stddev": 34160.36641237771,
+      "count": 85
+    },
+    "Friend of Hustler #2": {
+      "mean": 8380.773553314588,
+      "median": 20.67865390365395,
+      "min": 7.194927254238071,
+      "max": 254409.81344332205,
+      "stddev": 44924.32121035657,
+      "count": 31
+    },
+    "FOMO Wave #3": {
+      "mean": 431.9717983508617,
+      "median": 8.366472494533033,
+      "min": 6.656801033529543,
+      "max": 25210.594282845053,
+      "stddev": 3101.3040877545022,
+      "count": 65
+    },
+    "FOMO Wave #4": {
+      "mean": 425.208320660659,
+      "median": 8.307941032958235,
+      "min": 6.656801033529543,
+      "max": 25027.1462248395,
+      "stddev": 3024.6347740821407,
+      "count": 68
+    },
+    "FOMO Wave #5": {
+      "mean": 2243.2630243976278,
+      "median": 8.29973700955505,
+      "min": 6.656801033529543,
+      "max": 135516.36609053123,
+      "stddev": 17065.62169134484,
+      "count": 62
+    },
+    "Friend of Hustler #6": {
+      "mean": 396.48263176467555,
+      "median": 39.62076510848567,
+      "min": 8.747832953137594,
+      "max": 5992.163965152282,
+      "stddev": 1399.622177354438,
+      "count": 17
+    },
+    "FOMO Wave #7": {
+      "mean": 608.7033050982524,
+      "median": 8.360492894826503,
+      "min": 6.881860213634102,
+      "max": 23012.614773037665,
+      "stddev": 3301.157248736284,
+      "count": 48
+    },
+    "FOMO Wave #8": {
+      "mean": 15.692828303536954,
+      "median": 8.354945122500805,
+      "min": 7.510392799314827,
+      "max": 82.94724755694325,
+      "stddev": 16.0763348386159,
+      "count": 39
+    },
+    "FOMO Wave #9": {
+      "mean": 133.26339820431073,
+      "median": 8.726839810148919,
+      "min": 7.150034964949473,
+      "max": 2765.773164111219,
+      "stddev": 462.5131457521558,
+      "count": 46
+    },
+    "FOMO Wave #10": {
+      "mean": 66.43454913180355,
+      "median": 9.207496945424419,
+      "min": 7.150034964949473,
+      "max": 1520.7898684351126,
+      "stddev": 252.098752670945,
+      "count": 38
+    },
+    "FOMO Wave #11": {
+      "mean": 3647.9835590701327,
+      "median": 11.95151944952793,
+      "min": 7.150034964949473,
+      "max": 125067.674312523,
+      "stddev": 20824.753422520498,
+      "count": 35
+    },
+    "FOMO Wave #12": {
+      "mean": 726.5046361460226,
+      "median": 13.753532442735535,
+      "min": 7.923761732914488,
+      "max": 12895.378573682445,
+      "stddev": 2645.386533209046,
+      "count": 23
+    },
+    "Hype Chaser #13": {
+      "mean": 80.5982596233108,
+      "median": 18.879515452418193,
+      "min": 8.895054805901987,
+      "max": 771.9320659087595,
+      "stddev": 200.30370588080186,
+      "count": 13
+    },
+    "Hype Chaser #14": {
+      "mean": 31.29073173221863,
+      "median": 15.120290187910124,
+      "min": 10.819970597155274,
+      "max": 199.21502802456286,
+      "stddev": 50.91098708027295,
+      "count": 12
+    },
+    "Friend of Hustler #15": {
+      "mean": 1561.186168536046,
+      "median": 24.904047180412935,
+      "min": 10.673959706271669,
+      "max": 10184.496794221259,
+      "stddev": 3525.7966194597598,
+      "count": 7
+    },
+    "Hype Chaser #16": {
+      "mean": 14.445868584190727,
+      "median": 13.204580769037968,
+      "min": 9.283447587689592,
+      "max": 30.739761532595562,
+      "stddev": 5.511446257261399,
+      "count": 12
+    },
+    "FOMO Wave #2": {
+      "mean": 509.80293533434036,
+      "median": 8.21376892784305,
+      "min": 5.808380798811318,
+      "max": 25213.991469104425,
+      "stddev": 3215.143878945599,
+      "count": 61
+    },
+    "Friend of Hustler #4": {
+      "mean": 12869.850180616497,
+      "median": 44.78841374619185,
+      "min": 7.399324293474371,
+      "max": 249765.95043087399,
+      "stddev": 54355.6392842638,
+      "count": 20
+    },
+    "Friend of Hustler #5": {
+      "mean": 120.60757329749515,
+      "median": 34.457629755319985,
+      "min": 7.6410040325426705,
+      "max": 1543.0824538992144,
+      "stddev": 329.307499984994,
+      "count": 20
+    },
+    "Hype Chaser #6": {
+      "mean": 173.95960765649795,
+      "median": 32.84472225266973,
+      "min": 10.728320594557404,
+      "max": 789.2161674394652,
+      "stddev": 281.8366442096112,
+      "count": 11
+    },
+    "Friend of Hustler #8": {
+      "mean": 401.1222968794789,
+      "median": 33.24034092048105,
+      "min": 7.150034964949473,
+      "max": 5916.585121732202,
+      "stddev": 1238.1327964146383,
+      "count": 22
+    },
+    "Hype Chaser #10": {
+      "mean": 3569.2792582846014,
+      "median": 28.332821005535706,
+      "min": 7.955187766759297,
+      "max": 41177.159452113934,
+      "stddev": 10355.6072012546,
+      "count": 16
+    },
+    "Hype Chaser #12": {
+      "mean": 1451.4333416230008,
+      "median": 32.99496503082982,
+      "min": 10.343927257577223,
+      "max": 21746.959200251196,
+      "stddev": 5243.192726748074,
+      "count": 16
+    },
+    "FOMO Wave #13": {
+      "mean": 6750.385397016438,
+      "median": 16.217034446748652,
+      "min": 7.923761732914488,
+      "max": 120634.8959824589,
+      "stddev": 27621.298981409534,
+      "count": 18
+    },
+    "Friend of Hustler #16": {
+      "mean": 30957.746671695164,
+      "median": 416.6627549184294,
+      "min": 14.291337490078819,
+      "max": 184646.3259154084,
+      "stddev": 68731.94918712854,
+      "count": 6
+    },
+    "FOMO Wave #17": {
+      "mean": 68.22760064346454,
+      "median": 11.161182733026102,
+      "min": 9.083556572180306,
+      "max": 416.6627549184294,
+      "stddev": 134.14224579392769,
+      "count": 14
+    },
+    "Friend of Hustler #1": {
+      "mean": 355.7551071507106,
+      "median": 13.829605477846753,
+      "min": 7.469483351165149,
+      "max": 4192.005443185902,
+      "stddev": 1108.7908321978982,
+      "count": 13
+    },
+    "Hype Chaser #2": {
+      "mean": 17.59328213660441,
+      "median": 18.5973096475111,
+      "min": 7.024377175333903,
+      "max": 34.45344299099654,
+      "stddev": 10.757960334082668,
+      "count": 6
+    },
+    "Friend of Hustler #3": {
+      "mean": 280.86698719558535,
+      "median": 19.275474167184,
+      "min": 7.015481998108027,
+      "max": 6081.031396426442,
+      "stddev": 1209.8038639478912,
+      "count": 24
+    },
+    "FOMO Wave #6": {
+      "mean": 2743.936572751978,
+      "median": 8.255127797133126,
+      "min": 6.656801033529543,
+      "max": 133748.53187556518,
+      "stddev": 17643.800953130525,
+      "count": 58
+    },
+    "Hype Chaser #5": {
+      "mean": 1424.1944287077902,
+      "median": 46.73794878036215,
+      "min": 10.574716874620686,
+      "max": 8549.90253592813,
+      "stddev": 2939.0336004857095,
+      "count": 7
+    },
+    "Friend of Hustler #9": {
+      "mean": 16195.014519842362,
+      "median": 40.67265956011219,
+      "min": 8.96599170322069,
+      "max": 237206.4118290257,
+      "stddev": 55948.99147613121,
+      "count": 17
+    },
+    "Friend of Hustler #11": {
+      "mean": 2465.5628044218543,
+      "median": 35.77645494969391,
+      "min": 10.618248378250636,
+      "max": 30820.864530454342,
+      "stddev": 8187.584199219121,
+      "count": 13
+    },
+    "Friend of Hustler #13": {
+      "mean": 1754.313176117442,
+      "median": 45.61840492187077,
+      "min": 8.610789476000445,
+      "max": 18314.28963308139,
+      "stddev": 5015.510162342014,
+      "count": 12
+    },
+    "Friend of Hustler #14": {
+      "mean": 590.629086862327,
+      "median": 30.751852477013852,
+      "min": 8.895054805901987,
+      "max": 3903.8017073703304,
+      "stddev": 1352.8743077535707,
+      "count": 7
+    },
+    "FOMO Wave #15": {
+      "mean": 14.562947747938905,
+      "median": 12.170250613689104,
+      "min": 8.895054805901987,
+      "max": 29.490700039912355,
+      "stddev": 6.400903950490109,
+      "count": 18
+    },
+    "Hype Chaser #18": {
+      "mean": 13.612718943219827,
+      "median": 10.270296977205675,
+      "min": 9.390580386749267,
+      "max": 27.921582553460613,
+      "stddev": 7.162775698458621,
+      "count": 5
+    },
+    "FOMO Wave #19": {
+      "mean": 11.394242207502131,
+      "median": 11.920864062642439,
+      "min": 10.095394989796091,
+      "max": 12.712323471231459,
+      "stddev": 0.9263984752769341,
+      "count": 6
+    },
+    "FOMO Wave #20": {
+      "mean": 15.565391616024728,
+      "median": 18.175242545984283,
+      "min": 10.095394989796091,
+      "max": 22.234809285594775,
+      "stddev": 4.74623027131323,
+      "count": 6
+    },
+    "FOMO Wave #21": {
+      "mean": 28.1286074405983,
+      "median": 17.921197830969003,
+      "min": 10.095394989796091,
+      "max": 71.92930924185357,
+      "stddev": 25.446048426316615,
+      "count": 4
+    },
+    "FOMO Wave #14": {
+      "mean": 5970.231506112202,
+      "median": 18.817294548514973,
+      "min": 8.59360227145753,
+      "max": 114302.35551093874,
+      "stddev": 24319.767610429022,
+      "count": 21
+    },
+    "Hype Chaser #15": {
+      "mean": 2518.9644995392287,
+      "median": 26.41188619834856,
+      "min": 13.77657746038346,
+      "max": 31336.430422823996,
+      "stddev": 8321.164146401992,
+      "count": 13
+    },
+    "Hype Chaser #17": {
+      "mean": 4657.166208504574,
+      "median": 21.245079788393856,
+      "min": 9.479790900423387,
+      "max": 69509.88167428858,
+      "stddev": 17332.627689530636,
+      "count": 15
+    },
+    "Friend of Hustler #18": {
+      "mean": 16.817017396560953,
+      "median": 22.676252170711475,
+      "min": 10.95778262241043,
+      "max": 22.676252170711475,
+      "stddev": 5.859234774150522,
+      "count": 2
+    },
+    "Hype Chaser #19": {
+      "mean": 27.55098142659023,
+      "median": 19.7977838489627,
+      "min": 10.974652614092166,
+      "max": 89.61537736125095,
+      "stddev": 24.086246610564682,
+      "count": 8
+    },
+    "Hype Chaser #22": {
+      "mean": 14.118767083091823,
+      "median": 13.897131212724009,
+      "min": 12.679289307518383,
+      "max": 15.779880729033074,
+      "stddev": 1.2754760248806187,
+      "count": 3
+    },
+    "Hype Chaser #23": {
+      "mean": 14.26467204301318,
+      "median": 13.346858309500883,
+      "min": 12.067185685776117,
+      "max": 17.379972133762543,
+      "stddev": 2.263951044456703,
+      "count": 3
+    },
+    "Friend of Hustler #7": {
+      "mean": 12206.439103841125,
+      "median": 43.57738159762256,
+      "min": 7.345469253991426,
+      "max": 243064.0117651818,
+      "stddev": 52962.38680486625,
+      "count": 20
+    },
+    "Hype Chaser #3": {
+      "mean": 8555.141772797013,
+      "median": 128.3402656572441,
+      "min": 8.128730330673983,
+      "max": 49082.88173257786,
+      "stddev": 18139.07295147122,
+      "count": 6
+    },
+    "FOMO Wave #16": {
+      "mean": 24.738990197912894,
+      "median": 22.48730066473685,
+      "min": 9.083556572180306,
+      "max": 86.48811370490431,
+      "stddev": 18.55934053503589,
+      "count": 15
+    },
+    "FOMO Wave #18": {
+      "mean": 5674.451916238475,
+      "median": 20.09223589604099,
+      "min": 10.97715810216834,
+      "max": 79143.06509987793,
+      "stddev": 20376.53530627432,
+      "count": 14
+    },
+    "Hype Chaser #20": {
+      "mean": 27.111885323696725,
+      "median": 12.737584890541457,
+      "min": 10.020079840001276,
+      "max": 87.39835247177885,
+      "stddev": 30.170752208961265,
+      "count": 5
+    },
+    "Friend of Hustler #12": {
+      "mean": 28.14899050487805,
+      "median": 24.765237416378017,
+      "min": 9.0966760481691,
+      "max": 61.57723692598016,
+      "stddev": 19.578158886480733,
+      "count": 10
+    },
+    "Hype Chaser #1": {
+      "mean": 27.01927292844531,
+      "median": 45.98140888601194,
+      "min": 8.057136970878677,
+      "max": 45.98140888601194,
+      "stddev": 18.96213595756663,
+      "count": 2
+    },
+    "Hype Chaser #8": {
+      "mean": 6283.538992638001,
+      "median": 34.781607661304946,
+      "min": 9.207496945424419,
+      "max": 52798.609515091775,
+      "stddev": 15690.960069049286,
+      "count": 10
+    },
+    "Friend of Hustler #19": {
+      "mean": 27.921582553460613,
+      "median": 27.921582553460613,
+      "min": 27.921582553460613,
+      "max": 27.921582553460613,
+      "stddev": 0,
+      "count": 1
+    },
+    "Hype Chaser #4": {
+      "mean": 18.38754533247635,
+      "median": 12.266490482952124,
+      "min": 7.701470489609121,
+      "max": 33.22789900066936,
+      "stddev": 10.802075214761441,
+      "count": 5
+    },
+    "Friend of Hustler #10": {
+      "mean": 690.3885558698576,
+      "median": 52.70005389691014,
+      "min": 8.836720496956627,
+      "max": 5807.784808676924,
+      "stddev": 1809.6565382504994,
+      "count": 9
+    },
+    "Hype Chaser #9": {
+      "mean": 22.36850942366974,
+      "median": 20.498573248625906,
+      "min": 9.642277828658255,
+      "max": 50.76013871710764,
+      "stddev": 13.765293695220779,
+      "count": 6
+    },
+    "Hype Chaser #11": {
+      "mean": 520.4041424521381,
+      "median": 18.659362073713364,
+      "min": 9.6923964340711,
+      "max": 2521.741708996576,
+      "stddev": 1000.7051166763342,
+      "count": 5
+    },
+    "Hype Chaser #7": {
+      "mean": 30.029382309194816,
+      "median": 20.505998821196446,
+      "min": 8.45277426762854,
+      "max": 96.50018743905719,
+      "stddev": 25.29552302916541,
+      "count": 9
+    },
+    "Hype Chaser #21": {
+      "mean": 20.07561649410371,
+      "median": 20.07561649410371,
+      "min": 20.07561649410371,
+      "max": 20.07561649410371,
+      "stddev": 0,
+      "count": 1
+    },
+    "Friend of Hustler #17": {
+      "mean": 22.375507103839716,
+      "median": 22.375507103839716,
+      "min": 22.375507103839716,
+      "max": 22.375507103839716,
+      "stddev": 0,
+      "count": 1
+    }
+  }
+}

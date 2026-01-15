@@ -9,6 +9,33 @@ This is a **writing project**, not a codebase. The repository contains planning 
 1. **Vibe Token** - An economic system using a revenue-indexed bonding curve for small software businesses
 2. **Vibe Coding Essays** - A 12-part essay series about AI-assisted application development ("vibe coding")
 
+## Vibe Token Design Objectives
+
+These are the economic design goals that the token system aims to achieve. Use these to evaluate proposed changes and simulator configurations.
+
+### Core Economics
+1. **Reward early contributors** - sqrt pricing means early tokens are cheaper; early support is worth more
+2. **Earned via labor, not purchased** - tokens come from work (referrals, marketing), not capital investment
+3. **Speculation channeled through work** - people bet on success by hustling for it, not by buying in
+4. **Scale-agnostic** - works for $500/month micro businesses, not just venture-scale companies
+
+### Mechanism Properties
+5. **Liquidity without secondary markets** - exit queue provides optionality without exchanges or AMMs
+6. **Exits strengthen the system** - when people leave, remaining holders own a larger share
+7. **Locked founder commitment** - α (revenue share) is permanent; no bait-and-switch
+8. **Self-liquidating** - no reserve pool needed; exit queue funded by ongoing revenue
+9. **Bounded volatility** - sqrt function dampens extreme swings while allowing price discovery
+10. **Floor protection** - S_min prevents the system from reaching P=$0
+
+### Design Philosophy
+11. **Minimal rules** - six rules total; complexity is the enemy
+12. **Fun to participate** - prediction and reward engage dopamine; trading should feel like play
+
+### What This Means for the Simulator
+- `labor_intensity` is behavioral flavor, not economic input (simplicity > accuracy)
+- `referral_share` represents the deal, not variable effort
+- Fun proxy metrics (decision density, outcome variance) complement ROI metrics
+
 ## Key Documents
 
 - `whitepaper.md` - **Authoritative source** for Vibe Token economics (bonding curve formula, token mechanics). The website (`index.html`) should be updated FROM this file, not vice versa. When updating HTML, translate plaintext to symbols: `alpha` → `α`, `sqrt()` → `√`, `*` → `×`, `/` → `÷`.

@@ -125,6 +125,98 @@ function aggregateTimeSeries(results, fieldExtractor) {
 }
 
 /**
+ * Calculate "fun" engagement proxy metrics from simulation results
+ * Measures decision activity, outcome variance, and timing rewards
+ */
+function calculateEngagementMetrics(results) {
+    if (!results || results.length === 0) return null;
+
+    let totalExitRequests = 0;
+    let partialExits = 0;
+    let fullExits = 0;
+    let totalDecisions = 0;  // Non-HOLD decisions
+    const roiValues = [];
+    const earlyExiterROIs = [];  // Exited in first half
+    const lateExiterROIs = [];   // Exited in second half or held
+
+    for (const result of results) {
+        const duration = result.history?.length || 36;
+        const midpoint = Math.floor(duration / 2);
+
+        // Count exit events from history
+        for (const snapshot of (result.history || [])) {
+            for (const event of (snapshot.events || [])) {
+                if (event.type === 'exit_request') {
+                    totalExitRequests++;
+                    totalDecisions++;
+
+                    // Track partial vs full by comparing to participant's grant
+                    const participant = result.participantOutcomes?.find(p => p.id === event.participantId);
+                    if (participant) {
+                        if (event.tokens < participant.grant) {
+                            partialExits++;
+                        } else {
+                            fullExits++;
+                        }
+                    }
+                }
+                if (event.type === 'tokens_earned') {
+                    totalDecisions++;  // Earning tokens = active participation
+                }
+            }
+        }
+
+        // Collect ROI values for variance calculation
+        for (const p of (result.participantOutcomes || [])) {
+            if (isFinite(p.roi) && !isNaN(p.roi)) {
+                roiValues.push(p.roi);
+
+                // Categorize by exit timing
+                if (p.hasExited && p.exitMonth && p.exitMonth <= midpoint) {
+                    earlyExiterROIs.push(p.roi);
+                } else {
+                    lateExiterROIs.push(p.roi);
+                }
+            }
+        }
+    }
+
+    // Calculate ROI variance (outcome spread = excitement)
+    const roiMean = roiValues.length > 0
+        ? roiValues.reduce((a, b) => a + b, 0) / roiValues.length
+        : 0;
+    const roiVariance = roiValues.length > 0
+        ? roiValues.reduce((acc, v) => acc + (v - roiMean) ** 2, 0) / roiValues.length
+        : 0;
+    const roiStdDev = Math.sqrt(roiVariance);
+
+    // Calculate timing spread (does exit timing matter?)
+    const earlyMeanROI = earlyExiterROIs.length > 0
+        ? earlyExiterROIs.reduce((a, b) => a + b, 0) / earlyExiterROIs.length
+        : 0;
+    const lateMeanROI = lateExiterROIs.length > 0
+        ? lateExiterROIs.reduce((a, b) => a + b, 0) / lateExiterROIs.length
+        : 0;
+    const timingSpread = lateMeanROI - earlyMeanROI;
+
+    // Decision density (decisions per run)
+    const decisionDensity = totalDecisions / results.length;
+
+    return {
+        totalExitRequests,
+        partialExits,
+        fullExits,
+        exitRate: totalExitRequests > 0 ? (partialExits / totalExitRequests * 100).toFixed(0) : 0,
+        decisionDensity: decisionDensity.toFixed(1),
+        roiStdDev: roiStdDev.toFixed(2),
+        timingSpread: timingSpread.toFixed(2),
+        // Interpretation flags
+        highVariance: roiStdDev > 50,  // Exciting outcome spread
+        timingMatters: Math.abs(timingSpread) > 5  // Exit timing affects ROI significantly
+    };
+}
+
+/**
  * Aggregate participant balances by behavior type across all runs
  * Returns mean balance per month for each behavior type
  */
@@ -200,6 +292,9 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
     const revenueTimeSeries = aggregateTimeSeries(batchResult.results, h => h.revenue);
     const balancesByBehavior = aggregateBalancesByBehavior(batchResult.results);
 
+    // Calculate engagement/"fun" metrics
+    const engagementMetrics = calculateEngagementMetrics(batchResult.results);
+
     // Generate month labels
     const duration = batchResult.results[0]?.history?.length || 36;
     const monthLabels = Array.from({ length: duration }, (_, i) => `M${i + 1}`);
@@ -217,7 +312,9 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
         monthLabels,
         priceTimeSeries,
         revenueTimeSeries,
-        balancesByBehavior
+        balancesByBehavior,
+        // Engagement/"fun" metrics
+        engagementMetrics
     };
 
     return `<!DOCTYPE html>
@@ -375,6 +472,51 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
             color: var(--text-primary);
         }
 
+        /* Tooltips */
+        .has-tooltip {
+            position: relative;
+            cursor: help;
+            border-bottom: 1px dotted #666;
+        }
+
+        .has-tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 4px 8px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px dashed #888;
+            color: #c8c8c8;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s;
+            z-index: 100;
+        }
+
+        .has-tooltip:hover::after {
+            opacity: 1;
+        }
+
+        /* Chart tooltip (external) */
+        .chart-tooltip {
+            position: fixed;
+            padding: 6px 10px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px dashed #888;
+            color: #c8c8c8;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            z-index: 100;
+        }
+
         /* Chart Grid */
         .chart-grid {
             display: grid;
@@ -492,20 +634,40 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
         <!-- Summary Stats -->
         <div class="stats-grid">
             <div class="stat">
-                <div class="stat-label">Simulations</div>
+                <div class="stat-label has-tooltip" data-tooltip="Monte Carlo run count">Simulations</div>
                 <div class="stat-value">${batchResult.runs}</div>
             </div>
             <div class="stat">
-                <div class="stat-label">Survival Rate</div>
+                <div class="stat-label has-tooltip" data-tooltip="% where business survived">Survival Rate</div>
                 <div class="stat-value">${(batchResult.survivalRate * 100).toFixed(0)}%</div>
             </div>
             <div class="stat">
-                <div class="stat-label">Mean Price</div>
+                <div class="stat-label has-tooltip" data-tooltip="Average final token price">Mean Price</div>
                 <div class="stat-value">$${batchResult.priceStats.mean.toFixed(2)}</div>
             </div>
             <div class="stat">
-                <div class="stat-label">Mean Revenue</div>
+                <div class="stat-label has-tooltip" data-tooltip="Average cumulative revenue">Mean Revenue</div>
                 <div class="stat-value">${formatCompact(batchResult.revenueStats.mean)}</div>
+            </div>
+        </div>
+
+        <!-- Engagement/"Fun" Metrics -->
+        <div class="stats-grid">
+            <div class="stat">
+                <div class="stat-label has-tooltip" data-tooltip="Non-HOLD actions per simulation">Decisions/Run</div>
+                <div class="stat-value">${engagementMetrics?.decisionDensity || '—'}</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label has-tooltip" data-tooltip="StdDev of returns — higher = more variance">ROI Spread</div>
+                <div class="stat-value">${engagementMetrics?.roiStdDev || '—'}x</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label has-tooltip" data-tooltip="Total exit requests across all runs">Exit Events</div>
+                <div class="stat-value">${engagementMetrics?.totalExitRequests || 0}</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label has-tooltip" data-tooltip="ROI advantage of holding vs early exit">Timing Edge</div>
+                <div class="stat-value">${engagementMetrics?.timingSpread > 0 ? '+' : ''}${engagementMetrics?.timingSpread || '—'}x</div>
             </div>
         </div>
 
@@ -567,6 +729,41 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
         const ORANGE = '#f5a623';
         const TEAL = '#4ecdc4';
         const RED = '#ff6b6b';
+
+        // External tooltip handler for dashed-border CSS styling
+        function externalTooltipHandler(context) {
+            const tooltip = document.getElementById('chart-tooltip');
+            const tooltipModel = context.tooltip;
+
+            if (tooltipModel.opacity === 0) {
+                tooltip.style.opacity = 0;
+                return;
+            }
+
+            // Build content
+            let html = '';
+            if (tooltipModel.title && tooltipModel.title.length > 0) {
+                html += '<div style="margin-bottom:4px;font-weight:500">' + tooltipModel.title.join(' ') + '</div>';
+            }
+            if (tooltipModel.body) {
+                tooltipModel.body.forEach((item, i) => {
+                    const colors = tooltipModel.labelColors[i];
+                    const color = colors ? colors.borderColor || colors.backgroundColor : '#888';
+                    html += '<div style="display:flex;align-items:center;gap:6px">';
+                    html += '<span style="width:8px;height:8px;background:' + color + ';display:inline-block"></span>';
+                    html += item.lines.join(' ');
+                    html += '</div>';
+                });
+            }
+            tooltip.innerHTML = html;
+
+            // Position relative to viewport
+            const canvas = context.chart.canvas;
+            const rect = canvas.getBoundingClientRect();
+            tooltip.style.left = (rect.left + window.scrollX + tooltipModel.caretX) + 'px';
+            tooltip.style.top = (rect.top + window.scrollY + tooltipModel.caretY - tooltip.offsetHeight - 10) + 'px';
+            tooltip.style.opacity = 1;
+        }
 
         // 1. Survival Doughnut
         new Chart(document.getElementById('chart-survival'), {
@@ -736,6 +933,8 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
                         },
                         legend: { display: false },
                         tooltip: {
+                            enabled: false,
+                            external: externalTooltipHandler,
                             callbacks: {
                                 label: function(context) {
                                     if (context.datasetIndex === 1) {
@@ -825,6 +1024,8 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
                         },
                         legend: { display: false },
                         tooltip: {
+                            enabled: false,
+                            external: externalTooltipHandler,
                             callbacks: {
                                 label: function(context) {
                                     if (context.datasetIndex === 1) {
@@ -905,6 +1106,8 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
                             }
                         },
                         tooltip: {
+                            enabled: false,
+                            external: externalTooltipHandler,
                             callbacks: {
                                 label: function(context) {
                                     return context.dataset.label + ': ' + Math.round(context.parsed.y).toLocaleString() + ' tokens';
@@ -930,6 +1133,7 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
             });
         }
     </script>
+    <div id="chart-tooltip" class="chart-tooltip"></div>
 </body>
 </html>`;
 }
@@ -956,6 +1160,7 @@ function generateIndexPage(outputDir) {
 
         try {
             const summary = JSON.parse(fs.readFileSync(summaryPath, 'utf-8'));
+            const engagement = summary.engagementMetrics || {};
             simulations.push({
                 dirname: entry.name,
                 timestamp: entry.name.replace('T', ' ').replace(/-/g, ':').slice(0, 16),
@@ -963,7 +1168,11 @@ function generateIndexPage(outputDir) {
                 runs: summary.runs,
                 survivalRate: summary.survivalRate,
                 meanPrice: summary.priceStats?.mean || 0,
-                meanRevenue: summary.revenueStats?.mean || 0
+                meanRevenue: summary.revenueStats?.mean || 0,
+                // Engagement metrics
+                roiSpread: engagement.roiStdDev || '—',
+                timingEdge: engagement.timingSpread || '—',
+                decisions: engagement.decisionDensity || '—'
             });
         } catch (e) {
             // Skip invalid directories
@@ -974,7 +1183,9 @@ function generateIndexPage(outputDir) {
     simulations.sort((a, b) => b.dirname.localeCompare(a.dirname));
 
     // Generate table rows
-    const rows = simulations.map(sim => `
+    const rows = simulations.map(sim => {
+        const timing = sim.timingEdge !== '—' ? (parseFloat(sim.timingEdge) > 0 ? '+' : '') + sim.timingEdge : '—';
+        return `
             <tr>
                 <td><a href="output/${sim.dirname}/index.html">${sim.timestamp}</a></td>
                 <td>${sim.name}</td>
@@ -982,7 +1193,11 @@ function generateIndexPage(outputDir) {
                 <td>${(sim.survivalRate * 100).toFixed(0)}%</td>
                 <td>$${sim.meanPrice.toFixed(2)}</td>
                 <td>${formatCompact(sim.meanRevenue)}</td>
-            </tr>`).join('\n');
+                <td>${sim.roiSpread}x</td>
+                <td>${timing}x</td>
+                <td>${sim.decisions}</td>
+            </tr>`;
+    }).join('\n');
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -1009,7 +1224,7 @@ function generateIndexPage(outputDir) {
             --space-md: 1.5rem;
             --space-lg: 2.5rem;
             --space-xl: 4rem;
-            --max-width: 900px;
+            --max-width: 1100px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1094,6 +1309,38 @@ function generateIndexPage(outputDir) {
             color: #f5a623;
         }
 
+        /* Tooltips */
+        .has-tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .has-tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 4px 8px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px dashed #888;
+            color: #c8c8c8;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: normal;
+            text-transform: none;
+            letter-spacing: normal;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s;
+            z-index: 100;
+        }
+
+        .has-tooltip:hover::after {
+            opacity: 1;
+        }
+
         .count {
             margin-top: var(--space-lg);
             text-align: center;
@@ -1130,10 +1377,13 @@ function generateIndexPage(outputDir) {
                 <tr>
                     <th>Date</th>
                     <th>Name</th>
-                    <th>Runs</th>
-                    <th>Survival</th>
-                    <th>Price</th>
-                    <th>Revenue</th>
+                    <th class="has-tooltip" data-tooltip="Monte Carlo run count">Runs</th>
+                    <th class="has-tooltip" data-tooltip="% where business survived">Survival</th>
+                    <th class="has-tooltip" data-tooltip="Average final token price">Price</th>
+                    <th class="has-tooltip" data-tooltip="Average cumulative revenue">Revenue</th>
+                    <th class="has-tooltip" data-tooltip="StdDev of returns — higher = more variance">ROI Spread</th>
+                    <th class="has-tooltip" data-tooltip="ROI advantage of holding vs early exit">Timing</th>
+                    <th class="has-tooltip" data-tooltip="Non-HOLD actions per simulation">Decisions</th>
                 </tr>
             </thead>
             <tbody>
@@ -1155,5 +1405,6 @@ module.exports = {
     generateHTMLReport,
     generateIndexPage,
     markdownToHTML,
-    buildHistogramBins
+    buildHistogramBins,
+    calculateEngagementMetrics
 };

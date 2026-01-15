@@ -46,4 +46,4 @@ node simulator/run.js --preset startup-mixed --runs 100
 - `narrative.md` - Natural language analysis
 - `summary.json` - Aggregate statistics
 
-**Index page:** The simulation index at `simulator/index.html` is automatically updated after each run. No manual action needed.
+**Index page:** The simulation index is at `simulator/index.html`. After running simulations, update this file to add links to new output folders. Links should use the `output/` prefix (e.g., `output/2026-01-15T03-50-32/index.html`).

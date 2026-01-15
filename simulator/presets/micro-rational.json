@@ -1,0 +1,73 @@
+{
+  "meta": {
+    "name": "Micro Business + Rational Actors",
+    "description": "Small, spiky business with economically rational participants. Tests whether rational actors can navigate high-variance revenue.",
+    "version": "1.0"
+  },
+  "simulation": {
+    "runs": 100,
+    "duration_months": 36,
+    "seed": null,
+    "parallel_batches": 5
+  },
+  "business": {
+    "archetype": "micro",
+    "base_mrr": 1500,
+    "params": {
+      "growth_mean": 0.03,
+      "growth_stddev": 0.35,
+      "spike_probability": 0.10,
+      "spike_multiplier": 2.5,
+      "zero_probability": 0.12,
+      "failure_threshold": 3
+    }
+  },
+  "tokenomics": {
+    "alpha": 0.20,
+    "k": 0.008,
+    "treasury": 75000,
+    "s_min": 1000
+  },
+  "participants": [
+    {
+      "id": "founder_friend",
+      "name": "Founder's Friend",
+      "behavior": "rational",
+      "grant": 8000,
+      "referral_share": 0.15,
+      "start_month": 1,
+      "params": {
+        "discount_rate": 0.04,
+        "forecast_horizon": 18,
+        "confidence": 0.75
+      }
+    },
+    {
+      "id": "early_adopter",
+      "name": "Early Adopter",
+      "behavior": "rational",
+      "grant": 5000,
+      "referral_share": 0.20,
+      "start_month": 1,
+      "params": {
+        "discount_rate": 0.06,
+        "forecast_horizon": 12,
+        "confidence": 0.65
+      }
+    },
+    {
+      "id": "conservative_holder",
+      "name": "Conservative Holder",
+      "behavior": "rational",
+      "grant": 3000,
+      "referral_share": 0.05,
+      "start_month": 3,
+      "params": {
+        "discount_rate": 0.08,
+        "forecast_horizon": 6,
+        "confidence": 0.50,
+        "exit_threshold": 0.9
+      }
+    }
+  ]
+}

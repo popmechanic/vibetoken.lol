@@ -1,0 +1,120 @@
+{
+  "config": {
+    "meta": {
+      "name": "Micro Business + Rational Actors",
+      "description": "Small, spiky business with economically rational participants. Tests whether rational actors can navigate high-variance revenue.",
+      "version": "1.0"
+    },
+    "simulation": {
+      "runs": 100,
+      "duration_months": 36,
+      "seed": null,
+      "parallel_batches": 5
+    },
+    "business": {
+      "archetype": "micro",
+      "base_mrr": 1500,
+      "params": {
+        "growth_mean": 0.03,
+        "growth_stddev": 0.35,
+        "spike_probability": 0.1,
+        "spike_multiplier": 2.5,
+        "zero_probability": 0.12,
+        "failure_threshold": 3
+      }
+    },
+    "tokenomics": {
+      "alpha": 0.2,
+      "k": 0.008,
+      "treasury": 75000,
+      "s_min": 1000
+    },
+    "participants": [
+      {
+        "id": "founder_friend",
+        "name": "Founder's Friend",
+        "behavior": "rational",
+        "grant": 8000,
+        "referral_share": 0.15,
+        "start_month": 1,
+        "params": {
+          "discount_rate": 0.04,
+          "forecast_horizon": 18,
+          "confidence": 0.75
+        }
+      },
+      {
+        "id": "early_adopter",
+        "name": "Early Adopter",
+        "behavior": "rational",
+        "grant": 5000,
+        "referral_share": 0.2,
+        "start_month": 1,
+        "params": {
+          "discount_rate": 0.06,
+          "forecast_horizon": 12,
+          "confidence": 0.65
+        }
+      },
+      {
+        "id": "conservative_holder",
+        "name": "Conservative Holder",
+        "behavior": "rational",
+        "grant": 3000,
+        "referral_share": 0.05,
+        "start_month": 3,
+        "params": {
+          "discount_rate": 0.08,
+          "forecast_horizon": 6,
+          "confidence": 0.5,
+          "exit_threshold": 0.9
+        }
+      }
+    ]
+  },
+  "baseSeed": 1768447517460,
+  "runs": 100,
+  "survivalRate": 0.96,
+  "priceStats": {
+    "mean": 0.25298221281347083,
+    "median": 0.25298221281347033,
+    "min": 0.25298221281347033,
+    "max": 0.25298221281347033,
+    "stddev": 4.996003610813204e-16,
+    "count": 100
+  },
+  "revenueStats": {
+    "mean": 1402797.143707976,
+    "median": 117165.56062896352,
+    "min": 1556.474931770732,
+    "max": 18525399.271228675,
+    "stddev": 3438353.115082228,
+    "count": 100
+  },
+  "participantStats": {
+    "Founder's Friend": {
+      "mean": 4.191021128263568,
+      "median": 4.19605209015609,
+      "min": 4.12310562561766,
+      "max": 4.38433474630799,
+      "stddev": 0.04866806811909429,
+      "count": 100
+    },
+    "Early Adopter": {
+      "mean": 3.074547286736384,
+      "median": 3.0798928994429096,
+      "min": 2.9999999999999996,
+      "max": 3.288339749796679,
+      "stddev": 0.053575203360926124,
+      "count": 100
+    },
+    "Conservative Holder": {
+      "mean": 13.460590530539944,
+      "median": 2.022038955114367,
+      "min": 2,
+      "max": 584.7026017145268,
+      "stddev": 68.04752638852992,
+      "count": 100
+    }
+  }
+}

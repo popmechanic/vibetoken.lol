@@ -1,0 +1,183 @@
+{
+  "meta": {
+    "name": "Stress Test - Adversarial Conditions",
+    "description": "Extreme scenario with volatile business, mass dynamic entry, and adversarial participant behaviors. Tests economic robustness under pressure.",
+    "version": "1.0"
+  },
+  "simulation": {
+    "runs": 100,
+    "duration_months": 36,
+    "seed": null,
+    "parallel_batches": 5
+  },
+  "business": {
+    "archetype": "micro",
+    "base_mrr": 2000,
+    "params": {
+      "growth_mean": 0.05,
+      "growth_stddev": 0.50,
+      "spike_probability": 0.15,
+      "spike_multiplier": 4.0,
+      "zero_probability": 0.18,
+      "failure_threshold": 2
+    }
+  },
+  "tokenomics": {
+    "alpha": 0.25,
+    "k": 0.008,
+    "treasury": 200000,
+    "s_min": 1000
+  },
+  "participants": [
+    {
+      "id": "panic_seller_1",
+      "name": "Panic Seller",
+      "behavior": "trend_follower",
+      "grant": 10000,
+      "referral_share": 0.10,
+      "start_month": 1,
+      "params": {
+        "lookback_window": 2,
+        "panic_threshold": -0.10,
+        "fomo_threshold": 0.50
+      }
+    },
+    {
+      "id": "impatient_skeptic",
+      "name": "Impatient Skeptic",
+      "behavior": "skeptic",
+      "grant": 8000,
+      "referral_share": 0.08,
+      "start_month": 1,
+      "params": {
+        "patience": 3,
+        "validation_threshold": 0.25
+      }
+    },
+    {
+      "id": "bad_speculator",
+      "name": "Bad Speculator",
+      "behavior": "speculator",
+      "grant": 6000,
+      "referral_share": 0.05,
+      "start_month": 1,
+      "params": {
+        "timing_skill": 0.30,
+        "trade_frequency": 0.40,
+        "exit_portion": 0.80
+      }
+    },
+    {
+      "id": "desperate_hustler",
+      "name": "Desperate Hustler",
+      "behavior": "hustler",
+      "grant": 5000,
+      "referral_share": 0.25,
+      "start_month": 1,
+      "params": {
+        "labor_intensity": 0.70,
+        "exit_aversion": 0.50,
+        "desperation_threshold": -0.30
+      }
+    },
+    {
+      "id": "early_exit_emily",
+      "name": "Early Exit Emily",
+      "behavior": "life_event",
+      "grant": 4000,
+      "referral_share": 0.05,
+      "start_month": 1,
+      "params": {
+        "trigger_month": 6
+      }
+    },
+    {
+      "id": "diamond_anchor",
+      "name": "Diamond Anchor",
+      "behavior": "diamond_hands",
+      "grant": 20000,
+      "referral_share": 0.15,
+      "start_month": 1,
+      "params": {
+        "labor_intensity": 0.30
+      }
+    },
+    {
+      "id": "rational_observer",
+      "name": "Rational Observer",
+      "behavior": "rational",
+      "grant": 5000,
+      "referral_share": 0.02,
+      "start_month": 1,
+      "params": {
+        "discount_rate": 0.10,
+        "forecast_horizon": 6,
+        "confidence": 0.40,
+        "exit_threshold": 0.80
+      }
+    }
+  ],
+  "entry_pool": {
+    "treasury": 80000,
+    "templates": [
+      {
+        "id": "fomo_wave_1",
+        "name": "FOMO Wave",
+        "behavior": "trend_follower",
+        "grant": 3000,
+        "referral_share": 0.04,
+        "maxSpawns": 10,
+        "entry_conditions": {
+          "type": "price_signal",
+          "params": {
+            "price_threshold": 0.80,
+            "probability": 0.35
+          }
+        },
+        "params": {
+          "lookback_window": 2,
+          "panic_threshold": -0.15
+        }
+      },
+      {
+        "id": "hype_chasers",
+        "name": "Hype Chaser",
+        "behavior": "speculator",
+        "grant": 2000,
+        "referral_share": 0.03,
+        "maxSpawns": 8,
+        "entry_conditions": {
+          "type": "word_of_mouth",
+          "params": {
+            "revenue_threshold": 4000,
+            "probability_per_month": 0.30
+          }
+        },
+        "params": {
+          "timing_skill": 0.35,
+          "trade_frequency": 0.35
+        }
+      },
+      {
+        "id": "referral_chain_spawn",
+        "name": "Friend of Hustler",
+        "behavior": "hustler",
+        "grant": 1500,
+        "referral_share": 0.06,
+        "maxSpawns": 5,
+        "entry_conditions": {
+          "type": "referral_chain",
+          "params": {
+            "trigger_participant_id": "desperate_hustler",
+            "tokens_earned_threshold": 50,
+            "probability": 0.40
+          }
+        },
+        "params": {
+          "labor_intensity": 0.50,
+          "exit_aversion": 0.60
+        }
+      }
+    ]
+  }
+}

@@ -29,3 +29,21 @@ This is a **writing project**, not a codebase. The repository contains planning 
 - Central concepts: one-shot radius, complexity budget, local-first architecture, capability-based security
 - Reference stack: Vibes DIY + Fireproof (local-first database with sync)
 - Tone: technical but accessible, avoid evangelism
+
+## Simulator
+
+The `simulator/` directory contains a Monte Carlo stress-testing harness for Vibe Token economics.
+
+**Running simulations:**
+```bash
+node simulator/run.js --preset startup-mixed --runs 100
+```
+
+**Available presets:** `startup-mixed`, `micro-rational`, `enterprise-sophisticated`, `stress-test`
+
+**Output:** Each run generates a timestamped folder in `simulator/output/` with:
+- `index.html` - Visual report with charts
+- `narrative.md` - Natural language analysis
+- `summary.json` - Aggregate statistics
+
+**Index page:** The simulation index at `simulator/output/index.html` is automatically updated after each run. No manual action needed.

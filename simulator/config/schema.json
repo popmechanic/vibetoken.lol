@@ -1,0 +1,194 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Vibe Token Simulation Configuration",
+  "description": "Configuration schema for Vibe Token economic stress-testing simulations",
+  "type": "object",
+  "required": ["simulation", "business", "tokenomics", "participants"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "description": "Metadata about this configuration",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "version": { "type": "string" }
+      }
+    },
+    "simulation": {
+      "type": "object",
+      "description": "Simulation parameters",
+      "required": ["duration_months"],
+      "properties": {
+        "runs": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 100,
+          "description": "Number of simulations to run"
+        },
+        "duration_months": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120,
+          "default": 36,
+          "description": "Simulation length in months"
+        },
+        "seed": {
+          "type": ["integer", "null"],
+          "description": "Random seed for reproducibility (null = random)"
+        },
+        "parallel_batches": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 5,
+          "description": "Number of parallel agent batches"
+        }
+      }
+    },
+    "business": {
+      "type": "object",
+      "description": "Business revenue model configuration",
+      "required": ["archetype"],
+      "properties": {
+        "archetype": {
+          "type": "string",
+          "enum": ["micro", "startup", "enterprise"],
+          "description": "Business revenue pattern archetype"
+        },
+        "base_mrr": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Starting monthly recurring revenue"
+        },
+        "params": {
+          "type": "object",
+          "description": "Archetype-specific parameters",
+          "properties": {
+            "growth_mean": { "type": "number" },
+            "growth_stddev": { "type": "number" },
+            "spike_probability": { "type": "number", "minimum": 0, "maximum": 1 },
+            "spike_multiplier": { "type": "number", "minimum": 1 },
+            "zero_probability": { "type": "number", "minimum": 0, "maximum": 1 },
+            "failure_threshold": { "type": "integer", "minimum": 1 },
+            "runway_months": { "type": "integer", "minimum": 1 },
+            "breakthrough_prob": { "type": "number", "minimum": 0, "maximum": 1 },
+            "hockey_stick_multiplier": { "type": "number", "minimum": 1 },
+            "post_breakthrough_growth": { "type": "number" },
+            "growth_rate": { "type": "number" },
+            "seasonality_amplitude": { "type": "number", "minimum": 0, "maximum": 1 },
+            "decline_threshold": { "type": "integer", "minimum": 1 }
+          }
+        }
+      }
+    },
+    "tokenomics": {
+      "type": "object",
+      "description": "Token economic parameters",
+      "required": ["alpha", "k", "treasury"],
+      "properties": {
+        "alpha": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 1,
+          "description": "Revenue share (0.10 = 10%)"
+        },
+        "k": {
+          "type": "number",
+          "minimum": 0.0001,
+          "description": "Pricing constant for P = k × √S"
+        },
+        "treasury": {
+          "type": "integer",
+          "minimum": 1000,
+          "description": "Pre-mint treasury size"
+        },
+        "s_min": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1000,
+          "description": "Minimum supply floor"
+        }
+      }
+    },
+    "participants": {
+      "type": "array",
+      "description": "Initial participant configurations",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "behavior"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "behavior": {
+            "type": "string",
+            "enum": ["rational", "trend_follower", "diamond_hands", "life_event", "skeptic", "speculator", "hustler"]
+          },
+          "grant": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0,
+            "description": "Initial token grant from treasury"
+          },
+          "referral_share": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0,
+            "description": "Share of revenue attributed to this referrer"
+          },
+          "start_month": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1,
+            "description": "Month when participant becomes active"
+          },
+          "params": {
+            "type": "object",
+            "description": "Behavior-specific parameters"
+          }
+        }
+      }
+    },
+    "entry_pool": {
+      "type": "object",
+      "description": "Dynamic entry configuration",
+      "properties": {
+        "treasury": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Treasury reserved for late entrants"
+        },
+        "templates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "entry_conditions"],
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "behavior": {
+                "type": "string",
+                "enum": ["rational", "trend_follower", "diamond_hands", "life_event", "skeptic", "speculator", "hustler"]
+              },
+              "grant": { "type": "integer", "minimum": 0 },
+              "referral_share": { "type": "number", "minimum": 0, "maximum": 1 },
+              "maxSpawns": { "type": "integer", "minimum": 1 },
+              "entry_conditions": {
+                "type": "object",
+                "required": ["type"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["word_of_mouth", "price_signal", "scheduled", "referral_chain"]
+                  },
+                  "params": { "type": "object" }
+                }
+              },
+              "params": { "type": "object" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

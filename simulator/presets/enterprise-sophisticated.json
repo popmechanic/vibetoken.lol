@@ -1,0 +1,138 @@
+{
+  "meta": {
+    "name": "Enterprise + Sophisticated Actors",
+    "description": "Larger, more stable business with sophisticated participants who carefully manage risk. Tests compounding growth and long-term value accrual.",
+    "version": "1.0"
+  },
+  "simulation": {
+    "runs": 100,
+    "duration_months": 36,
+    "seed": null,
+    "parallel_batches": 5
+  },
+  "business": {
+    "archetype": "enterprise",
+    "base_mrr": 35000,
+    "params": {
+      "growth_rate": 0.045,
+      "growth_stddev": 0.03,
+      "seasonality_amplitude": 0.08,
+      "seasonality_peak_month": 11,
+      "decline_threshold": 8
+    }
+  },
+  "tokenomics": {
+    "alpha": 0.15,
+    "k": 0.02,
+    "treasury": 150000,
+    "s_min": 1000
+  },
+  "participants": [
+    {
+      "id": "institutional_holder",
+      "name": "Institutional Holder",
+      "behavior": "rational",
+      "grant": 25000,
+      "referral_share": 0.20,
+      "start_month": 1,
+      "params": {
+        "discount_rate": 0.03,
+        "forecast_horizon": 24,
+        "confidence": 0.85,
+        "exit_threshold": 0.95
+      }
+    },
+    {
+      "id": "growth_hustler",
+      "name": "Growth Hustler",
+      "behavior": "hustler",
+      "grant": 10000,
+      "referral_share": 0.35,
+      "start_month": 1,
+      "params": {
+        "labor_intensity": 0.60,
+        "exit_aversion": 0.85,
+        "desperation_threshold": -0.45
+      }
+    },
+    {
+      "id": "diversified_alice",
+      "name": "Diversified Alice",
+      "behavior": "rational",
+      "grant": 8000,
+      "referral_share": 0.10,
+      "start_month": 1,
+      "params": {
+        "discount_rate": 0.06,
+        "forecast_horizon": 12,
+        "confidence": 0.60,
+        "exit_threshold": 1.05
+      }
+    },
+    {
+      "id": "patient_partner",
+      "name": "Patient Partner",
+      "behavior": "diamond_hands",
+      "grant": 15000,
+      "referral_share": 0.15,
+      "start_month": 1,
+      "params": {
+        "labor_intensity": 0.15
+      }
+    },
+    {
+      "id": "value_target_vince",
+      "name": "Value Target Vince",
+      "behavior": "life_event",
+      "grant": 5000,
+      "referral_share": 0.05,
+      "start_month": 1,
+      "params": {
+        "trigger_value": 25000
+      }
+    }
+  ],
+  "entry_pool": {
+    "treasury": 30000,
+    "templates": [
+      {
+        "id": "scheduled_partner",
+        "name": "Year 2 Partner",
+        "behavior": "rational",
+        "grant": 10000,
+        "referral_share": 0.12,
+        "maxSpawns": 1,
+        "entry_conditions": {
+          "type": "scheduled",
+          "params": {
+            "entry_month": 13
+          }
+        },
+        "params": {
+          "discount_rate": 0.04,
+          "forecast_horizon": 18,
+          "confidence": 0.70
+        }
+      },
+      {
+        "id": "growth_signal_pool",
+        "name": "Growth Chaser",
+        "behavior": "hustler",
+        "grant": 3000,
+        "referral_share": 0.08,
+        "maxSpawns": 4,
+        "entry_conditions": {
+          "type": "word_of_mouth",
+          "params": {
+            "revenue_threshold": 50000,
+            "probability_per_month": 0.15
+          }
+        },
+        "params": {
+          "labor_intensity": 0.45,
+          "exit_aversion": 0.75
+        }
+      }
+    ]
+  }
+}

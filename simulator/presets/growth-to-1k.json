@@ -1,0 +1,116 @@
+{
+  "meta": {
+    "name": "Growth to $1K MRR",
+    "description": "Stress test: micro business growing from $200 to ~$1000 MRR over 36 months. Tests economics at small scale with mixed behaviors.",
+    "version": "1.0"
+  },
+  "simulation": {
+    "runs": 100,
+    "duration_months": 36,
+    "seed": null,
+    "parallel_batches": 5
+  },
+  "business": {
+    "archetype": "micro",
+    "base_mrr": 200,
+    "params": {
+      "growth_mean": 0.045,
+      "growth_stddev": 0.15,
+      "spike_probability": 0.08,
+      "spike_multiplier": 2,
+      "zero_probability": 0.05,
+      "failure_threshold": 4
+    }
+  },
+  "tokenomics": {
+    "alpha": 0.20,
+    "k": 0.005,
+    "treasury": 50000,
+    "s_min": 1000
+  },
+  "participants": [
+    {
+      "id": "founder",
+      "name": "Founder's Friend",
+      "behavior": "diamond_hands",
+      "grant": 10000,
+      "referral_share": 0.20,
+      "start_month": 1,
+      "params": {
+        "labor_intensity": 0.4
+      }
+    },
+    {
+      "id": "early_believer",
+      "name": "Early Believer",
+      "behavior": "diamond_hands",
+      "grant": 5000,
+      "referral_share": 0.15,
+      "start_month": 1,
+      "params": {
+        "labor_intensity": 0.3
+      }
+    },
+    {
+      "id": "cautious_carl",
+      "name": "Cautious Carl",
+      "behavior": "rational",
+      "grant": 3000,
+      "referral_share": 0.10,
+      "start_month": 2,
+      "params": {
+        "discount_rate": 0.08,
+        "forecast_horizon": 12,
+        "confidence": 0.5,
+        "exit_threshold": 0.85
+      }
+    },
+    {
+      "id": "part_timer",
+      "name": "Part-Time Hustler",
+      "behavior": "hustler",
+      "grant": 2000,
+      "referral_share": 0.08,
+      "start_month": 3,
+      "params": {
+        "labor_intensity": 0.25,
+        "exit_aversion": 0.7
+      }
+    },
+    {
+      "id": "skeptic",
+      "name": "Skeptical Sam",
+      "behavior": "skeptic",
+      "grant": 2000,
+      "referral_share": 0.05,
+      "start_month": 1,
+      "params": {
+        "patience": 6,
+        "validation_threshold": 0.3
+      }
+    }
+  ],
+  "entry_pool": {
+    "treasury": 15000,
+    "templates": [
+      {
+        "id": "wom_entrant",
+        "name": "Word of Mouth",
+        "behavior": "diamond_hands",
+        "grant": 1500,
+        "referral_share": 0.06,
+        "maxSpawns": 5,
+        "entry_conditions": {
+          "type": "word_of_mouth",
+          "params": {
+            "revenue_threshold": 800,
+            "probability_per_month": 0.25
+          }
+        },
+        "params": {
+          "labor_intensity": 0.2
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation Report: Growth to $1K MRR</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --font-heading: Georgia, serif;
+            --font-body: 'Crimson Pro', Georgia, serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --text-primary: #e8e8e8;
+            --text-secondary: #a0a0a0;
+            --bg: #0a0a0a;
+            --border: #222;
+            --accent: #c8c8c8;
+
+            --chart-orange: #f5a623;
+            --chart-teal: #4ecdc4;
+            --chart-red: #ff6b6b;
+
+            --space-sm: 0.75rem;
+            --space-md: 1.5rem;
+            --space-lg: 2.5rem;
+            --space-xl: 4rem;
+
+            --max-width: 720px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 18px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--text-primary);
+            background: var(--bg);
+            line-height: 1.65;
+            padding: var(--space-lg) var(--space-md);
+            position: relative;
+        }
+
+        /* Noise texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            font-family: var(--font-heading);
+            font-weight: bold;
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            line-height: 1.1;
+            margin-bottom: 0.25rem;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-top: var(--space-lg);
+            margin-bottom: var(--space-sm);
+            color: var(--accent);
+        }
+
+        h3 {
+            font-size: 1rem;
+            margin-top: var(--space-md);
+            margin-bottom: var(--space-sm);
+            color: var(--text-primary);
+        }
+
+        p {
+            margin-bottom: 1em;
+        }
+
+        strong {
+            color: var(--text-primary);
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .subtitle {
+            font-family: var(--font-body);
+            font-style: italic;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+        }
+
+        .stat {
+            text-align: center;
+            padding: var(--space-md) var(--space-sm);
+            border: 1px solid var(--border);
+        }
+
+        .stat-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 0.5em;
+        }
+
+        .stat-value {
+            font-family: var(--font-mono);
+            font-size: 1.3rem;
+            color: var(--text-primary);
+        }
+
+        /* Chart Grid */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+        }
+
+        .chart-container {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: var(--space-md);
+            position: relative;
+        }
+
+        .chart-container canvas {
+            width: 100% !important;
+            height: 240px !important;
+        }
+
+        .chart-container.tall canvas {
+            height: 320px !important;
+        }
+
+        .chart-container.full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Conditions list (from narrative) */
+        .conditions {
+            list-style: none;
+            margin: var(--space-sm) 0;
+        }
+
+        .conditions li {
+            padding-left: 1.5em;
+            position: relative;
+            margin-bottom: 0.5em;
+        }
+
+        .conditions li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--text-secondary);
+        }
+
+        /* Narrative section */
+        .narrative {
+            margin-top: var(--space-xl);
+            padding-top: var(--space-lg);
+            border-top: 1px solid var(--border);
+        }
+
+        .narrative p {
+            color: var(--text-secondary);
+        }
+
+        .narrative strong {
+            color: var(--text-primary);
+        }
+
+        /* Divider */
+        .divider {
+            width: 50px;
+            height: 1px;
+            background: var(--border);
+            margin: var(--space-lg) auto;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: var(--space-xl);
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container canvas {
+                height: 200px !important;
+            }
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: var(--space-xl) var(--space-lg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <article class="container">
+        <header>
+            <h1>Growth to $1K MRR</h1>
+            <p class="subtitle">Monte Carlo Simulation Report</p>
+        </header>
+
+        <!-- Summary Stats -->
+        <div class="stats-grid">
+            <div class="stat">
+                <div class="stat-label">Simulations</div>
+                <div class="stat-value">100</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Survival Rate</div>
+                <div class="stat-value">100%</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Mean Price</div>
+                <div class="stat-value">$1.04</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Mean Revenue</div>
+                <div class="stat-value">$554K</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="chart-grid">
+            <div class="chart-container">
+                <canvas id="chart-survival"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="chart-price"></canvas>
+            </div>
+            <div class="chart-container full-width tall">
+                <canvas id="chart-roi"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="chart-revenue"></canvas>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Narrative Content -->
+        <section class="narrative">
+            <h2>Simulation Results: Growth to $1K MRR</h2>
+
+<p>This analysis covers 100 simulations of a micro business model over 36 months.</p>
+
+<ul class="conditions">
+<li>Business survival rate: 100%</li>
+<li>Mean final token price: $1.04</li>
+<li>Revenue share (α): 20%</li>
+<li>Initial participant count: 5</li>
+</ul>
+
+<h3>Business Outcomes</h3>
+
+<p>Despite high revenue volatility, the micro business survived in 100% of cases. The square root pricing function helped dampen price swings during spiky revenue periods.</p>
+
+<ul class="conditions">
+<li>Mean: $554,471</li>
+<li>Median: $227,047</li>
+<li>Range: $30,228 - $8,681,782</li>
+</ul>
+
+<p>The significant gap between mean and median revenue indicates a right-skewed distribution with occasional extreme successes.</p>
+
+<h3>Participant Performance</h3>
+
+<ul class="conditions">
+<li>Part-Time Hustler: 47.40x ██████████</li>
+<li>Word of Mouth #1: 45.79x ██████████</li>
+<li>Word of Mouth #2: 42.72x ██████████</li>
+<li>Early Believer: 42.46x ██████████</li>
+<li>Word of Mouth #3: 39.29x ██████████</li>
+<li>Founder's Friend: 35.46x ██████████</li>
+<li>Word of Mouth #4: 31.15x ██████████</li>
+<li>Word of Mouth #5: 26.82x ██████████</li>
+<li>Skeptical Sam: 12.54x ██████████</li>
+<li>Cautious Carl: 4.98x ████</li>
+</ul>
+
+<p><strong>Behavior Analysis:</strong></p>
+
+<p><strong>Diamond hands outperformed</strong> in this scenario, achieving 38.96x average ROI. Their refusal to exit captured full upside when the business succeeded.</p>
+
+<p><strong>Rational actors</strong> achieved 4.98x average ROI. Their conservative approach may have triggered premature exits in some successful scenarios.</p>
+
+<p><strong>Skeptics</strong> achieved 12.54x average ROI. Their early exits may have left money on the table in successful scenarios.</p>
+
+<h3>Economic Observations</h3>
+
+<ul class="conditions">
+<li>Final price range: $0.81 - $1.10</li>
+<li>Coefficient of variation: 5.5%</li>
+</ul>
+
+<p>The square root pricing function (P = k×√S) delivered relatively stable prices despite varying revenue conditions. A 6% coefficient of variation suggests the bonding curve effectively dampened volatility.</p>
+
+<p><strong>Supply Floor (S_min = 1000):</strong> The minimum supply floor prevented price collapse in failure scenarios. Floor price: $0.16. No simulation reached the floor, indicating adequate supply cushion.</p>
+
+<p><strong>Exit Queue Mechanism:</strong> With high survival rate, exit queues typically cleared quickly. The FIFO queue processed exits from ongoing revenue without delays.</p>
+
+<h3>Key Findings</h3>
+
+<p>1. <strong>High survival rate rewards patience.</strong> Diamond hands and long-term holders outperformed reactive strategies in this scenario.</p>
+
+<p>2. <strong>Part-Time Hustler</strong> achieved highest returns (47.40x), while <strong>Cautious Carl</strong> achieved lowest (4.98x).</p>
+
+<p>3. <strong>The tokenomics performed as designed.</strong> Supply-based pricing provided price discovery, distributions rewarded holders, and the exit queue enabled liquidity without secondary markets.</p>
+
+<p><strong>Implication:</strong> For micro businesses with similar parameters, the token system creates meaningful value for early contributors.</p>
+        </section>
+
+        <footer>
+            Generated 2026-01-15 20:34:52 | 100 simulations × 36 months
+        </footer>
+    </article>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const DATA = {
+  "runs": 100,
+  "survivalRate": 1,
+  "priceStats": {
+    "mean": 1.0402816469902119,
+    "median": 1.0657509089838957,
+    "min": 0.8118189453320241,
+    "max": 1.095045661148429,
+    "stddev": 0.05729611623253149,
+    "count": 100
+  },
+  "revenueStats": {
+    "mean": 554471.4654361205,
+    "median": 227046.52948759397,
+    "min": 30227.54804672255,
+    "max": 8681781.612980336,
+    "stddev": 1111998.7831496114,
+    "count": 100
+  },
+  "participantStats": {
+    "Part-Time Hustler": {
+      "mean": 47.395120718553386,
+      "median": 27.27026381148556,
+      "min": 7.397776831025377,
+      "max": 508.54789837250814,
+      "stddev": 69.076289902412,
+      "count": 100
+    },
+    "Word of Mouth #1": {
+      "mean": 45.78549755862232,
+      "median": 26.123435792899162,
+      "min": 6.630297360482315,
+      "max": 510.9095976543028,
+      "stddev": 68.7433091236608,
+      "count": 99
+    },
+    "Word of Mouth #2": {
+      "mean": 42.724063722717574,
+      "median": 24.188320734010667,
+      "min": 5.847765738569715,
+      "max": 502.6097091503991,
+      "stddev": 66.16011816463146,
+      "count": 99
+    },
+    "Early Believer": {
+      "mean": 42.4576375688834,
+      "median": 24.12746085947867,
+      "min": 7.127739010590744,
+      "max": 518.0845421172926,
+      "stddev": 65.12844287929185,
+      "count": 100
+    },
+    "Word of Mouth #3": {
+      "mean": 39.28915755894734,
+      "median": 22.33111165195424,
+      "min": 5.13439382984983,
+      "max": 499.6407701728028,
+      "stddev": 63.94483510704499,
+      "count": 99
+    },
+    "Founder's Friend": {
+      "mean": 35.45553617590785,
+      "median": 20.68932164604292,
+      "min": 6.667311818555695,
+      "max": 381.11181341667805,
+      "stddev": 50.61116341094977,
+      "count": 100
+    },
+    "Word of Mouth #4": {
+      "mean": 31.1548929870926,
+      "median": 20.781769617154072,
+      "min": 7.019819670777342,
+      "max": 462.6939740071587,
+      "stddev": 50.48266939526916,
+      "count": 92
+    },
+    "Word of Mouth #5": {
+      "mean": 26.816836461182483,
+      "median": 17.564211412062306,
+      "min": 6.184941769349708,
+      "max": 422.6530153305985,
+      "stddev": 49.01814960573758,
+      "count": 79
+    },
+    "Skeptical Sam": {
+      "mean": 12.538120374021371,
+      "median": 5.6628040915535856,
+      "min": 4.6969022749175515,
+      "max": 149.33741224053253,
+      "stddev": 19.883412778341032,
+      "count": 100
+    },
+    "Cautious Carl": {
+      "mean": 4.981847215654828,
+      "median": 4.947607306689133,
+      "min": 4.80499739854248,
+      "max": 5.699431676609417,
+      "stddev": 0.10918697777243418,
+      "count": 100
+    }
+  },
+  "priceBins": [
+    {
+      "min": 0.8118189453320241,
+      "max": 0.8354211716500579,
+      "count": 1
+    },
+    {
+      "min": 0.8354211716500579,
+      "max": 0.8590233979680916,
+      "count": 0
+    },
+    {
+      "min": 0.8590233979680916,
+      "max": 0.8826256242861253,
+      "count": 0
+    },
+    {
+      "min": 0.8826256242861253,
+      "max": 0.9062278506041591,
+      "count": 4
+    },
+    {
+      "min": 0.9062278506041591,
+      "max": 0.9298300769221928,
+      "count": 3
+    },
+    {
+      "min": 0.9298300769221928,
+      "max": 0.9534323032402265,
+      "count": 5
+    },
+    {
+      "min": 0.9534323032402265,
+      "max": 0.9770345295582603,
+      "count": 2
+    },
+    {
+      "min": 0.9770345295582603,
+      "max": 1.000636755876294,
+      "count": 4
+    },
+    {
+      "min": 1.000636755876294,
+      "max": 1.0242389821943276,
+      "count": 2
+    },
+    {
+      "min": 1.0242389821943276,
+      "max": 1.0478412085123614,
+      "count": 6
+    },
+    {
+      "min": 1.0478412085123614,
+      "max": 1.0714434348303952,
+      "count": 64
+    },
+    {
+      "min": 1.0714434348303952,
+      "max": 1.095045661148429,
+      "count": 9
+    }
+  ],
+  "revenueBins": [
+    {
+      "min": 30227.54804672255,
+      "max": 751190.3867911902,
+      "count": 85
+    },
+    {
+      "min": 751190.3867911902,
+      "max": 1472153.225535658,
+      "count": 7
+    },
+    {
+      "min": 1472153.225535658,
+      "max": 2193116.064280126,
+      "count": 3
+    },
+    {
+      "min": 2193116.064280126,
+      "max": 2914078.9030245934,
+      "count": 2
+    },
+    {
+      "min": 2914078.9030245934,
+      "max": 3635041.741769061,
+      "count": 1
+    },
+    {
+      "min": 3635041.741769061,
+      "max": 4356004.5805135295,
+      "count": 0
+    },
+    {
+      "min": 4356004.5805135295,
+      "max": 5076967.419257997,
+      "count": 0
+    },
+    {
+      "min": 5076967.419257997,
+      "max": 5797930.258002465,
+      "count": 1
+    },
+    {
+      "min": 5797930.258002465,
+      "max": 6518893.096746933,
+      "count": 0
+    },
+    {
+      "min": 6518893.096746933,
+      "max": 7239855.9354914,
+      "count": 0
+    },
+    {
+      "min": 7239855.9354914,
+      "max": 7960818.774235868,
+      "count": 0
+    },
+    {
+      "min": 7960818.774235868,
+      "max": 8681781.612980336,
+      "count": 1
+    }
+  ]
+};
+
+        // Chart defaults
+        Chart.defaults.color = '#888';
+        Chart.defaults.borderColor = '#222';
+        Chart.defaults.font.family = "'JetBrains Mono', monospace";
+
+        // Colors
+        const ORANGE = '#f5a623';
+        const TEAL = '#4ecdc4';
+        const RED = '#ff6b6b';
+
+        // 1. Survival Doughnut
+        new Chart(document.getElementById('chart-survival'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Survived', 'Failed'],
+                datasets: [{
+                    data: [
+                        Math.round(DATA.survivalRate * DATA.runs),
+                        Math.round((1 - DATA.survivalRate) * DATA.runs)
+                    ],
+                    backgroundColor: [TEAL, RED],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'BUSINESS OUTCOMES',
+                        font: { size: 11, weight: 'normal' },
+                        padding: { bottom: 15 }
+                    },
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15,
+                            font: { size: 10 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. Price Distribution Histogram
+        new Chart(document.getElementById('chart-price'), {
+            type: 'bar',
+            data: {
+                labels: DATA.priceBins.map(b => '$' + b.min.toFixed(2)),
+                datasets: [{
+                    data: DATA.priceBins.map(b => b.count),
+                    backgroundColor: TEAL,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'FINAL PRICE DISTRIBUTION',
+                        font: { size: 11, weight: 'normal' },
+                        padding: { bottom: 15 }
+                    },
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 9 }, maxRotation: 45 }
+                    },
+                    y: {
+                        grid: { color: '#222' },
+                        ticks: { font: { size: 9 } },
+                        title: { display: true, text: 'Runs', font: { size: 9 } }
+                    }
+                }
+            }
+        });
+
+        // 3. ROI by Participant (Horizontal Bar)
+        const participants = Object.entries(DATA.participantStats).sort((a, b) => a[1].mean - b[1].mean);
+        new Chart(document.getElementById('chart-roi'), {
+            type: 'bar',
+            data: {
+                labels: participants.map(([name]) => name),
+                datasets: [{
+                    data: participants.map(([_, stats]) => stats.mean),
+                    backgroundColor: ORANGE,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'MEAN ROI BY PARTICIPANT',
+                        font: { size: 11, weight: 'normal' },
+                        padding: { bottom: 15 }
+                    },
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { color: '#222' },
+                        ticks: {
+                            font: { size: 9 },
+                            callback: function(value) { return value.toFixed(1) + 'x'; }
+                        },
+                        title: { display: true, text: 'ROI', font: { size: 9 } }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { font: { size: 9 } }
+                    }
+                }
+            }
+        });
+
+        // 4. Revenue Distribution Histogram
+        function formatRevenue(n) {
+            if (n >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M';
+            if (n >= 1000) return '$' + (n / 1000).toFixed(0) + 'K';
+            return '$' + n.toFixed(0);
+        }
+
+        new Chart(document.getElementById('chart-revenue'), {
+            type: 'bar',
+            data: {
+                labels: DATA.revenueBins.map(b => formatRevenue(b.min)),
+                datasets: [{
+                    data: DATA.revenueBins.map(b => b.count),
+                    backgroundColor: ORANGE,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'REVENUE DISTRIBUTION',
+                        font: { size: 11, weight: 'normal' },
+                        padding: { bottom: 15 }
+                    },
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 9 }, maxRotation: 45 }
+                    },
+                    y: {
+                        grid: { color: '#222' },
+                        ticks: { font: { size: 9 } },
+                        title: { display: true, text: 'Runs', font: { size: 9 } }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -19,9 +19,12 @@ This is a **writing project**, not a codebase. The repository contains planning 
 
 ### Vibe Token White Paper
 - Use Bitcoin white paper tone: pragmatic, neutral, minimal
-- ASCII math only (use `*`, `sqrt()`, not LaTeX)
+- ASCII math only (use `*`, `sqrt()`, `max()`, not LaTeX)
 - Fixed variables: R, dR, alpha (0.20), S, P, k
-- Core formula: `P = k * sqrt(R)`
+- Core formulas:
+  - Price: `P = k * sqrt(S)`
+  - k floor: `k = max(MRR / 1,000,000, 0.005)`
+- Partial exits supported (holders can exit any number of tokens, not just full stake)
 - One page maximum, no appendices or FAQs
 
 ### Vibe Coding Essays
@@ -46,4 +49,9 @@ node simulator/run.js --preset startup-mixed --runs 100
 - `narrative.md` - Natural language analysis
 - `summary.json` - Aggregate statistics
 
-**Index page:** The simulation index is at `simulator/index.html`. After running simulations, update this file to add links to new output folders. Links should use the `output/` prefix (e.g., `output/2026-01-15T03-50-32/index.html`).
+**Index page:** The simulation index at `simulator/index.html` is automatically updated after each run. Links use the `output/` prefix (e.g., `output/2026-01-15T03-50-32/index.html`).
+
+**Key findings from simulations:**
+- Diamond hands outperform rational actors 10-15x in micro businesses (no exits = supply grows)
+- k floor of 0.005 ensures viable token economics for businesses under $5K MRR
+- Partial exits allow holders to take liquidity while maintaining exposure

@@ -33,7 +33,7 @@
             --font-mono: 'JetBrains Mono', monospace;
 
             --text-primary: #e8e8e8;
-            --text-secondary: #888;
+            --text-secondary: #a0a0a0;
             --bg: #0a0a0a;
             --border: #222;
             --accent: #c8c8c8;
@@ -53,7 +53,7 @@
         }
 
         html {
-            font-size: 17px;
+            font-size: 18px;
             -webkit-font-smoothing: antialiased;
         }
 
@@ -212,12 +212,13 @@
         .abstract {
             margin-bottom: var(--space-lg);
             text-align: center;
-            font-size: 1.02rem;
+            font-size: 1.1rem;
+            line-height: 1.75;
         }
 
         /* Sections */
         section {
-            margin-bottom: var(--space-lg);
+            margin-bottom: var(--space-xl);
         }
 
         /* Divider */
@@ -269,7 +270,7 @@
         }
 
         .invariant-note {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--text-secondary);
             margin: 0;
         }
@@ -304,7 +305,7 @@
 
         /* Variables - inline flow */
         .variables {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             line-height: 1.8;
             color: var(--text-secondary);
             margin-bottom: var(--space-md);
@@ -329,7 +330,7 @@
         .conditions {
             list-style: none;
             margin: var(--space-sm) 0;
-            font-size: 0.95rem;
+            font-size: 1rem;
         }
 
         .conditions li {
@@ -370,7 +371,7 @@
         }
 
         .property-desc {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--text-secondary);
         }
 
@@ -521,37 +522,66 @@
         }
 
         .sim-explainer {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--text-secondary);
             margin: 0;
-            line-height: 1.4;
+            line-height: 1.5;
         }
 
+        /* Card-based Token Holders input */
         .sim-holders {
             width: 100%;
-            overflow-x: auto;
         }
 
         .sim-holders table {
+            display: block;
             width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
         }
 
-        .sim-holders th {
-            font-family: var(--font-mono);
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-            color: var(--text-secondary);
-            text-align: left;
-            padding: 0.5em;
-            border-bottom: 1px solid var(--border);
+        .sim-holders thead {
+            display: none;
+        }
+
+        .sim-holders tbody {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--space-sm);
+        }
+
+        .sim-holders tr {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6em;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: var(--space-md);
+            position: relative;
         }
 
         .sim-holders td {
-            padding: 0.4em;
-            border-bottom: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 0.3em;
+        }
+
+        .sim-holders td::before {
+            content: attr(data-label);
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: var(--text-secondary);
+        }
+
+        /* Remove button positioning */
+        .sim-holders td:last-child {
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-sm);
+        }
+
+        .sim-holders td:last-child::before {
+            display: none;
         }
 
         .sim-holders input {
@@ -560,16 +590,8 @@
             background: var(--bg);
             border: 1px solid var(--border);
             color: var(--text-primary);
-            padding: 0.3em 0.5em;
+            padding: 0.4em 0.6em;
             width: 100%;
-        }
-
-        .sim-holders input[type="text"] {
-            width: 80px;
-        }
-
-        .sim-holders input[type="number"] {
-            width: 70px;
         }
 
         .sim-holders .remove-btn {
@@ -577,7 +599,7 @@
             border: none;
             color: var(--text-secondary);
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.2rem;
             padding: 0.2em 0.5em;
         }
 
@@ -665,33 +687,130 @@
             color: var(--text-primary);
         }
 
-        .sim-final-table {
+        /* Card-based Final Holder State */
+        .sim-final-wrapper {
             width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
         }
 
-        .sim-final-table th {
-            font-family: var(--font-mono);
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-            color: var(--text-secondary);
-            text-align: left;
-            padding: 0.5em;
-            border-bottom: 1px solid var(--border);
+        .sim-final-table {
+            display: block;
+            width: 100%;
+        }
+
+        .sim-final-table thead {
+            display: none;
+        }
+
+        .sim-final-table tbody {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--space-sm);
+        }
+
+        .sim-final-table tr {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5em;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: var(--space-md);
         }
 
         .sim-final-table td {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2em;
             font-family: var(--font-mono);
-            padding: 0.5em;
-            border-bottom: 1px solid var(--border);
             color: var(--text-primary);
+        }
+
+        .sim-final-table td::before {
+            content: attr(data-label);
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: var(--text-secondary);
+            font-weight: normal;
+        }
+
+        /* Holder name spans full width */
+        .sim-final-table td[data-label="Holder"] {
+            grid-column: 1 / -1;
+            font-size: 1rem;
         }
 
         .sim-final-table .exited {
             color: var(--text-secondary);
             font-style: italic;
+            font-size: 0.85rem;
+        }
+
+        /* Validation errors */
+        .sim-errors {
+            background: rgba(200, 60, 60, 0.15);
+            border: 1px solid #c44;
+            padding: var(--space-md);
+            margin-bottom: var(--space-md);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+        }
+
+        .sim-errors ul {
+            margin: 0;
+            padding-left: 1.5em;
+        }
+
+        .sim-errors li {
+            margin-bottom: 0.3em;
+            color: #f88;
+        }
+
+        .sim-errors li:last-child {
+            margin-bottom: 0;
+        }
+
+        .sim-holders input.invalid,
+        .sim-param input.invalid {
+            border-color: #c44;
+            background: rgba(200, 60, 60, 0.1);
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .sim-param input,
+            .sim-holders input {
+                font-size: 16px;  /* Prevents iOS zoom on focus */
+                padding: 0.6em 0.75em;
+            }
+
+            .run-btn {
+                width: 100%;
+                padding: 1em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sim-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .sim-chart-container {
+                height: 240px;
+                padding: var(--space-sm);
+            }
+
+            /* Single column cards on small screens */
+            .sim-holders tbody,
+            .sim-final-table tbody {
+                grid-template-columns: 1fr;
+            }
+
+            /* Tighter padding on mobile */
+            .sim-holders tr,
+            .sim-final-table tr {
+                padding: var(--space-sm);
+            }
         }
 
         /* Print */
@@ -990,6 +1109,7 @@
                 <button class="add-holder-btn" onclick="addHolder()">+ Add Holder</button>
             </div>
 
+            <div class="sim-errors" id="sim-errors" style="display: none;"></div>
             <button class="run-btn" onclick="runSimulation()">Run Simulation</button>
 
             <div class="sim-results" id="sim-results">
@@ -1027,20 +1147,22 @@
                 </div>
 
                 <h3 style="margin-top: var(--space-md);">Final Holder State</h3>
-                <table class="sim-final-table">
-                    <thead>
-                        <tr>
-                            <th>Holder</th>
-                            <th>Tokens</th>
-                            <th>Value</th>
-                            <th>Distributions</th>
-                            <th>Total Return</th>
-                        </tr>
-                    </thead>
-                    <tbody id="sim-final-body">
-                        <!-- Generated by JS -->
-                    </tbody>
-                </table>
+                <div class="sim-final-wrapper">
+                    <table class="sim-final-table">
+                        <thead>
+                            <tr>
+                                <th>Holder</th>
+                                <th>Tokens</th>
+                                <th>Value</th>
+                                <th>Distributions</th>
+                                <th>Total Return</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sim-final-body">
+                            <!-- Generated by JS -->
+                        </tbody>
+                    </table>
+                </div>
 
                 <div id="sim-exit-queue" style="margin-top: var(--space-md); font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-secondary);"></div>
             </div>
@@ -1171,12 +1293,12 @@
             holders.forEach((h, idx) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><input type="text" value="${h.name}" onchange="holders[${idx}].name=this.value"></td>
-                    <td><input type="text" value="${h.grant.toLocaleString()}" onchange="holders[${idx}].grant=parseCommaNumber(this.value)"></td>
-                    <td><input type="number" value="${(h.referralPct * 100).toFixed(0)}" min="0" max="100" step="5" onchange="holders[${idx}].referralPct=parseFloat(this.value)/100||0">%</td>
-                    <td><input type="number" value="${h.startMonth}" min="1" max="12" onchange="holders[${idx}].startMonth=parseInt(this.value)||1"></td>
-                    <td><input type="number" value="${h.exitMonth || ''}" min="0" max="12" placeholder="-" onchange="holders[${idx}].exitMonth=parseInt(this.value)||0"></td>
-                    <td><input type="number" value="${h.exitTokens || ''}" min="0" step="100" placeholder="-" onchange="holders[${idx}].exitTokens=parseInt(this.value)||0"></td>
+                    <td data-label="Name"><input type="text" value="${h.name}" onchange="holders[${idx}].name=this.value"></td>
+                    <td data-label="Grant"><input type="text" value="${h.grant.toLocaleString()}" onchange="holders[${idx}].grant=parseCommaNumber(this.value)"></td>
+                    <td data-label="Referral %"><input type="number" value="${(h.referralPct * 100).toFixed(0)}" min="0" max="100" step="5" onchange="holders[${idx}].referralPct=parseFloat(this.value)/100||0"></td>
+                    <td data-label="Start Mo"><input type="number" value="${h.startMonth}" min="1" max="12" onchange="holders[${idx}].startMonth=parseInt(this.value)||1"></td>
+                    <td data-label="Exit Mo"><input type="number" value="${h.exitMonth || ''}" min="0" max="12" placeholder="-" onchange="holders[${idx}].exitMonth=parseInt(this.value)||0"></td>
+                    <td data-label="Exit Qty"><input type="number" value="${h.exitTokens || ''}" min="0" step="100" placeholder="-" onchange="holders[${idx}].exitTokens=parseInt(this.value)||0"></td>
                     <td><button class="remove-btn" onclick="removeHolder(${idx})">×</button></td>
                 `;
                 tbody.appendChild(tr);
@@ -1321,7 +1443,103 @@
             };
         }
 
+        function validateInputs() {
+            const errors = [];
+            const errorsDiv = document.getElementById('sim-errors');
+
+            // Clear previous error styling
+            document.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+
+            // Get parameter values
+            const alpha = parseFloat(document.getElementById('sim-alpha').value);
+            const premint = parseCommaNumber(document.getElementById('sim-premint').value);
+            const mrr = parseCommaNumber(document.getElementById('sim-mrr').value);
+            const growth = parseFloat(document.getElementById('sim-growth').value);
+
+            // Validate parameters
+            if (isNaN(alpha) || alpha < 1 || alpha > 100) {
+                errors.push('Revenue Share must be between 1% and 100%');
+                document.getElementById('sim-alpha').classList.add('invalid');
+            }
+
+            if (isNaN(premint) || premint < 1000) {
+                errors.push('Treasury must be at least 1,000 tokens');
+                document.getElementById('sim-premint').classList.add('invalid');
+            }
+
+            if (isNaN(mrr) || mrr <= 0) {
+                errors.push('Starting MRR must be greater than $0');
+                document.getElementById('sim-mrr').classList.add('invalid');
+            }
+
+            if (isNaN(growth) || growth < 0 || growth > 100) {
+                errors.push('Monthly Growth must be between 0% and 100%');
+                document.getElementById('sim-growth').classList.add('invalid');
+            }
+
+            // Calculate total grants
+            let totalGrants = 0;
+
+            // Validate each holder
+            holders.forEach((h, idx) => {
+                const prefix = `${h.name || 'Holder ' + (idx + 1)}`;
+
+                if (h.grant < 0) {
+                    errors.push(`${prefix}: Grant cannot be negative`);
+                }
+                totalGrants += h.grant;
+
+                if (h.referralPct < 0 || h.referralPct > 1) {
+                    errors.push(`${prefix}: Referral % must be between 0 and 100`);
+                }
+
+                if (h.startMonth < 1 || h.startMonth > 12) {
+                    errors.push(`${prefix}: Start Month must be between 1 and 12`);
+                }
+
+                if (h.exitMonth !== 0 && (h.exitMonth < 1 || h.exitMonth > 12)) {
+                    errors.push(`${prefix}: Exit Month must be between 1 and 12 (or empty)`);
+                }
+
+                if (h.exitMonth > 0 && h.exitMonth < h.startMonth) {
+                    errors.push(`${prefix}: Exit Month cannot be before Start Month`);
+                }
+
+                if (h.exitMonth > 0 && h.exitTokens <= 0) {
+                    errors.push(`${prefix}: Exit Qty must be greater than 0 if exiting`);
+                }
+
+                if (h.exitTokens < 0) {
+                    errors.push(`${prefix}: Exit Qty cannot be negative`);
+                }
+
+                if (h.exitTokens > h.grant && h.referralPct === 0) {
+                    errors.push(`${prefix}: Exit Qty (${h.exitTokens.toLocaleString()}) exceeds grant (${h.grant.toLocaleString()}) with no referral income`);
+                }
+            });
+
+            // Check total grants vs treasury
+            if (totalGrants > premint) {
+                errors.push(`Total grants (${totalGrants.toLocaleString()}) exceed treasury (${premint.toLocaleString()})`);
+            }
+
+            // Display errors or hide error box
+            if (errors.length > 0) {
+                errorsDiv.innerHTML = '<ul>' + errors.map(e => `<li>${e}</li>`).join('') + '</ul>';
+                errorsDiv.style.display = 'block';
+                return false;
+            } else {
+                errorsDiv.style.display = 'none';
+                return true;
+            }
+        }
+
         function runSimulation() {
+            // Validate inputs first
+            if (!validateInputs()) {
+                return;
+            }
+
             const results = simulate();
 
             // Update summary stats
@@ -1712,11 +1930,11 @@
                 const tr = document.createElement('tr');
                 const exited = h.exitMonth > 0 ? ' (exited M' + h.exitMonth + ')' : '';
                 tr.innerHTML = `
-                    <td>${h.name}${exited ? '<span class="exited">' + exited + '</span>' : ''}</td>
-                    <td>${Math.round(h.tokens).toLocaleString()}</td>
-                    <td>$${value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                    <td>$${h.distributions.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                    <td>$${totalReturn.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    <td data-label="Holder">${h.name}${exited ? '<span class="exited">' + exited + '</span>' : ''}</td>
+                    <td data-label="Tokens">${Math.round(h.tokens).toLocaleString()}</td>
+                    <td data-label="Value">$${value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    <td data-label="Distributions">$${h.distributions.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    <td data-label="Total Return">$${totalReturn.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                 `;
                 tbody.appendChild(tr);
             });

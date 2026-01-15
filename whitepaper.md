@@ -1,6 +1,6 @@
 # Vibe Token
 
-## A Revenue-Indexed Contribution System for Small Software
+## A Market-Priced Contribution System for Small Software
 
 ---
 
@@ -16,9 +16,10 @@ The entire system operates on six rules. Everything else follows from these.
 
 **1. Price**
 ```
-P = k * sqrt(R)
+P = k * sqrt(S)
+S_min = 1,000
 ```
-Token price equals a constant times the square root of cumulative revenue.
+Token price equals a constant times the square root of circulating supply. A minimum supply floor prevents the system from reaching P = $0.
 
 **2. Pre-mint**
 ```
@@ -70,10 +71,11 @@ This is the deal between founder and contributors. The founder chooses what perc
 
 ## Variables
 
-- **R** - cumulative net revenue (lifetime total, only increases)
+- **S** - circulating supply (increases with minting, decreases with exits)
+- **S_min** - minimum supply floor (1,000 tokens)
+- **R** - cumulative revenue (used for distribution calculations)
 - **dR** - new revenue from a single event
 - **alpha** - revenue share (founder-specified, locked at launch)
-- **S** - circulating supply (issued tokens only; excludes treasury)
 - **P** - current token price
 - **k** - pricing constant (typically 0.01)
 
@@ -82,24 +84,23 @@ This is the deal between founder and contributors. The founder chooses what perc
 ## Rule 1: Token Pricing
 
 ```
-P = k * sqrt(R)
+P = k * sqrt(S)
 ```
 
-Token price is determined by cumulative revenue. The square root function means early revenue raises the price more than later revenue.
+Token price is determined by circulating supply. When tokens are minted (through referral earnings), supply increases and price rises. When tokens are burned (through exits), supply decreases and price falls.
 
 **Example with k = 0.01:**
 
-| Cumulative Revenue | Price |
+| Circulating Supply | Price |
 |--------------------|-------|
-| $100 | $0.10 |
-| $1,000 | $0.32 |
-| $10,000 | $1.00 |
-| $100,000 | $3.16 |
-| $1,000,000 | $10.00 |
+| 1,000 (floor) | $0.32 |
+| 10,000 | $1.00 |
+| 50,000 | $2.24 |
+| 100,000 | $3.16 |
 
-Price never decreases because cumulative revenue never decreases. A business that has earned $100,000 lifetime has proven something permanent, regardless of current month's performance.
+The square root function dampens volatility: a 20% supply reduction causes only a ~10% price drop. This prevents extreme swings while allowing meaningful price discovery.
 
-**Why square root?** It rewards early contributors without locking out latecomers. The first $10,000 of revenue raises the price from $0 to $1. The next $10,000 only raises it from $1 to $1.41. Early risk earns early reward, but growth remains accessible.
+**Why does this work?** Tokens represent claims on future distributions. The market prices those claims through minting and burning activity. If price diverges from fundamental value, arbitrage corrects it: underpriced tokens attract hustlers who earn their way in; overpriced tokens trigger exits.
 
 ---
 
@@ -173,27 +174,31 @@ A holder with 1,000 tokens receives $4.00.
 
 ```
 exit_value = tokens * P
+Exit blocked if S - tokens < S_min
 ```
 
-Holders can exit at any time by burning their tokens. The system calculates exit value at current price.
+Holders can exit at any time by burning their tokens. The system calculates exit value at current price. Exiting reduces circulating supply, which lowers the token price for remaining holders.
 
 **How it works:**
 1. Holder requests exit for N tokens
 2. Exit value = N * P (at current price)
-3. Burning tokens decreases supply
+3. Burning tokens decreases supply, lowering P
 4. Holder joins the exit queue
 5. Future distributions pay exit value
 
-**Example:** Holder has 500 tokens. Current price P = $2.00.
-- Exit value = 500 * $2.00 = $1,000
+**Example:** Holder has 500 tokens. Current supply S = 10,000, price P = $1.00.
+- Exit value = 500 * $1.00 = $500
 - 500 tokens are burned
-- Holder joins queue for $1,000 payment
+- New supply S = 9,500, new price P = $0.97
+- Holder joins queue for $500 payment
 
 **Why would someone exit?** Two reasons:
 1. They need liquidity now
 2. They believe future distributions are worth less than exit value today
 
 Both are legitimate. The exit mechanism provides optionality without requiring a secondary market.
+
+**Minimum supply floor:** Exit is blocked if it would reduce supply below S_min (1,000 tokens). The last tokens cannot exit, ensuring the system never reaches P = $0.
 
 ---
 
@@ -235,34 +240,37 @@ Next month, distribution pool is $600.
 
 ## System Properties
 
-- **Revenue-indexed** - Price tracks lifetime business performance, not speculation
+- **Supply-based pricing** - Price reflects market expectations through minting and burning
 - **Earned, not purchased** - Tokens represent contribution, not investment
 - **Continuous mint/burn** - Supply adjusts with each revenue event and exit
-- **Deflationary on exit** - Departures strengthen remaining positions
+- **Price discovery** - Exits lower price, minting raises it
 - **Early-weighted** - Square root pricing rewards early contributors
 - **Self-liquidating** - Exit queue requires no reserve; funded by ongoing revenue
-- **Whole integers** - Tokens are discrete units, no fractional accounting
+- **Floor protected** - Minimum supply prevents P = $0 singularity
 - **Scale-agnostic** - Works for $500/month or $500,000/year
 
 ---
 
 ## Choosing k (Pricing Constant)
 
-The constant k determines the scale of token prices. Choose based on your typical transaction size.
+The constant k anchors token price to business scale. Set k proportional to expected revenue:
 
-**Goal:** Ensure typical referrals mint at least 1 token.
+```
+k = MRR / 1,000,000
+```
 
-| Typical Transaction | Recommended k | Price at R=$10,000 |
-|--------------------|---------------|-------------------|
-| $50+ | 0.01 | $1.00 |
-| $10-50 | 0.005 | $0.50 |
-| $5-10 | 0.001 | $0.10 |
+Or equivalently: k = Annual Revenue / 10,000,000
 
-**Example calculation:** Your typical sale is $20. Referrer value (at α = 0.20) = $4. You want at least 1 token minted.
-- Need P ≤ $4
-- At mature scale (R = $100,000), P = k * 316
-- If k = 0.01, P = $3.16 ✓ (1 token minted)
-- If k = 0.1, P = $31.60 ✗ (0 tokens minted)
+| Business Scale | MRR | k | Price at S=10,000 |
+|----------------|-----|---|-------------------|
+| Pre-revenue | $500 | 0.0005 | $0.05 |
+| Early | $1,000 | 0.001 | $0.10 |
+| Growing | $10,000 | 0.01 | $1.00 |
+| Established | $100,000 | 0.1 | $10.00 |
+
+**Why this matters:** If k is too high relative to revenue, token grants become worth more than the business can pay out. A 10,000-token grant at k=0.01 is worth $1,000. If total year-one distributions are only $2,000, that single grant claims half the pie before anyone hustles.
+
+**Rule of thumb:** Initial grants should total less than 50% of expected year-one distributions. If grants seem too valuable, k is too high
 
 ---
 

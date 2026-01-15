@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation Report: Startup + Mixed Behaviors</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --font-heading: Georgia, serif;
+            --font-body: 'Crimson Pro', Georgia, serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --text-primary: #e8e8e8;
+            --text-secondary: #a0a0a0;
+            --bg: #0a0a0a;
+            --border: #222;
+            --accent: #c8c8c8;
+
+            --chart-orange: #f5a623;
+            --chart-teal: #4ecdc4;
+            --chart-red: #ff6b6b;
+
+            --space-sm: 0.75rem;
+            --space-md: 1.5rem;
+            --space-lg: 2.5rem;
+            --space-xl: 4rem;
+
+            --max-width: 720px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 18px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--text-primary);
+            background: var(--bg);
+            line-height: 1.65;
+            padding: var(--space-lg) var(--space-md);
+            position: relative;
+        }
+
+        /* Noise texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            font-family: var(--font-heading);
+            font-weight: bold;
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            line-height: 1.1;
+            margin-bottom: 0.25rem;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-top: var(--space-lg);
+            margin-bottom: var(--space-sm);
+            color: var(--accent);
+        }
+
+        h3 {
+            font-size: 1rem;
+            margin-top: var(--space-md);
+            margin-bottom: var(--space-sm);
+            color: var(--text-primary);
+        }
+
+        p {
+            margin-bottom: 1em;
+        }
+
+        strong {
+            color: var(--text-primary);
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .subtitle {
+            font-family: var(--font-body);
+            font-style: italic;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+        }
+
+        .stat {
+            text-align: center;
+            padding: var(--space-md) var(--space-sm);
+            border: 1px solid var(--border);
+        }
+
+        .stat-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 0.5em;
+        }
+
+        .stat-value {
+            font-family: var(--font-mono);
+            font-size: 1.3rem;
+            color: var(--text-primary);
+        }
+
+        /* Chart Grid */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+        }
+
+        .chart-container {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: var(--space-md);
+            position: relative;
+        }
+
+        .chart-container canvas {
+            width: 100% !important;
+            height: 240px !important;
+        }
+
+        .chart-container.tall canvas {
+            height: 320px !important;
+        }
+
+        .chart-container.full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Conditions list (from narrative) */
+        .conditions {
+            list-style: none;
+            margin: var(--space-sm) 0;
+        }
+
+        .conditions li {
+            padding-left: 1.5em;
+            position: relative;
+            margin-bottom: 0.5em;
+        }
+
+        .conditions li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--text-secondary);
+        }
+
+        /* Narrative section */
+        .narrative {
+            margin-top: var(--space-xl);
+            padding-top: var(--space-lg);
+            border-top: 1px solid var(--border);
+        }
+
+        .narrative p {
+            color: var(--text-secondary);
+        }
+
+        .narrative strong {
+            color: var(--text-primary);
+        }
+
+        /* Divider */
+        .divider {
+            width: 50px;
+            height: 1px;
+            background: var(--border);
+            margin: var(--space-lg) auto;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: var(--space-xl);
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container canvas {
+                height: 200px !important;
+            }
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: var(--space-xl) var(--space-lg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <article class="container">
+        <header>
+            <h1>Startup + Mixed Behaviors</h1>
+            <p class="subtitle">Monte Carlo Simulation Report</p>
+        </header>
+
+        <!-- Summary Stats -->
+        <div class="stats-grid">
+            <div class="stat">
+                <div class="stat-label">Simulations</div>
+                <div class="stat-value">100</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Survival Rate</div>
+                <div class="stat-value">64%</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Mean Price</div>
+                <div class="stat-value">$1.82</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Mean Revenue</div>
+                <div class="stat-value">$95K</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="chart-grid">
+            <div class="chart-container">
+                <canvas id="chart-survival"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="chart-price"></canvas>
+            </div>
+            <div class="chart-container full-width tall">
+                <canvas id="chart-roi"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="chart-revenue"></canvas>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Narrative Content -->
+        <section class="narrative">
+            <h2>Simulation Results: Startup + Mixed Behaviors</h2>
+
+<p>This analysis covers 100 simulations of a startup business model over 36 months.</p>
+
+<ul class="conditions">
+<li>Business survival rate: 64%</li>
+<li>Mean final token price: $1.82</li>
+<li>Revenue share (α): 20%</li>
+<li>Initial participant count: 5</li>
+</ul>
+
+<h3>Business Outcomes</h3>
+
+<p>The startup achieved breakthrough in 64% of simulations, exceeding typical startup success rates. Failed businesses (36%) typically exhausted their runway before finding product-market fit.</p>
+
+<ul class="conditions">
+<li>Mean: $95,239</li>
+<li>Median: $42,498</li>
+<li>Range: $555 - $803,617</li>
+</ul>
+
+<p>The significant gap between mean and median revenue indicates a right-skewed distribution with occasional extreme successes.</p>
+
+<h3>Participant Performance</h3>
+
+<ul class="conditions">
+<li>WoM Entrant #2: 18.08x ██████████</li>
+<li>Price Chaser #4: 13.35x ██████████</li>
+<li>WoM Entrant #3: 12.77x ██████████</li>
+<li>WoM Entrant #5: 11.77x ██████████</li>
+<li>WoM Entrant #6: 10.93x ██████████</li>
+<li>WoM Entrant #7: 10.90x ██████████</li>
+<li>WoM Entrant #8: 10.64x ██████████</li>
+<li>Price Chaser #5: 10.29x ██████████</li>
+<li>WoM Entrant #4: 10.18x ██████████</li>
+<li>Price Chaser #1: 7.88x ███████</li>
+<li>Price Chaser #3: 7.78x ███████</li>
+<li>Momentum Trader: 7.70x ███████</li>
+<li>Price Chaser #2: 7.54x ███████</li>
+<li>Skeptical Tester: 7.42x ███████</li>
+<li>True Believer: 6.95x ██████</li>
+<li>Life Event Lisa: 6.24x ██████</li>
+<li>Angel Referrer: 6.01x ██████</li>
+</ul>
+
+<p><strong>Behavior Analysis:</strong></p>
+
+<p><strong>Diamond hands outperformed</strong> in this scenario, achieving 6.95x average ROI. Their refusal to exit captured full upside when the business succeeded.</p>
+
+<p><strong>Rational actors</strong> achieved 6.01x average ROI. Their conservative approach may have triggered premature exits in some successful scenarios.</p>
+
+<p><strong>Trend followers</strong> achieved 7.70x average ROI. Momentum-based decisions led to variable outcomes depending on price trajectory timing.</p>
+
+<p><strong>Skeptics</strong> achieved 7.42x average ROI. Their early exits may have left money on the table in successful scenarios.</p>
+
+<h3>Economic Observations</h3>
+
+<ul class="conditions">
+<li>Final price range: $1.47 - $2.69</li>
+<li>Coefficient of variation: 14.4%</li>
+</ul>
+
+<p>The square root pricing function (P = k×√S) delivered relatively stable prices despite varying revenue conditions. A 14% coefficient of variation suggests the bonding curve effectively dampened volatility.</p>
+
+<p><strong>Supply Floor (S_min = 1000):</strong> The minimum supply floor prevented price collapse in failure scenarios. Floor price: $0.32. No simulation reached the floor, indicating adequate supply cushion.</p>
+
+<p><strong>Exit Queue Mechanism:</strong> In failed scenarios, exit queues froze when revenue stopped. Participants who exited early captured value; late exits risked queue freeze.</p>
+
+<h3>Key Findings</h3>
+
+<p>1. <strong>Mixed outcomes favor balanced strategies.</strong> Neither pure conviction nor pure caution dominated. Risk management mattered.</p>
+
+<p>2. <strong>WoM Entrant #2</strong> achieved highest returns (18.08x), while <strong>Angel Referrer</strong> achieved lowest (6.01x).</p>
+
+<p>3. <strong>The tokenomics performed as designed.</strong> Supply-based pricing provided price discovery, distributions rewarded holders, and the exit queue enabled liquidity without secondary markets.</p>
+
+<p><strong>Implication:</strong> For startup businesses with similar parameters, the token system creates meaningful value for early contributors.</p>
+        </section>
+
+        <footer>
+            Generated 2026-01-15 03:50:32 | 100 simulations × 36 months
+        </footer>
+    </article>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const DATA = {
+  "runs": 100,
+  "survivalRate": 0.64,
+  "priceStats": {
+    "mean": 1.8169316221587672,
+    "median": 1.702967997350508,
+    "min": 1.4705441169852742,
+    "max": 2.6863171815703373,
+    "stddev": 0.26095685543689146,
+    "count": 100
+  },
+  "revenueStats": {
+    "mean": 95239.12760504888,
+    "median": 42497.760177821096,
+    "min": 554.6817696608853,
+    "max": 803616.5945034755,
+    "stddev": 137744.32557754192,
+    "count": 100
+  },
+  "participantStats": {
+    "WoM Entrant #2": {
+      "mean": 18.07798732658216,
+      "median": 13.500198702857162,
+      "min": 7.3053162325459935,
+      "max": 41.36269480880369,
+      "stddev": 13.621091010857535,
+      "count": 4
+    },
+    "Price Chaser #4": {
+      "mean": 13.352517211540748,
+      "median": 10.723518013314644,
+      "min": 6.438171240344574,
+      "max": 32.67909622881308,
+      "stddev": 8.075832807148672,
+      "count": 8
+    },
+    "WoM Entrant #3": {
+      "mean": 12.773555023761437,
+      "median": 11.871397114045298,
+      "min": 6.775984098509234,
+      "max": 23.60915040817758,
+      "stddev": 5.16247886292913,
+      "count": 6
+    },
+    "WoM Entrant #5": {
+      "mean": 11.769064617632264,
+      "median": 9.582640979373345,
+      "min": 5.474339472141821,
+      "max": 25.986980711064547,
+      "stddev": 5.995786013259051,
+      "count": 32
+    },
+    "WoM Entrant #6": {
+      "mean": 10.92527767113132,
+      "median": 10.129805861657895,
+      "min": 5.406755034214144,
+      "max": 25.37883826986566,
+      "stddev": 5.135358642277463,
+      "count": 30
+    },
+    "WoM Entrant #7": {
+      "mean": 10.904150082770823,
+      "median": 10.07113254987425,
+      "min": 6.007911450745591,
+      "max": 24.553932186259257,
+      "stddev": 4.8412755422660565,
+      "count": 23
+    },
+    "WoM Entrant #8": {
+      "mean": 10.635058154999069,
+      "median": 10.149708432863322,
+      "min": 6.231211760163508,
+      "max": 23.14217693486814,
+      "stddev": 4.181566951117478,
+      "count": 16
+    },
+    "Price Chaser #5": {
+      "mean": 10.293513606615964,
+      "median": 10.678819302697196,
+      "min": 9.908207910534733,
+      "max": 10.678819302697196,
+      "stddev": 0.38530569608123155,
+      "count": 2
+    },
+    "WoM Entrant #4": {
+      "mean": 10.177326895330957,
+      "median": 8.665063229861625,
+      "min": 5.24294415858113,
+      "max": 26.47469890648147,
+      "stddev": 5.24770969397692,
+      "count": 38
+    },
+    "Price Chaser #1": {
+      "mean": 7.881489675509378,
+      "median": 5.820030401180621,
+      "min": 4.725329820305316,
+      "max": 32.80564168553871,
+      "stddev": 4.679713970191483,
+      "count": 100
+    },
+    "Price Chaser #3": {
+      "mean": 7.778490457931324,
+      "median": 5.767513441490863,
+      "min": 4.9109282252209345,
+      "max": 28.158628068689172,
+      "stddev": 4.3601673005859585,
+      "count": 87
+    },
+    "Momentum Trader": {
+      "mean": 7.703769377691449,
+      "median": 5.556925225023276,
+      "min": 4.656081645446361,
+      "max": 32.89434988313255,
+      "stddev": 4.445969047560197,
+      "count": 100
+    }
+  },
+  "priceBins": [
+    {
+      "min": 1.4705441169852742,
+      "max": 1.5718585390340294,
+      "count": 12
+    },
+    {
+      "min": 1.5718585390340294,
+      "max": 1.6731729610827848,
+      "count": 17
+    },
+    {
+      "min": 1.6731729610827848,
+      "max": 1.77448738313154,
+      "count": 36
+    },
+    {
+      "min": 1.77448738313154,
+      "max": 1.8758018051802952,
+      "count": 2
+    },
+    {
+      "min": 1.8758018051802952,
+      "max": 1.9771162272290503,
+      "count": 8
+    },
+    {
+      "min": 1.9771162272290503,
+      "max": 2.0784306492778057,
+      "count": 8
+    },
+    {
+      "min": 2.0784306492778057,
+      "max": 2.179745071326561,
+      "count": 4
+    },
+    {
+      "min": 2.179745071326561,
+      "max": 2.281059493375316,
+      "count": 7
+    },
+    {
+      "min": 2.281059493375316,
+      "max": 2.3823739154240715,
+      "count": 3
+    },
+    {
+      "min": 2.3823739154240715,
+      "max": 2.4836883374728265,
+      "count": 0
+    },
+    {
+      "min": 2.4836883374728265,
+      "max": 2.585002759521582,
+      "count": 2
+    },
+    {
+      "min": 2.585002759521582,
+      "max": 2.6863171815703373,
+      "count": 1
+    }
+  ],
+  "revenueBins": [
+    {
+      "min": 554.6817696608853,
+      "max": 67476.5078308121,
+      "count": 62
+    },
+    {
+      "min": 67476.5078308121,
+      "max": 134398.3338919633,
+      "count": 13
+    },
+    {
+      "min": 134398.3338919633,
+      "max": 201320.1599531145,
+      "count": 7
+    },
+    {
+      "min": 201320.1599531145,
+      "max": 268241.98601426574,
+      "count": 6
+    },
+    {
+      "min": 268241.98601426574,
+      "max": 335163.81207541696,
+      "count": 5
+    },
+    {
+      "min": 335163.81207541696,
+      "max": 402085.63813656813,
+      "count": 3
+    },
+    {
+      "min": 402085.63813656813,
+      "max": 469007.46419771935,
+      "count": 2
+    },
+    {
+      "min": 469007.46419771935,
+      "max": 535929.2902588706,
+      "count": 1
+    },
+    {
+      "min": 535929.2902588706,
+      "max": 602851.1163200218,
+      "count": 0
+    },
+    {
+      "min": 602851.1163200218,
+      "max": 669772.942381173,
+      "count": 0
+    },
+    {
+      "min": 669772.942381173,
+      "max": 736694.7684423242,
+      "count": 0
+    },
+    {
+      "min": 736694.7684423242,
+      "max": 803616.5945034754,
+      "count": 1
+    }
+  ]
+};
+
+        // Chart defaults
+        Chart.defaults.color = '#888';
+        Chart.defaults.borderColor = '#222';
+        Chart.defaults.font.family = "'JetBrains Mono', monospace";
+
+        // Colors
+        const ORANGE = '#f5a623';
+        const TEAL = '#4ecdc4';
+        const RED = '#ff6b6b';
+
+        // 1. Survival Doughnut
+        new Chart(document.getElementById('chart-survival'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Survived', 'Failed'],
+                datasets: [{
+                    data: [
+                        Math.round(DATA.survivalRate * DATA.runs),
+                        Math.round((1 - DATA.survivalRate) * DATA.runs)
+                    ],
+                    backgroundColor: [TEAL, RED],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'BUSINESS OUTCOMES',
+                        font: { size: 11, weight: 'normal' },
+                        padding: { bottom: 15 }
+                    },
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15,
+                            font: { size: 10 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. Price Distribution Histogram
+        new Chart(document.getElementById('chart-price'), {
+            type: 'bar',
+            data: {
+                labels: DATA.priceBins.map(b => '$' + b.min.toFixed(2)),
+                datasets: [{
+                    data: DATA.priceBins.map(b => b.count),
+                    backgroundColor: TEAL,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'FINAL PRICE DISTRIBUTION',
+                        font: { size: 11, weight: 'normal' },
+                        padding: { bottom: 15 }
+                    },
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 9 }, maxRotation: 45 }
+                    },
+                    y: {
+                        grid: { color: '#222' },
+                        ticks: { font: { size: 9 } },
+                        title: { display: true, text: 'Runs', font: { size: 9 } }
+                    }
+                }
+            }
+        });
+
+        // 3. ROI by Participant (Horizontal Bar)
+        const participants = Object.entries(DATA.participantStats).sort((a, b) => a[1].mean - b[1].mean);
+        new Chart(document.getElementById('chart-roi'), {
+            type: 'bar',
+            data: {
+                labels: participants.map(([name]) => name),
+                datasets: [{
+                    data: participants.map(([_, stats]) => stats.mean),
+                    backgroundColor: ORANGE,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'MEAN ROI BY PARTICIPANT',
+                        font: { size: 11, weight: 'normal' },
+                        padding: { bottom: 15 }
+                    },
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { color: '#222' },
+                        ticks: {
+                            font: { size: 9 },
+                            callback: function(value) { return value.toFixed(1) + 'x'; }
+                        },
+                        title: { display: true, text: 'ROI', font: { size: 9 } }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { font: { size: 9 } }
+                    }
+                }
+            }
+        });
+
+        // 4. Revenue Distribution Histogram
+        function formatRevenue(n) {
+            if (n >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M';
+            if (n >= 1000) return '$' + (n / 1000).toFixed(0) + 'K';
+            return '$' + n.toFixed(0);
+        }
+
+        new Chart(document.getElementById('chart-revenue'), {
+            type: 'bar',
+            data: {
+                labels: DATA.revenueBins.map(b => formatRevenue(b.min)),
+                datasets: [{
+                    data: DATA.revenueBins.map(b => b.count),
+                    backgroundColor: ORANGE,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'REVENUE DISTRIBUTION',
+                        font: { size: 11, weight: 'normal' },
+                        padding: { bottom: 15 }
+                    },
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 9 }, maxRotation: 45 }
+                    },
+                    y: {
+                        grid: { color: '#222' },
+                        ticks: { font: { size: 9 } },
+                        title: { display: true, text: 'Runs', font: { size: 9 } }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

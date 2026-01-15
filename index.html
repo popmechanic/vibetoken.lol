@@ -438,8 +438,8 @@
 
         .sim-params {
             display: flex;
-            flex-wrap: wrap;
-            gap: var(--space-sm);
+            flex-direction: column;
+            gap: var(--space-md);
         }
 
         .sim-param {
@@ -450,7 +450,19 @@
 
         .sim-param label {
             font-family: var(--font-mono);
-            font-size: 0.8rem;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+
+        .sim-param .input-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+        }
+
+        .sim-param .input-row .unit {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
             color: var(--text-secondary);
         }
 
@@ -461,7 +473,7 @@
             border: 1px solid var(--border);
             color: var(--text-primary);
             padding: 0.5em 0.75em;
-            width: 100px;
+            width: 120px;
         }
 
         .sim-param input:focus {
@@ -469,40 +481,50 @@
             border-color: var(--accent);
         }
 
-        .sim-revenue {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 0.5rem;
+        .sim-calculated {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            color: var(--accent);
+            background: rgba(200, 200, 200, 0.1);
+            padding: 0.5em 0.75em;
+            border: 1px solid var(--border);
         }
 
-        @media (min-width: 768px) {
-            .sim-revenue {
-                grid-template-columns: repeat(12, 1fr);
-            }
-        }
-
-        .sim-revenue-month {
-            display: flex;
-            flex-direction: column;
-            gap: 0.15rem;
-        }
-
-        .sim-revenue-month label {
+        .override-toggle {
             font-family: var(--font-mono);
             font-size: 0.7rem;
+            background: none;
+            border: 1px solid var(--border);
             color: var(--text-secondary);
-            text-align: center;
+            padding: 0.3em 0.6em;
+            cursor: pointer;
+            margin-left: 0.5em;
         }
 
-        .sim-revenue-month input {
+        .override-toggle:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+
+        .k-override-input {
+            margin-top: 0.5em;
+        }
+
+        .k-override-input input {
             font-family: var(--font-mono);
-            font-size: 0.8rem;
+            font-size: 0.95rem;
             background: var(--bg);
             border: 1px solid var(--border);
             color: var(--text-primary);
-            padding: 0.4em;
-            width: 100%;
-            text-align: center;
+            padding: 0.5em 0.75em;
+            width: 120px;
+        }
+
+        .sim-explainer {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin: 0;
+            line-height: 1.4;
         }
 
         .sim-holders {
@@ -613,10 +635,7 @@
             padding: var(--space-md);
             margin-bottom: var(--space-md);
             position: relative;
-        }
-
-        .sim-chart-container canvas {
-            max-height: 300px;
+            height: 280px;
         }
 
         .sim-summary {
@@ -786,6 +805,29 @@
         </section>
 
         <section>
+            <h2>Choosing k (Pricing Constant)</h2>
+            <div class="formula">
+                <code>k = MRR ÷ 1,000,000</code>
+            </div>
+            <p>The pricing constant k anchors token value to business scale. Set k proportional to your monthly recurring revenue. This keeps grant values reasonable relative to what the business can actually pay out.</p>
+            <div class="properties" style="margin-top: var(--space-sm);">
+                <div class="property">
+                    <div class="property-name">$1,000 MRR</div>
+                    <div class="property-desc">k = 0.001 → Price $0.10 at 10K supply</div>
+                </div>
+                <div class="property">
+                    <div class="property-name">$10,000 MRR</div>
+                    <div class="property-desc">k = 0.01 → Price $1.00 at 10K supply</div>
+                </div>
+                <div class="property">
+                    <div class="property-name">$100,000 MRR</div>
+                    <div class="property-desc">k = 0.1 → Price $10.00 at 10K supply</div>
+                </div>
+            </div>
+            <p style="margin-top: var(--space-md);">If k is too high, grants become worth more than the business can pay out. Rule of thumb: initial grants should total less than 50% of expected year-one distributions.</p>
+        </section>
+
+        <section>
             <h2>Pre-mint Treasury</h2>
             <p>Pre-mint creates a treasury pool. These tokens are inert: they do not participate in distributions until the founder grants them to contributors. The founder's compensation is retained revenue (1-α), not tokens.</p>
             <p>Before any revenue exists, founders need tokens to distribute. Pre-mint solves this cold-start problem: give tokens to the influencer who tweets your launch, the friend who refers customers, the beta tester who finds bugs.</p>
@@ -872,45 +914,71 @@
 
         <section class="simulator">
             <h2>Simulator</h2>
-            <p>Model the token economics with your own parameters. Pre-mint creates a treasury; only granted tokens participate in distributions. The founder's compensation is retained revenue (1-α), not tokens.</p>
+            <p>Model the token economics. The simulator randomizes referral activity and exit events to show realistic dynamics.</p>
 
             <div class="sim-section">
-                <h3>System Parameters</h3>
+                <h3>Parameters</h3>
                 <div class="sim-params">
                     <div class="sim-param">
-                        <label>k (price constant)</label>
-                        <input type="number" id="sim-k" value="0.01" step="0.001" min="0.001">
+                        <label>Pricing Constant (k)</label>
+                        <div class="input-row">
+                            <span class="sim-calculated" id="sim-k-display">0.001</span>
+                            <span class="unit">= MRR ÷ 1,000,000</span>
+                            <button class="override-toggle" id="k-override-btn" onclick="toggleKOverride()">override</button>
+                        </div>
+                        <div class="k-override-input" id="k-override-row" style="display: none;">
+                            <input type="number" id="sim-k" value="0.001" step="0.0001" min="0.0001">
+                        </div>
+                        <p class="sim-explainer">Auto-calculated from MRR. Keeps token value proportional to business size.</p>
                     </div>
                     <div class="sim-param">
-                        <label>α (revenue share)</label>
-                        <input type="number" id="sim-alpha" value="0.20" step="0.01" min="0.01" max="1">
+                        <label>Revenue Share (α)</label>
+                        <div class="input-row">
+                            <input type="number" id="sim-alpha" value="20" step="1" min="1" max="100">
+                            <span class="unit">%</span>
+                        </div>
+                        <p class="sim-explainer">Percentage of revenue distributed to token holders. Founder keeps the rest.</p>
                     </div>
                     <div class="sim-param">
-                        <label>Treasury (pre-mint)</label>
-                        <input type="number" id="sim-premint" value="100000" step="1000" min="0">
+                        <label>Treasury (Pre-mint)</label>
+                        <div class="input-row">
+                            <input type="text" id="sim-premint" value="100,000">
+                            <span class="unit">tokens</span>
+                        </div>
+                        <p class="sim-explainer">Tokens available to grant to early contributors. Inert until granted.</p>
+                    </div>
+                    <div class="sim-param">
+                        <label>Starting MRR</label>
+                        <div class="input-row">
+                            <span class="unit">$</span>
+                            <input type="text" id="sim-mrr" value="1,000">
+                        </div>
+                        <p class="sim-explainer">Monthly recurring revenue at month 1.</p>
+                    </div>
+                    <div class="sim-param">
+                        <label>Monthly Growth</label>
+                        <div class="input-row">
+                            <input type="number" id="sim-growth" value="15" step="1" min="0" max="100">
+                            <span class="unit">%</span>
+                        </div>
+                        <p class="sim-explainer">Month-over-month revenue growth rate.</p>
                     </div>
                 </div>
             </div>
 
             <div class="sim-section">
-                <h3>Monthly Revenue (Year 1)</h3>
-                <div class="sim-revenue" id="sim-revenue-grid">
-                    <!-- Generated by JS -->
-                </div>
-            </div>
-
-            <div class="sim-section">
-                <h3>Token Holders</h3>
+                <h3>Token Holders <span id="scenario-name" style="font-weight: normal; font-size: 0.85rem; color: var(--text-secondary);"></span></h3>
+                <p class="sim-explainer" style="margin-bottom: var(--space-sm);">Different scenarios rotate on page refresh. Edit values to explore alternatives.</p>
                 <div class="sim-holders">
                     <table>
                         <thead>
                             <tr>
                                 <th>Name</th>
                                 <th>Grant</th>
-                                <th>Referral %</th>
-                                <th>Start Month</th>
-                                <th>Exit Month</th>
-                                <th>Exit Tokens</th>
+                                <th>Referral</th>
+                                <th>Start</th>
+                                <th>Exit Mo</th>
+                                <th>Exit Qty</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -925,9 +993,9 @@
             <button class="run-btn" onclick="runSimulation()">Run Simulation</button>
 
             <div class="sim-results" id="sim-results">
-                <h3>Results</h3>
+                <h3>Final State (Month 12)</h3>
 
-                <div class="sim-summary" id="sim-summary" style="grid-template-columns: repeat(4, 1fr);">
+                <div class="sim-summary" id="sim-summary">
                     <div class="sim-stat">
                         <div class="sim-stat-label">Cumulative Revenue</div>
                         <div class="sim-stat-value" id="stat-revenue">$0</div>
@@ -952,6 +1020,10 @@
 
                 <div class="sim-chart-container">
                     <canvas id="chart-holders"></canvas>
+                </div>
+
+                <div class="sim-chart-container">
+                    <canvas id="chart-distributions"></canvas>
                 </div>
 
                 <h3 style="margin-top: var(--space-md);">Final Holder State</h3>
@@ -982,38 +1054,115 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Default monthly revenue
-        const defaultRevenue = [1000, 1000, 1000, 3000, 3000, 3000, 8000, 8000, 8000, 8000, 8000, 8000];
+        // Minimum supply floor
+        const S_MIN = 1000;
 
-        // Default holders (no founder - founder's compensation is retained revenue, not tokens)
-        const defaultHolders = [
-            { name: 'Alice', grant: 10000, referralPct: 0, startMonth: 1, exitMonth: 9, exitTokens: 5000 },
-            { name: 'Bob', grant: 5000, referralPct: 0.30, startMonth: 3, exitMonth: 0, exitTokens: 0 },
-            { name: 'Carol', grant: 0, referralPct: 0.20, startMonth: 8, exitMonth: 0, exitTokens: 0 }
+        // Scenario templates - different stories that rotate randomly
+        const scenarioTemplates = [
+            {
+                name: 'Hustle Pays Off',
+                holders: [
+                    { name: 'Alice', grant: 8000, referralPct: 0.10, startMonth: 1, exitMonth: 0, exitTokens: 0 },
+                    { name: 'Bob', grant: 3000, referralPct: 0.55, startMonth: 1, exitMonth: 0, exitTokens: 0 },
+                    { name: 'Carol', grant: 5000, referralPct: 0.05, startMonth: 3, exitMonth: 10, exitTokens: 3000 }
+                ]
+                // Bob's hustle overtakes Alice's larger grant; Carol exits late with modest gains
+            },
+            {
+                name: 'Early Exit Regret',
+                holders: [
+                    { name: 'Alice', grant: 10000, referralPct: 0.15, startMonth: 1, exitMonth: 4, exitTokens: 8000 },
+                    { name: 'Bob', grant: 5000, referralPct: 0.25, startMonth: 2, exitMonth: 0, exitTokens: 0 },
+                    { name: 'Carol', grant: 0, referralPct: 0.20, startMonth: 1, exitMonth: 0, exitTokens: 0 }
+                ]
+                // Alice exits too early, misses the growth; Bob and Carol benefit
+            },
+            {
+                name: 'Late Entry Success',
+                holders: [
+                    { name: 'Alice', grant: 12000, referralPct: 0.05, startMonth: 1, exitMonth: 0, exitTokens: 0 },
+                    { name: 'Bob', grant: 4000, referralPct: 0.15, startMonth: 1, exitMonth: 7, exitTokens: 2000 },
+                    { name: 'Carol', grant: 0, referralPct: 0.40, startMonth: 6, exitMonth: 0, exitTokens: 0 }
+                ]
+                // Carol joins late but hustles hard, builds significant position despite no grant
+            },
+            {
+                name: 'Steady Growth',
+                holders: [
+                    { name: 'Alice', grant: 7000, referralPct: 0.20, startMonth: 1, exitMonth: 0, exitTokens: 0 },
+                    { name: 'Bob', grant: 7000, referralPct: 0.25, startMonth: 2, exitMonth: 0, exitTokens: 0 },
+                    { name: 'Carol', grant: 6000, referralPct: 0.15, startMonth: 3, exitMonth: 0, exitTokens: 0 }
+                ]
+                // No dramatic exits; everyone grows steadily through distributions and referrals
+            }
         ];
 
-        let holders = JSON.parse(JSON.stringify(defaultHolders));
+        // Select random scenario
+        function getRandomScenario() {
+            return scenarioTemplates[Math.floor(Math.random() * scenarioTemplates.length)];
+        }
+
+        // Initialize with random scenario
+        let currentScenario = getRandomScenario();
+        let holders = JSON.parse(JSON.stringify(currentScenario.holders));
         let priceChart = null;
         let holdersChart = null;
+        let distributionsChart = null;
+        let kOverrideEnabled = false;
+
+        // Parse comma-formatted numbers
+        function parseCommaNumber(str) {
+            return parseInt(String(str).replace(/,/g, '')) || 0;
+        }
+
+        // Get k value (auto-calculated or manual override)
+        function getK() {
+            if (kOverrideEnabled) {
+                return parseFloat(document.getElementById('sim-k').value) || 0.001;
+            }
+            const mrr = parseCommaNumber(document.getElementById('sim-mrr').value) || 1000;
+            return mrr / 1000000;
+        }
+
+        // Update k display when MRR changes
+        function updateKDisplay() {
+            if (!kOverrideEnabled) {
+                const k = getK();
+                document.getElementById('sim-k-display').textContent = k.toFixed(6).replace(/\.?0+$/, '');
+            }
+        }
+
+        // Toggle between auto k and manual override
+        function toggleKOverride() {
+            kOverrideEnabled = !kOverrideEnabled;
+            const btn = document.getElementById('k-override-btn');
+            const row = document.getElementById('k-override-row');
+            const display = document.getElementById('sim-k-display');
+
+            if (kOverrideEnabled) {
+                btn.textContent = 'auto';
+                row.style.display = 'flex';
+                display.style.opacity = '0.5';
+                // Seed manual input with current auto value
+                const autoK = parseCommaNumber(document.getElementById('sim-mrr').value) / 1000000 || 0.001;
+                document.getElementById('sim-k').value = autoK.toFixed(6).replace(/\.?0+$/, '');
+            } else {
+                btn.textContent = 'override';
+                row.style.display = 'none';
+                display.style.opacity = '1';
+                updateKDisplay();
+            }
+        }
 
         // Initialize UI
         function initSimulator() {
-            renderRevenueGrid();
+            // Display current scenario name
+            document.getElementById('scenario-name').textContent = '— ' + currentScenario.name;
             renderHoldersTable();
-        }
+            updateKDisplay();
 
-        function renderRevenueGrid() {
-            const grid = document.getElementById('sim-revenue-grid');
-            grid.innerHTML = '';
-            for (let i = 0; i < 12; i++) {
-                const div = document.createElement('div');
-                div.className = 'sim-revenue-month';
-                div.innerHTML = `
-                    <label>M${i + 1}</label>
-                    <input type="number" id="rev-${i}" value="${defaultRevenue[i]}" min="0" step="100">
-                `;
-                grid.appendChild(div);
-            }
+            // Update k display when MRR changes
+            document.getElementById('sim-mrr').addEventListener('input', updateKDisplay);
         }
 
         function renderHoldersTable() {
@@ -1023,7 +1172,7 @@
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><input type="text" value="${h.name}" onchange="holders[${idx}].name=this.value"></td>
-                    <td><input type="number" value="${h.grant}" min="0" step="1000" onchange="holders[${idx}].grant=parseInt(this.value)||0"></td>
+                    <td><input type="text" value="${h.grant.toLocaleString()}" onchange="holders[${idx}].grant=parseCommaNumber(this.value)"></td>
                     <td><input type="number" value="${(h.referralPct * 100).toFixed(0)}" min="0" max="100" step="5" onchange="holders[${idx}].referralPct=parseFloat(this.value)/100||0">%</td>
                     <td><input type="number" value="${h.startMonth}" min="1" max="12" onchange="holders[${idx}].startMonth=parseInt(this.value)||1"></td>
                     <td><input type="number" value="${h.exitMonth || ''}" min="0" max="12" placeholder="-" onchange="holders[${idx}].exitMonth=parseInt(this.value)||0"></td>
@@ -1047,16 +1196,19 @@
         }
 
         function simulate() {
-            const k = parseFloat(document.getElementById('sim-k').value) || 0.01;
-            const alpha = parseFloat(document.getElementById('sim-alpha').value) || 0.20;
-            const premint = parseInt(document.getElementById('sim-premint').value) || 100000;
+            const k = getK();
+            const alpha = (parseFloat(document.getElementById('sim-alpha').value) || 20) / 100; // Convert % to decimal
+            const premint = parseCommaNumber(document.getElementById('sim-premint').value) || 100000;
 
+            // Calculate monthly revenue from MRR + growth rate
+            const startingMRR = parseCommaNumber(document.getElementById('sim-mrr').value) || 1000;
+            const growthRate = (parseFloat(document.getElementById('sim-growth').value) || 15) / 100;
             const monthlyRevenue = [];
             for (let i = 0; i < 12; i++) {
-                monthlyRevenue.push(parseFloat(document.getElementById(`rev-${i}`).value) || 0);
+                monthlyRevenue.push(Math.round(startingMRR * Math.pow(1 + growthRate, i)));
             }
 
-            // Deep copy holders for simulation
+            // Deep copy holders for simulation (using fixed scenarios, no randomization)
             const simHolders = holders.map(h => ({
                 ...h,
                 tokens: h.grant,
@@ -1079,20 +1231,24 @@
 
             const timeline = [];
             const holderTimeline = simHolders.map(() => []);
+            const distributionTimeline = simHolders.map(() => []);  // Track cumulative distributions
 
             for (let month = 1; month <= 12; month++) {
                 const dR = monthlyRevenue[month - 1];
                 R += dR;
 
-                const P = R > 0 ? k * Math.sqrt(R) : 0;
+                // Supply-based pricing: P = k * sqrt(S)
+                let P = S > 0 ? k * Math.sqrt(S) : 0;
 
-                // Mint tokens for referrers
+                // Mint tokens for referrers (at current price)
                 for (const holder of simHolders) {
                     if (holder.referralPct > 0 && holder.startMonth <= month && P > 0) {
                         const referralRevenue = dR * holder.referralPct;
                         const tokensEarned = Math.floor(alpha * referralRevenue / P);
                         holder.tokens += tokensEarned;
                         S += tokensEarned;
+                        // Recalculate P after minting (supply increased)
+                        P = k * Math.sqrt(S);
                     }
                 }
 
@@ -1118,18 +1274,24 @@
                     }
                 }
 
-                // Process exits this month
+                // Process exits this month (with S_MIN floor check)
                 for (const holder of simHolders) {
                     if (holder.exitMonth === month && holder.exitTokens > 0) {
-                        const exitValue = holder.exitTokens * P;
-                        holder.tokens -= holder.exitTokens;
-                        holder.exitValue = exitValue;
-                        S -= holder.exitTokens;
-                        exitQueue.push({ holder, owed: exitValue });
+                        // Check if exit would violate minimum supply floor
+                        const allowedExit = Math.min(holder.exitTokens, S - S_MIN);
+                        if (allowedExit > 0) {
+                            const exitValue = allowedExit * P;
+                            holder.tokens -= allowedExit;
+                            holder.exitValue = exitValue;
+                            S -= allowedExit;
+                            exitQueue.push({ holder, owed: exitValue });
+                            // Recalculate P after burning (supply decreased)
+                            P = S > 0 ? k * Math.sqrt(S) : 0;
+                        }
                     }
                 }
 
-                // Record timeline
+                // Record timeline (P reflects end-of-month state)
                 timeline.push({
                     month,
                     R,
@@ -1139,18 +1301,20 @@
                     exitQueueTotal: exitQueue.reduce((a, e) => a + e.owed, 0)
                 });
 
-                // Record holder balances
+                // Record holder balances and cumulative distributions
                 simHolders.forEach((h, i) => {
                     holderTimeline[i].push(h.tokens);
+                    distributionTimeline[i].push(h.distributions);  // Running total
                 });
             }
 
             return {
                 timeline,
                 holderTimeline,
+                distributionTimeline,
                 holders: simHolders,
                 finalR: R,
-                finalP: R > 0 ? k * Math.sqrt(R) : 0,
+                finalP: S > 0 ? k * Math.sqrt(S) : 0,  // Supply-based final price
                 finalS: S,
                 treasury: treasury,
                 exitQueueRemaining: exitQueue.reduce((a, e) => a + e.owed, 0)
@@ -1169,6 +1333,7 @@
             // Render charts
             renderPriceChart(results);
             renderHoldersChart(results);
+            renderDistributionsChart(results);
 
             // Render final table
             renderFinalTable(results);
@@ -1259,24 +1424,114 @@
             });
         }
 
+        // Custom plugin for entry/exit annotations
+        const annotationPlugin = {
+            id: 'entryExitAnnotations',
+            afterDatasetsDraw(chart, args, options) {
+                const { ctx } = chart;
+                const annotations = options.annotations || [];
+
+                annotations.forEach(ann => {
+                    const datasetIndex = ann.datasetIndex;
+                    const dataIndex = ann.dataIndex;
+                    const meta = chart.getDatasetMeta(datasetIndex);
+                    const point = meta.data[dataIndex];
+
+                    if (!point) return;
+
+                    const x = point.x;
+                    const y = point.y;
+                    const color = ann.color || '#888';
+                    const isEntry = ann.type === 'entry';
+
+                    // Position: entries below, exits above
+                    const offsetY = isEntry ? 25 : -25;
+                    const arrow = isEntry ? '↓' : '↑';
+                    const text = `${arrow} ${ann.name} ${isEntry ? 'enters' : 'exits'}`;
+
+                    ctx.save();
+                    ctx.font = "10px 'JetBrains Mono', monospace";
+                    const textWidth = ctx.measureText(text).width;
+
+                    // Background box
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+                    ctx.strokeStyle = color;
+                    ctx.setLineDash([2, 2]);
+                    ctx.lineWidth = 1;
+
+                    const boxX = x - textWidth / 2 - 6;
+                    const boxY = y + offsetY - 8;
+                    const boxW = textWidth + 12;
+                    const boxH = 16;
+
+                    ctx.fillRect(boxX, boxY, boxW, boxH);
+                    ctx.strokeRect(boxX, boxY, boxW, boxH);
+
+                    // Text
+                    ctx.fillStyle = '#c8c8c8';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(text, x, y + offsetY);
+
+                    ctx.restore();
+                });
+            }
+        };
+
         function renderHoldersChart(results) {
             const ctx = document.getElementById('chart-holders').getContext('2d');
 
             if (holdersChart) holdersChart.destroy();
 
             const colors = ['#f5a623', '#4ecdc4', '#ff6b6b', '#95e1d3', '#a8e6cf', '#dcedc1'];
+            const annotations = [];
 
-            const datasets = results.holders.map((h, i) => ({
-                label: h.name,
-                data: results.holderTimeline[i],
-                borderColor: colors[i % colors.length],
-                backgroundColor: 'transparent',
-                borderWidth: 2,
-                pointStyle: 'rectRot',
-                pointRadius: 4,
-                pointBackgroundColor: colors[i % colors.length],
-                tension: 0
-            }));
+            // Build datasets with null values for inactive periods
+            const datasets = results.holders.map((h, i) => {
+                const data = results.timeline.map((t, monthIdx) => {
+                    const month = monthIdx + 1;
+                    // Before entry: null (no line)
+                    if (month < h.startMonth) return null;
+                    // After exit: null (line stops)
+                    if (h.exitMonth > 0 && month > h.exitMonth) return null;
+                    return results.holderTimeline[i][monthIdx];
+                });
+
+                // Track entry annotation (if not month 1)
+                if (h.startMonth > 1) {
+                    annotations.push({
+                        type: 'entry',
+                        name: h.name,
+                        datasetIndex: i,
+                        dataIndex: h.startMonth - 1,
+                        color: colors[i % colors.length]
+                    });
+                }
+
+                // Track exit annotation
+                if (h.exitMonth > 0) {
+                    annotations.push({
+                        type: 'exit',
+                        name: h.name,
+                        datasetIndex: i,
+                        dataIndex: h.exitMonth - 1,
+                        color: colors[i % colors.length]
+                    });
+                }
+
+                return {
+                    label: h.name,
+                    data,
+                    borderColor: colors[i % colors.length],
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    pointStyle: 'rectRot',
+                    pointRadius: 4,
+                    pointBackgroundColor: colors[i % colors.length],
+                    tension: 0,
+                    spanGaps: false  // Don't connect across nulls
+                };
+            });
 
             holdersChart = new Chart(ctx, {
                 type: 'line',
@@ -1309,6 +1564,9 @@
                                 size: 11,
                                 weight: 'normal'
                             }
+                        },
+                        entryExitAnnotations: {
+                            annotations
                         }
                     },
                     scales: {
@@ -1340,6 +1598,104 @@
                             }
                         }
                     }
+                },
+                plugins: [annotationPlugin]
+            });
+        }
+
+        function renderDistributionsChart(results) {
+            const ctx = document.getElementById('chart-distributions').getContext('2d');
+
+            if (distributionsChart) distributionsChart.destroy();
+
+            const colors = ['#f5a623', '#4ecdc4', '#ff6b6b', '#95e1d3', '#a8e6cf', '#dcedc1'];
+
+            // Build datasets with null values for inactive periods
+            // Note: distributions continue after exit (exit queue payments)
+            const datasets = results.holders.map((h, i) => {
+                const data = results.timeline.map((t, monthIdx) => {
+                    const month = monthIdx + 1;
+                    // Before entry AND no grant: null (no distributions possible)
+                    if (month < h.startMonth && h.grant === 0) return null;
+                    return results.distributionTimeline[i][monthIdx];
+                });
+
+                return {
+                    label: h.name,
+                    data,
+                    borderColor: colors[i % colors.length],
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    pointStyle: 'rectRot',
+                    pointRadius: 4,
+                    pointBackgroundColor: colors[i % colors.length],
+                    tension: 0,
+                    spanGaps: false
+                };
+            });
+
+            distributionsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: results.timeline.map(t => 'M' + t.month),
+                    datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                color: '#888',
+                                font: {
+                                    family: "'JetBrains Mono', monospace",
+                                    size: 10
+                                },
+                                usePointStyle: true
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'CUMULATIVE DISTRIBUTIONS RECEIVED',
+                            color: '#c8c8c8',
+                            font: {
+                                family: "'JetBrains Mono', monospace",
+                                size: 11,
+                                weight: 'normal'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: '#222'
+                            },
+                            ticks: {
+                                color: '#888',
+                                font: {
+                                    family: "'JetBrains Mono', monospace",
+                                    size: 10
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: '#222'
+                            },
+                            ticks: {
+                                color: '#888',
+                                font: {
+                                    family: "'JetBrains Mono', monospace",
+                                    size: 10
+                                },
+                                callback: function(value) {
+                                    return '$' + value.toFixed(0);
+                                }
+                            }
+                        }
+                    }
                 }
             });
         }
@@ -1350,15 +1706,17 @@
 
             results.holders.forEach(h => {
                 const value = h.tokens * results.finalP;
-                const totalReturn = h.distributions + (h.exitValue || 0);
+                // distributions already includes exit queue payments
+                // total return = cash received + current token value
+                const totalReturn = h.distributions + (h.tokens * results.finalP);
                 const tr = document.createElement('tr');
                 const exited = h.exitMonth > 0 ? ' (exited M' + h.exitMonth + ')' : '';
                 tr.innerHTML = `
                     <td>${h.name}${exited ? '<span class="exited">' + exited + '</span>' : ''}</td>
                     <td>${Math.round(h.tokens).toLocaleString()}</td>
-                    <td>$${value.toFixed(2)}</td>
-                    <td>$${h.distributions.toFixed(2)}</td>
-                    <td>$${totalReturn.toFixed(2)}</td>
+                    <td>$${value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    <td>$${h.distributions.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    <td>$${totalReturn.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                 `;
                 tbody.appendChild(tr);
             });

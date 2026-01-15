@@ -926,13 +926,13 @@
         <section>
             <h2>Choosing k (Pricing Constant)</h2>
             <div class="formula">
-                <code>k = MRR ÷ 1,000,000</code>
+                <code>k = max(MRR ÷ 1,000,000, 0.005)</code>
             </div>
-            <p>The pricing constant k anchors token value to business scale. Set k proportional to your monthly recurring revenue. This keeps grant values reasonable relative to what the business can actually pay out.</p>
+            <p>The pricing constant k anchors token value to business scale. Set k proportional to your monthly recurring revenue, with a minimum floor. This keeps grant values reasonable relative to what the business can actually pay out.</p>
             <div class="properties" style="margin-top: var(--space-sm);">
                 <div class="property">
-                    <div class="property-name">$1,000 MRR</div>
-                    <div class="property-desc">k = 0.001 → Price $0.10 at 10K supply</div>
+                    <div class="property-name">$0-5,000 MRR</div>
+                    <div class="property-desc">k = 0.005 (floor) → Price $0.50 at 10K supply</div>
                 </div>
                 <div class="property">
                     <div class="property-name">$10,000 MRR</div>
@@ -943,7 +943,7 @@
                     <div class="property-desc">k = 0.1 → Price $10.00 at 10K supply</div>
                 </div>
             </div>
-            <p style="margin-top: var(--space-md);">If k is too high, grants become worth more than the business can pay out. Rule of thumb: initial grants should total less than 50% of expected year-one distributions.</p>
+            <p style="margin-top: var(--space-md);">The floor ensures viable token economics for micro businesses. If k is too high, grants become worth more than the business can pay out. Rule of thumb: initial grants should total less than 50% of expected year-one distributions.</p>
         </section>
 
         <section>
@@ -975,11 +975,12 @@
             <div class="formula">
                 <code>exit_value = tokens × P</code>
             </div>
-            <p>Holders can exit at any time by burning their tokens. The system calculates exit value at current price.</p>
+            <p>Holders can exit any number of tokens at any time—one token, their entire stake, or anything in between. The system calculates exit value at current price.</p>
             <ul class="conditions">
                 <li>Burning tokens decreases supply</li>
                 <li>Holder joins the exit queue</li>
                 <li>Future distributions pay exit value</li>
+                <li>Partial exits let holders take liquidity while keeping exposure</li>
             </ul>
         </section>
 
@@ -1186,27 +1187,27 @@
                 holders: [
                     { name: 'Alice', grant: 8000, referralPct: 0.10, startMonth: 1, exitMonth: 0, exitTokens: 0 },
                     { name: 'Bob', grant: 3000, referralPct: 0.55, startMonth: 1, exitMonth: 0, exitTokens: 0 },
-                    { name: 'Carol', grant: 5000, referralPct: 0.05, startMonth: 3, exitMonth: 10, exitTokens: 3000 }
+                    { name: 'Carol', grant: 5000, referralPct: 0.05, startMonth: 3, exitMonth: 10, exitTokens: 2000 }
                 ]
-                // Bob's hustle overtakes Alice's larger grant; Carol exits late with modest gains
+                // Bob's hustle overtakes Alice's larger grant; Carol takes partial liquidity, keeps upside
             },
             {
-                name: 'Early Exit Regret',
+                name: 'Partial Exit Strategy',
                 holders: [
-                    { name: 'Alice', grant: 10000, referralPct: 0.15, startMonth: 1, exitMonth: 4, exitTokens: 8000 },
-                    { name: 'Bob', grant: 5000, referralPct: 0.25, startMonth: 2, exitMonth: 0, exitTokens: 0 },
+                    { name: 'Alice', grant: 10000, referralPct: 0.15, startMonth: 1, exitMonth: 4, exitTokens: 3000 },
+                    { name: 'Bob', grant: 5000, referralPct: 0.25, startMonth: 2, exitMonth: 8, exitTokens: 2000 },
                     { name: 'Carol', grant: 0, referralPct: 0.20, startMonth: 1, exitMonth: 0, exitTokens: 0 }
                 ]
-                // Alice exits too early, misses the growth; Bob and Carol benefit
+                // Alice and Bob take partial exits at different times, balancing liquidity with exposure
             },
             {
                 name: 'Late Entry Success',
                 holders: [
-                    { name: 'Alice', grant: 12000, referralPct: 0.05, startMonth: 1, exitMonth: 0, exitTokens: 0 },
-                    { name: 'Bob', grant: 4000, referralPct: 0.15, startMonth: 1, exitMonth: 7, exitTokens: 2000 },
+                    { name: 'Alice', grant: 12000, referralPct: 0.05, startMonth: 1, exitMonth: 6, exitTokens: 4000 },
+                    { name: 'Bob', grant: 4000, referralPct: 0.15, startMonth: 1, exitMonth: 9, exitTokens: 1500 },
                     { name: 'Carol', grant: 0, referralPct: 0.40, startMonth: 6, exitMonth: 0, exitTokens: 0 }
                 ]
-                // Carol joins late but hustles hard, builds significant position despite no grant
+                // Alice and Bob take partial profits; Carol joins late, hustles hard, builds position
             },
             {
                 name: 'Steady Growth',
@@ -1215,7 +1216,16 @@
                     { name: 'Bob', grant: 7000, referralPct: 0.25, startMonth: 2, exitMonth: 0, exitTokens: 0 },
                     { name: 'Carol', grant: 6000, referralPct: 0.15, startMonth: 3, exitMonth: 0, exitTokens: 0 }
                 ]
-                // No dramatic exits; everyone grows steadily through distributions and referrals
+                // No exits; everyone grows steadily through distributions and referrals
+            },
+            {
+                name: 'Liquidity Ladder',
+                holders: [
+                    { name: 'Alice', grant: 9000, referralPct: 0.12, startMonth: 1, exitMonth: 5, exitTokens: 2000 },
+                    { name: 'Bob', grant: 6000, referralPct: 0.18, startMonth: 1, exitMonth: 8, exitTokens: 1500 },
+                    { name: 'Carol', grant: 5000, referralPct: 0.10, startMonth: 2, exitMonth: 11, exitTokens: 1000 }
+                ]
+                // Staggered partial exits create a liquidity ladder; all retain significant stakes
             }
         ];
 
@@ -1238,12 +1248,13 @@
         }
 
         // Get k value (auto-calculated or manual override)
+        // Formula: k = max(MRR / 1,000,000, 0.005)
         function getK() {
             if (kOverrideEnabled) {
-                return parseFloat(document.getElementById('sim-k').value) || 0.001;
+                return parseFloat(document.getElementById('sim-k').value) || 0.005;
             }
             const mrr = parseCommaNumber(document.getElementById('sim-mrr').value) || 1000;
-            return mrr / 1000000;
+            return Math.max(mrr / 1000000, 0.005);
         }
 
         // Update k display when MRR changes
@@ -1265,8 +1276,8 @@
                 btn.textContent = 'auto';
                 row.style.display = 'flex';
                 display.style.opacity = '0.5';
-                // Seed manual input with current auto value
-                const autoK = parseCommaNumber(document.getElementById('sim-mrr').value) / 1000000 || 0.001;
+                // Seed manual input with current auto value (with floor)
+                const autoK = Math.max(parseCommaNumber(document.getElementById('sim-mrr').value) / 1000000, 0.005);
                 document.getElementById('sim-k').value = autoK.toFixed(6).replace(/\.?0+$/, '');
             } else {
                 btn.textContent = 'override';

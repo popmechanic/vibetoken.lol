@@ -177,26 +177,27 @@ exit_value = tokens * P
 Exit blocked if S - tokens < S_min
 ```
 
-Holders can exit at any time by burning their tokens. The system calculates exit value at current price. Exiting reduces circulating supply, which lowers the token price for remaining holders.
+Holders can exit any number of tokens at any time—one token, their entire stake, or anything in between. The system calculates exit value at current price. Exiting reduces circulating supply, which lowers the token price for remaining holders.
 
 **How it works:**
-1. Holder requests exit for N tokens
+1. Holder requests exit for N tokens (any amount they hold)
 2. Exit value = N * P (at current price)
 3. Burning tokens decreases supply, lowering P
 4. Holder joins the exit queue
 5. Future distributions pay exit value
 
-**Example:** Holder has 500 tokens. Current supply S = 10,000, price P = $1.00.
-- Exit value = 500 * $1.00 = $500
-- 500 tokens are burned
-- New supply S = 9,500, new price P = $0.97
-- Holder joins queue for $500 payment
+**Example:** Holder has 500 tokens. Current supply S = 10,000, price P = $1.00. They exit 200 tokens.
+- Exit value = 200 * $1.00 = $200
+- 200 tokens are burned
+- New supply S = 9,800, new price P = $0.99
+- Holder joins queue for $200 payment
+- Holder retains 300 tokens, continues receiving distributions
 
 **Why would someone exit?** Two reasons:
 1. They need liquidity now
 2. They believe future distributions are worth less than exit value today
 
-Both are legitimate. The exit mechanism provides optionality without requiring a secondary market.
+Both are legitimate. Partial exits let holders take some liquidity while maintaining exposure. The exit mechanism provides optionality without requiring a secondary market.
 
 **Minimum supply floor:** Exit is blocked if it would reduce supply below S_min (1,000 tokens). The last tokens cannot exit, ensuring the system never reaches P = $0.
 
@@ -253,20 +254,22 @@ Next month, distribution pool is $600.
 
 ## Choosing k (Pricing Constant)
 
-The constant k anchors token price to business scale. Set k proportional to expected revenue:
+The constant k anchors token price to business scale. Set k proportional to expected revenue, with a minimum floor:
 
 ```
-k = MRR / 1,000,000
+k = max(MRR / 1,000,000, 0.005)
 ```
 
-Or equivalently: k = Annual Revenue / 10,000,000
+Or equivalently: k = max(Annual Revenue / 10,000,000, 0.005)
 
 | Business Scale | MRR | k | Price at S=10,000 |
 |----------------|-----|---|-------------------|
-| Pre-revenue | $500 | 0.0005 | $0.05 |
-| Early | $1,000 | 0.001 | $0.10 |
+| Micro/Pre-revenue | $0-5,000 | 0.005 (floor) | $0.50 |
+| Early | $5,000 | 0.005 | $0.50 |
 | Growing | $10,000 | 0.01 | $1.00 |
 | Established | $100,000 | 0.1 | $10.00 |
+
+**Why a floor?** Very small businesses need viable token economics. Without a minimum k, a $500 MRR business would have k = 0.0005, giving a floor price of $0.016. Tokens become too cheap to be meaningful. The floor of k = 0.005 ensures floor price is at least $0.16.
 
 **Why this matters:** If k is too high relative to revenue, token grants become worth more than the business can pay out. A 10,000-token grant at k=0.01 is worth $1,000. If total year-one distributions are only $2,000, that single grant claims half the pie before anyone hustles.
 

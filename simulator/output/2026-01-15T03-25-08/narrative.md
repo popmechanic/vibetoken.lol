@@ -3,113 +3,113 @@
 This analysis covers 100 simulations of a micro business model over 36 months.
 
 **Quick Summary:**
-- Business survival rate: 35%
-- Mean final token price: $2.31
+- Business survival rate: 39%
+- Mean final token price: $2.36
 - Revenue share (α): 25%
 - Initial participant count: 7
 
 ### Business Outcomes
 
-The micro business's high variance led to 65% failure rate, typically from consecutive zero-revenue months.
+The micro business's high variance led to 61% failure rate, typically from consecutive zero-revenue months.
 
 **Revenue Distribution:**
-- Mean: $5,667,563
-- Median: $36,172
-- Range: $0 - $156,332,499
+- Mean: $3,800,227,105
+- Median: $24,082
+- Range: $0 - $374,874,495,659
 
 The significant gap between mean and median revenue indicates a right-skewed distribution with occasional extreme successes.
 
 ### Participant Performance
 
 **ROI Rankings (Mean):**
-- Friend of Hustler #8: 501.70x ██████████
-- Friend of Hustler #7: 385.21x ██████████
-- Friend of Hustler #5: 370.17x ██████████
-- Friend of Hustler #12: 314.55x ██████████
-- Friend of Hustler #15: 278.12x ██████████
-- Friend of Hustler #10: 269.98x ██████████
-- Friend of Hustler #4: 267.98x ██████████
-- Hype Chaser #17: 254.87x ██████████
-- Friend of Hustler #3: 250.31x ██████████
-- Desperate Hustler: 247.60x ██████████
-- Friend of Hustler #14: 221.54x ██████████
-- Friend of Hustler #6: 201.36x ██████████
-- Friend of Hustler #1: 189.34x ██████████
-- Friend of Hustler #2: 183.76x ██████████
-- Hype Chaser #6: 180.56x ██████████
-- Hype Chaser #2: 177.12x ██████████
-- FOMO Wave #11: 156.28x ██████████
-- Hype Chaser #3: 156.14x ██████████
-- Friend of Hustler #13: 151.96x ██████████
-- Hype Chaser #18: 151.57x ██████████
-- FOMO Wave #16: 141.18x ██████████
-- Hype Chaser #10: 135.66x ██████████
-- Friend of Hustler #9: 123.39x ██████████
-- FOMO Wave #13: 123.37x ██████████
-- Hype Chaser #15: 120.64x ██████████
-- Hype Chaser #14: 120.51x ██████████
-- FOMO Wave #12: 119.96x ██████████
-- Friend of Hustler #11: 118.03x ██████████
-- Hype Chaser #5: 116.87x ██████████
-- Hype Chaser #9: 112.66x ██████████
-- FOMO Wave #1: 106.70x ██████████
-- FOMO Wave #14: 105.68x ██████████
-- Panic Seller: 87.21x ██████████
-- FOMO Wave #9: 85.67x ██████████
-- FOMO Wave #4: 80.04x ██████████
-- Hype Chaser #4: 76.31x ██████████
-- FOMO Wave #2: 74.11x ██████████
-- Diamond Anchor: 72.77x ██████████
-- Hype Chaser #13: 63.18x ██████████
-- Hype Chaser #16: 57.80x ██████████
-- FOMO Wave #8: 57.63x ██████████
-- FOMO Wave #6: 50.29x ██████████
-- Friend of Hustler #18: 48.30x ██████████
-- Hype Chaser #7: 47.67x ██████████
-- FOMO Wave #15: 47.33x ██████████
-- FOMO Wave #7: 44.15x ██████████
-- FOMO Wave #10: 42.78x ██████████
-- Bad Speculator: 31.85x ██████████
-- Hype Chaser #8: 31.75x ██████████
-- Hype Chaser #12: 30.41x ██████████
-- Hype Chaser #11: 26.71x ██████████
-- FOMO Wave #21: 25.18x ██████████
-- FOMO Wave #3: 24.28x ██████████
-- FOMO Wave #20: 22.48x ██████████
-- FOMO Wave #5: 19.15x ██████████
-- Friend of Hustler #17: 17.67x ██████████
-- Hype Chaser #21: 17.47x ██████████
-- Friend of Hustler #16: 16.46x ██████████
-- Hype Chaser #19: 15.85x ██████████
-- Hype Chaser #1: 15.43x ██████████
-- Hype Chaser #22: 15.36x ██████████
-- FOMO Wave #18: 15.19x ██████████
-- FOMO Wave #19: 15.04x ██████████
-- FOMO Wave #17: 14.11x ██████████
-- Impatient Skeptic: 12.19x ██████████
-- Hype Chaser #20: 11.11x ██████████
-- Rational Observer: 7.69x ███████
-- Early Exit Emily: 7.28x ███████
+- Friend of Hustler #1: 1408921.79x ██████████
+- Friend of Hustler #5: 786083.63x ██████████
+- Friend of Hustler #2: 730244.78x ██████████
+- Hype Chaser #6: 685308.53x ██████████
+- Friend of Hustler #3: 630167.25x ██████████
+- Friend of Hustler #7: 611616.93x ██████████
+- Desperate Hustler: 190338.01x ██████████
+- Hype Chaser #4: 188505.21x ██████████
+- Panic Seller: 56595.61x ██████████
+- FOMO Wave #8: 53313.28x ██████████
+- Diamond Anchor: 48176.34x ██████████
+- Friend of Hustler #6: 6861.43x ██████████
+- Hype Chaser #2: 5161.39x ██████████
+- Friend of Hustler #4: 4539.40x ██████████
+- Friend of Hustler #8: 4055.65x ██████████
+- Friend of Hustler #9: 2239.88x ██████████
+- Hype Chaser #9: 1994.09x ██████████
+- Bad Speculator: 1472.95x ██████████
+- Friend of Hustler #10: 1432.07x ██████████
+- Hype Chaser #11: 1365.80x ██████████
+- FOMO Wave #3: 999.08x ██████████
+- FOMO Wave #7: 899.84x ██████████
+- FOMO Wave #5: 838.82x ██████████
+- FOMO Wave #1: 707.32x ██████████
+- FOMO Wave #6: 371.96x ██████████
+- FOMO Wave #12: 325.48x ██████████
+- FOMO Wave #2: 211.11x ██████████
+- FOMO Wave #10: 147.89x ██████████
+- Hype Chaser #8: 127.21x ██████████
+- Friend of Hustler #12: 86.07x ██████████
+- Hype Chaser #3: 78.65x ██████████
+- Friend of Hustler #11: 73.46x ██████████
+- Friend of Hustler #13: 73.07x ██████████
+- Hype Chaser #7: 63.80x ██████████
+- Hype Chaser #14: 51.75x ██████████
+- Hype Chaser #12: 50.03x ██████████
+- Friend of Hustler #18: 37.63x ██████████
+- Friend of Hustler #16: 36.32x ██████████
+- Friend of Hustler #14: 34.09x ██████████
+- Friend of Hustler #15: 33.01x ██████████
+- FOMO Wave #15: 32.17x ██████████
+- Friend of Hustler #17: 31.11x ██████████
+- Hype Chaser #10: 30.32x ██████████
+- Hype Chaser #15: 29.27x ██████████
+- Hype Chaser #5: 25.83x ██████████
+- FOMO Wave #14: 25.17x ██████████
+- Hype Chaser #13: 24.76x ██████████
+- Hype Chaser #18: 24.20x ██████████
+- FOMO Wave #11: 23.12x ██████████
+- FOMO Wave #21: 22.46x ██████████
+- Hype Chaser #16: 22.34x ██████████
+- FOMO Wave #13: 21.50x ██████████
+- FOMO Wave #20: 21.15x ██████████
+- FOMO Wave #17: 20.92x ██████████
+- Hype Chaser #17: 20.89x ██████████
+- FOMO Wave #16: 20.75x ██████████
+- FOMO Wave #18: 17.37x ██████████
+- FOMO Wave #4: 17.07x ██████████
+- Hype Chaser #20: 16.46x ██████████
+- Hype Chaser #19: 16.03x ██████████
+- FOMO Wave #9: 15.91x ██████████
+- Hype Chaser #21: 11.63x ██████████
+- FOMO Wave #19: 11.16x ██████████
+- Hype Chaser #22: 10.47x ██████████
+- Hype Chaser #1: 9.35x █████████
+- Impatient Skeptic: 8.99x ████████
+- Early Exit Emily: 7.86x ███████
+- Rational Observer: 7.67x ███████
 
 **Behavior Analysis:**
 
-**Diamond hands showed mixed results.** While they captured upside in successful scenarios, they also bore full losses in failures. Average ROI: 72.77x.
+**Diamond hands showed mixed results.** While they captured upside in successful scenarios, they also bore full losses in failures. Average ROI: 48176.34x.
 
-**Rational actors** achieved 7.69x average ROI. Their NPV-based exit decisions helped preserve capital in the majority of failing scenarios.
+**Rational actors** achieved 7.67x average ROI. Their NPV-based exit decisions helped preserve capital in the majority of failing scenarios.
 
-**Trend followers** achieved 87.21x average ROI. Momentum-based decisions led to variable outcomes depending on price trajectory timing.
+**Trend followers** achieved 56595.61x average ROI. Momentum-based decisions led to variable outcomes depending on price trajectory timing.
 
-**Skeptics** achieved 12.19x average ROI. Their caution was rewarded—early exits preserved capital when businesses failed to validate.
+**Skeptics** achieved 8.99x average ROI. Their caution was rewarded—early exits preserved capital when businesses failed to validate.
 
 
 
 ### Economic Observations
 
 **Token Price Dynamics:**
-- Final price range: $1.41 - $3.32
-- Coefficient of variation: 24.2%
+- Final price range: $1.29 - $3.40
+- Coefficient of variation: 25.5%
 
-The square root pricing function (P = k×√S) delivered relatively stable prices despite varying revenue conditions. A 24% coefficient of variation suggests the bonding curve effectively dampened volatility.
+The square root pricing function (P = k×√S) delivered relatively stable prices despite varying revenue conditions. A 26% coefficient of variation suggests the bonding curve effectively dampened volatility.
 
 **Supply Floor (S_min = 1000):**
 The minimum supply floor prevented price collapse in failure scenarios. Floor price: $0.25. No simulation reached the floor, indicating adequate supply cushion.
@@ -121,7 +121,7 @@ In failed scenarios, exit queues froze when revenue stopped. Participants who ex
 
 1. **Mixed outcomes favor balanced strategies.** Neither pure conviction nor pure caution dominated. Risk management mattered.
 
-2. **Friend of Hustler #8** achieved highest returns (501.70x), while **Early Exit Emily** achieved lowest (7.28x).
+2. **Friend of Hustler #1** achieved highest returns (1408921.79x), while **Rational Observer** achieved lowest (7.67x).
 
 3. **The tokenomics performed as designed.** Supply-based pricing provided price discovery, distributions rewarded holders, and the exit queue enabled liquidity without secondary markets.
 

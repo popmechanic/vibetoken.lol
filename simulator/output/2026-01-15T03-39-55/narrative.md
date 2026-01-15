@@ -3,32 +3,32 @@
 This analysis covers 100 simulations of a micro business model over 36 months.
 
 **Quick Summary:**
-- Business survival rate: 94%
+- Business survival rate: 97%
 - Mean final token price: $0.25
 - Revenue share (α): 20%
 - Initial participant count: 3
 
 ### Business Outcomes
 
-Despite high revenue volatility, the micro business survived in 94% of cases. The square root pricing function helped dampen price swings during spiky revenue periods.
+Despite high revenue volatility, the micro business survived in 97% of cases. The square root pricing function helped dampen price swings during spiky revenue periods.
 
 **Revenue Distribution:**
-- Mean: $499,132
-- Median: $97,332
-- Range: $1,801 - $9,544,389
+- Mean: $2,480,917
+- Median: $101,675
+- Range: $1,994 - $178,301,461
 
 The significant gap between mean and median revenue indicates a right-skewed distribution with occasional extreme successes.
 
 ### Participant Performance
 
 **ROI Rankings (Mean):**
-- Conservative Holder: 4.28x ████
+- Conservative Holder: 10.28x ██████████
 - Founder's Friend: 4.20x ████
 - Early Adopter: 3.09x ███
 
 **Behavior Analysis:**
 
-**Rational actors** achieved 3.86x average ROI. Their conservative approach may have triggered premature exits in some successful scenarios.
+**Rational actors** achieved 5.86x average ROI. Their conservative approach may have triggered premature exits in some successful scenarios.
 
 
 
@@ -50,7 +50,7 @@ With high survival rate, exit queues typically cleared quickly. The FIFO queue p
 
 1. **High survival rate rewards patience.** Diamond hands and long-term holders outperformed reactive strategies in this scenario.
 
-2. **Conservative Holder** achieved highest returns (4.28x), while **Early Adopter** achieved lowest (3.09x).
+2. **Conservative Holder** achieved highest returns (10.28x), while **Early Adopter** achieved lowest (3.09x).
 
 3. **The tokenomics performed as designed.** Supply-based pricing provided price discovery, distributions rewarded holders, and the exit queue enabled liquidity without secondary markets.
 

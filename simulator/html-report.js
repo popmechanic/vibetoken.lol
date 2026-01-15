@@ -552,6 +552,17 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
         Chart.defaults.borderColor = '#222';
         Chart.defaults.font.family = "'JetBrains Mono', monospace";
 
+        // Tooltip styling (dark theme with dashed border)
+        Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+        Chart.defaults.plugins.tooltip.titleColor = '#e8e8e8';
+        Chart.defaults.plugins.tooltip.bodyColor = '#e8e8e8';
+        Chart.defaults.plugins.tooltip.borderColor = '#888';
+        Chart.defaults.plugins.tooltip.borderWidth = 1;
+        Chart.defaults.plugins.tooltip.padding = 10;
+        Chart.defaults.plugins.tooltip.cornerRadius = 0;
+        Chart.defaults.plugins.tooltip.displayColors = true;
+        Chart.defaults.plugins.tooltip.boxPadding = 4;
+
         // Colors
         const ORANGE = '#f5a623';
         const TEAL = '#4ecdc4';
@@ -712,6 +723,10 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
                     plugins: {
                         title: {
                             display: true,
@@ -719,7 +734,20 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
                             font: { size: 11, weight: 'normal' },
                             padding: { bottom: 15 }
                         },
-                        legend: { display: false }
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.datasetIndex === 1) {
+                                        return 'Mean: $' + context.parsed.y.toFixed(2);
+                                    } else if (context.datasetIndex === 0) {
+                                        return '90th %: $' + context.parsed.y.toFixed(2);
+                                    } else {
+                                        return '10th %: $' + context.parsed.y.toFixed(2);
+                                    }
+                                }
+                            }
+                        }
                     },
                     scales: {
                         x: {
@@ -784,6 +812,10 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
                     plugins: {
                         title: {
                             display: true,
@@ -791,7 +823,20 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
                             font: { size: 11, weight: 'normal' },
                             padding: { bottom: 15 }
                         },
-                        legend: { display: false }
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.datasetIndex === 1) {
+                                        return 'Mean: ' + formatRevenue(context.parsed.y);
+                                    } else if (context.datasetIndex === 0) {
+                                        return '90th %: ' + formatRevenue(context.parsed.y);
+                                    } else {
+                                        return '10th %: ' + formatRevenue(context.parsed.y);
+                                    }
+                                }
+                            }
+                        }
                     },
                     scales: {
                         x: {
@@ -840,6 +885,10 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
                     plugins: {
                         title: {
                             display: true,
@@ -853,6 +902,13 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
                                 usePointStyle: true,
                                 padding: 15,
                                 font: { size: 10 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + Math.round(context.parsed.y).toLocaleString() + ' tokens';
+                                }
                             }
                         }
                     },

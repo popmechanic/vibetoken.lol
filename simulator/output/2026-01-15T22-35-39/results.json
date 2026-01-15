@@ -1,0 +1,113 @@
+{
+  "config": {
+    "meta": {
+      "name": "Micro Business + Diamond Hands",
+      "description": "Small, spiky business with committed holders who never exit. Tests whether patience pays off in high-variance environments.",
+      "version": "1.0"
+    },
+    "simulation": {
+      "runs": 10,
+      "duration_months": 36,
+      "seed": null,
+      "parallel_batches": 5
+    },
+    "business": {
+      "archetype": "micro",
+      "base_mrr": 1500,
+      "params": {
+        "growth_mean": 0.03,
+        "growth_stddev": 0.35,
+        "spike_probability": 0.1,
+        "spike_multiplier": 2.5,
+        "zero_probability": 0.12,
+        "failure_threshold": 3
+      }
+    },
+    "tokenomics": {
+      "alpha": 0.2,
+      "k": 0.008,
+      "treasury": 75000,
+      "s_min": 1000
+    },
+    "participants": [
+      {
+        "id": "founder_friend",
+        "name": "Founder's Friend",
+        "behavior": "diamond_hands",
+        "grant": 8000,
+        "referral_share": 0.15,
+        "start_month": 1,
+        "params": {
+          "labor_intensity": 0.3
+        }
+      },
+      {
+        "id": "early_adopter",
+        "name": "Early Adopter",
+        "behavior": "diamond_hands",
+        "grant": 5000,
+        "referral_share": 0.2,
+        "start_month": 1,
+        "params": {
+          "labor_intensity": 0.4
+        }
+      },
+      {
+        "id": "committed_holder",
+        "name": "Committed Holder",
+        "behavior": "diamond_hands",
+        "grant": 3000,
+        "referral_share": 0.05,
+        "start_month": 3,
+        "params": {
+          "labor_intensity": 0.2
+        }
+      }
+    ]
+  },
+  "baseSeed": 1768516539171,
+  "runs": 10,
+  "survivalRate": 0.9,
+  "priceStats": {
+    "mean": 1.4958870652036427,
+    "median": 1.277923315383204,
+    "min": 1.0515664505869327,
+    "max": 2.2052011246142604,
+    "stddev": 0.4965789848115127,
+    "count": 10
+  },
+  "revenueStats": {
+    "mean": 1280252.7347132522,
+    "median": 124261.19164315776,
+    "min": 4427.18012622497,
+    "max": 8058224.128454037,
+    "stddev": 2389583.35158925,
+    "count": 10
+  },
+  "participantStats": {
+    "Founder's Friend": {
+      "mean": 63.69655121145827,
+      "median": 12.616930039689207,
+      "min": 4.419970122528255,
+      "max": 334.80572938977497,
+      "stddev": 99.58065712913886,
+      "count": 10
+    },
+    "Early Adopter": {
+      "mean": 109.5332487273071,
+      "median": 15.972335423582614,
+      "min": 4.489698064317604,
+      "max": 598.6724627324236,
+      "stddev": 179.35301914848887,
+      "count": 10
+    },
+    "Committed Holder": {
+      "mean": 70.2174655416296,
+      "median": 12.161085159293272,
+      "min": 4.329633834955628,
+      "max": 417.98827449921254,
+      "stddev": 122.3108416739668,
+      "count": 10
+    }
+  }
+}

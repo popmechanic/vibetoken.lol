@@ -284,6 +284,12 @@ function runMonth(state, participants, business, entryPool, history, rng) {
     }
 
     // 8. Create snapshot for history
+    // Track participant balances for charting
+    const participantBalances = {};
+    for (const p of participants) {
+        participantBalances[p.id] = p.tokens;
+    }
+
     const snapshot = {
         month,
         S: state.S,
@@ -295,6 +301,7 @@ function runMonth(state, participants, business, entryPool, history, rng) {
         queueValue: state.queue.reduce((sum, e) => sum + e.owed, 0),
         treasuryRemaining: state.treasuryRemaining,
         participantCount: participants.filter(p => !p.hasExited).length,
+        participantBalances,
         events
     };
 

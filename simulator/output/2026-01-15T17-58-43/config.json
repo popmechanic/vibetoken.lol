@@ -5,7 +5,7 @@
     "version": "1.0"
   },
   "simulation": {
-    "runs": 20,
+    "runs": 100,
     "duration_months": 36,
     "seed": null,
     "parallel_batches": 5

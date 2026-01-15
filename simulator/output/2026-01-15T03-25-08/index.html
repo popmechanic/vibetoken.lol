@@ -275,15 +275,15 @@
             </div>
             <div class="stat">
                 <div class="stat-label">Survival Rate</div>
-                <div class="stat-value">42%</div>
+                <div class="stat-value">35%</div>
             </div>
             <div class="stat">
                 <div class="stat-label">Mean Price</div>
-                <div class="stat-value">$2.34</div>
+                <div class="stat-value">$2.31</div>
             </div>
             <div class="stat">
                 <div class="stat-label">Mean Revenue</div>
-                <div class="stat-value">$415.4M</div>
+                <div class="stat-value">$5.7M</div>
             </div>
         </div>
 
@@ -293,13 +293,19 @@
                 <canvas id="chart-survival"></canvas>
             </div>
             <div class="chart-container">
-                <canvas id="chart-price"></canvas>
+                <canvas id="chart-price-dist"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="chart-price-time"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="chart-revenue-time"></canvas>
             </div>
             <div class="chart-container full-width tall">
                 <canvas id="chart-roi"></canvas>
             </div>
-            <div class="chart-container">
-                <canvas id="chart-revenue"></canvas>
+            <div class="chart-container full-width tall">
+                <canvas id="chart-balances"></canvas>
             </div>
         </div>
 
@@ -312,20 +318,20 @@
 <p>This analysis covers 100 simulations of a micro business model over 36 months.</p>
 
 <ul class="conditions">
-<li>Business survival rate: 42%</li>
-<li>Mean final token price: $2.34</li>
+<li>Business survival rate: 35%</li>
+<li>Mean final token price: $2.31</li>
 <li>Revenue share (α): 25%</li>
 <li>Initial participant count: 7</li>
 </ul>
 
 <h3>Business Outcomes</h3>
 
-<p>The micro business's high variance led to 58% failure rate, typically from consecutive zero-revenue months.</p>
+<p>The micro business's high variance led to 65% failure rate, typically from consecutive zero-revenue months.</p>
 
 <ul class="conditions">
-<li>Mean: $415,399,684</li>
-<li>Median: $54,341</li>
-<li>Range: $0 - $40,552,467,598</li>
+<li>Mean: $5,667,563</li>
+<li>Median: $36,172</li>
+<li>Range: $0 - $156,332,499</li>
 </ul>
 
 <p>The significant gap between mean and median revenue indicates a right-skewed distribution with occasional extreme successes.</p>
@@ -333,98 +339,94 @@
 <h3>Participant Performance</h3>
 
 <ul class="conditions">
-<li>Friend of Hustler #15: 254066.62x ██████████</li>
-<li>Friend of Hustler #2: 76535.11x ██████████</li>
-<li>Hype Chaser #14: 50849.82x ██████████</li>
-<li>Friend of Hustler #7: 48383.92x ██████████</li>
-<li>Friend of Hustler #6: 43791.17x ██████████</li>
-<li>Friend of Hustler #12: 29835.15x ██████████</li>
-<li>Hype Chaser #11: 21421.82x ██████████</li>
-<li>Hype Chaser #9: 18964.57x ██████████</li>
-<li>Desperate Hustler: 17048.70x ██████████</li>
-<li>Hype Chaser #5: 13975.06x ██████████</li>
-<li>FOMO Wave #8: 11456.87x ██████████</li>
-<li>FOMO Wave #13: 9957.31x ██████████</li>
-<li>FOMO Wave #3: 9635.34x ██████████</li>
-<li>FOMO Wave #4: 9079.51x ██████████</li>
-<li>FOMO Wave #1: 7628.44x ██████████</li>
-<li>FOMO Wave #10: 6634.47x ██████████</li>
-<li>Panic Seller: 5496.07x ██████████</li>
-<li>Diamond Anchor: 4770.49x ██████████</li>
-<li>Friend of Hustler #1: 1598.30x ██████████</li>
-<li>Friend of Hustler #4: 1121.22x ██████████</li>
-<li>Friend of Hustler #11: 1075.22x ██████████</li>
-<li>Friend of Hustler #9: 873.37x ██████████</li>
-<li>Hype Chaser #8: 411.61x ██████████</li>
-<li>Bad Speculator: 329.77x ██████████</li>
-<li>FOMO Wave #6: 226.46x ██████████</li>
-<li>FOMO Wave #5: 223.18x ██████████</li>
-<li>FOMO Wave #7: 215.03x ██████████</li>
-<li>FOMO Wave #2: 181.76x ██████████</li>
-<li>Hype Chaser #1: 170.58x ██████████</li>
-<li>Hype Chaser #2: 157.90x ██████████</li>
-<li>Friend of Hustler #8: 128.92x ██████████</li>
-<li>Friend of Hustler #18: 106.81x ██████████</li>
-<li>Hype Chaser #7: 85.66x ██████████</li>
-<li>Friend of Hustler #13: 77.68x ██████████</li>
-<li>Friend of Hustler #3: 61.72x ██████████</li>
-<li>Hype Chaser #3: 52.31x ██████████</li>
-<li>Friend of Hustler #10: 43.51x ██████████</li>
-<li>Hype Chaser #15: 33.62x ██████████</li>
-<li>Friend of Hustler #5: 31.84x ██████████</li>
-<li>Friend of Hustler #14: 31.66x ██████████</li>
-<li>FOMO Wave #16: 28.18x ██████████</li>
-<li>Friend of Hustler #16: 27.65x ██████████</li>
-<li>Hype Chaser #13: 26.19x ██████████</li>
-<li>Hype Chaser #17: 25.18x ██████████</li>
-<li>Hype Chaser #16: 24.42x ██████████</li>
-<li>FOMO Wave #12: 24.16x ██████████</li>
-<li>FOMO Wave #14: 22.88x ██████████</li>
-<li>FOMO Wave #15: 22.70x ██████████</li>
-<li>Hype Chaser #4: 22.52x ██████████</li>
-<li>FOMO Wave #11: 22.28x ██████████</li>
-<li>Hype Chaser #21: 21.78x ██████████</li>
-<li>FOMO Wave #9: 19.65x ██████████</li>
-<li>Hype Chaser #6: 19.36x ██████████</li>
-<li>FOMO Wave #17: 18.63x ██████████</li>
-<li>Hype Chaser #12: 17.99x ██████████</li>
-<li>Friend of Hustler #20: 17.13x ██████████</li>
-<li>Hype Chaser #18: 16.95x ██████████</li>
-<li>Hype Chaser #20: 16.45x ██████████</li>
-<li>Hype Chaser #10: 16.07x ██████████</li>
-<li>Hype Chaser #19: 16.05x ██████████</li>
-<li>Friend of Hustler #23: 14.94x ██████████</li>
-<li>Friend of Hustler #17: 13.94x ██████████</li>
-<li>Hype Chaser #22: 12.54x ██████████</li>
-<li>Friend of Hustler #19: 11.88x ██████████</li>
-<li>FOMO Wave #21: 11.19x ██████████</li>
-<li>FOMO Wave #18: 10.93x ██████████</li>
-<li>FOMO Wave #22: 10.00x ██████████</li>
-<li>FOMO Wave #19: 9.79x █████████</li>
-<li>FOMO Wave #20: 9.79x █████████</li>
-<li>Impatient Skeptic: 8.99x ████████</li>
-<li>Rational Observer: 7.66x ███████</li>
-<li>Early Exit Emily: 7.63x ███████</li>
+<li>Friend of Hustler #8: 501.70x ██████████</li>
+<li>Friend of Hustler #7: 385.21x ██████████</li>
+<li>Friend of Hustler #5: 370.17x ██████████</li>
+<li>Friend of Hustler #12: 314.55x ██████████</li>
+<li>Friend of Hustler #15: 278.12x ██████████</li>
+<li>Friend of Hustler #10: 269.98x ██████████</li>
+<li>Friend of Hustler #4: 267.98x ██████████</li>
+<li>Hype Chaser #17: 254.87x ██████████</li>
+<li>Friend of Hustler #3: 250.31x ██████████</li>
+<li>Desperate Hustler: 247.60x ██████████</li>
+<li>Friend of Hustler #14: 221.54x ██████████</li>
+<li>Friend of Hustler #6: 201.36x ██████████</li>
+<li>Friend of Hustler #1: 189.34x ██████████</li>
+<li>Friend of Hustler #2: 183.76x ██████████</li>
+<li>Hype Chaser #6: 180.56x ██████████</li>
+<li>Hype Chaser #2: 177.12x ██████████</li>
+<li>FOMO Wave #11: 156.28x ██████████</li>
+<li>Hype Chaser #3: 156.14x ██████████</li>
+<li>Friend of Hustler #13: 151.96x ██████████</li>
+<li>Hype Chaser #18: 151.57x ██████████</li>
+<li>FOMO Wave #16: 141.18x ██████████</li>
+<li>Hype Chaser #10: 135.66x ██████████</li>
+<li>Friend of Hustler #9: 123.39x ██████████</li>
+<li>FOMO Wave #13: 123.37x ██████████</li>
+<li>Hype Chaser #15: 120.64x ██████████</li>
+<li>Hype Chaser #14: 120.51x ██████████</li>
+<li>FOMO Wave #12: 119.96x ██████████</li>
+<li>Friend of Hustler #11: 118.03x ██████████</li>
+<li>Hype Chaser #5: 116.87x ██████████</li>
+<li>Hype Chaser #9: 112.66x ██████████</li>
+<li>FOMO Wave #1: 106.70x ██████████</li>
+<li>FOMO Wave #14: 105.68x ██████████</li>
+<li>Panic Seller: 87.21x ██████████</li>
+<li>FOMO Wave #9: 85.67x ██████████</li>
+<li>FOMO Wave #4: 80.04x ██████████</li>
+<li>Hype Chaser #4: 76.31x ██████████</li>
+<li>FOMO Wave #2: 74.11x ██████████</li>
+<li>Diamond Anchor: 72.77x ██████████</li>
+<li>Hype Chaser #13: 63.18x ██████████</li>
+<li>Hype Chaser #16: 57.80x ██████████</li>
+<li>FOMO Wave #8: 57.63x ██████████</li>
+<li>FOMO Wave #6: 50.29x ██████████</li>
+<li>Friend of Hustler #18: 48.30x ██████████</li>
+<li>Hype Chaser #7: 47.67x ██████████</li>
+<li>FOMO Wave #15: 47.33x ██████████</li>
+<li>FOMO Wave #7: 44.15x ██████████</li>
+<li>FOMO Wave #10: 42.78x ██████████</li>
+<li>Bad Speculator: 31.85x ██████████</li>
+<li>Hype Chaser #8: 31.75x ██████████</li>
+<li>Hype Chaser #12: 30.41x ██████████</li>
+<li>Hype Chaser #11: 26.71x ██████████</li>
+<li>FOMO Wave #21: 25.18x ██████████</li>
+<li>FOMO Wave #3: 24.28x ██████████</li>
+<li>FOMO Wave #20: 22.48x ██████████</li>
+<li>FOMO Wave #5: 19.15x ██████████</li>
+<li>Friend of Hustler #17: 17.67x ██████████</li>
+<li>Hype Chaser #21: 17.47x ██████████</li>
+<li>Friend of Hustler #16: 16.46x ██████████</li>
+<li>Hype Chaser #19: 15.85x ██████████</li>
+<li>Hype Chaser #1: 15.43x ██████████</li>
+<li>Hype Chaser #22: 15.36x ██████████</li>
+<li>FOMO Wave #18: 15.19x ██████████</li>
+<li>FOMO Wave #19: 15.04x ██████████</li>
+<li>FOMO Wave #17: 14.11x ██████████</li>
+<li>Impatient Skeptic: 12.19x ██████████</li>
+<li>Hype Chaser #20: 11.11x ██████████</li>
+<li>Rational Observer: 7.69x ███████</li>
+<li>Early Exit Emily: 7.28x ███████</li>
 </ul>
 
 <p><strong>Behavior Analysis:</strong></p>
 
-<p><strong>Diamond hands showed mixed results.</strong> While they captured upside in successful scenarios, they also bore full losses in failures. Average ROI: 4770.49x.</p>
+<p><strong>Diamond hands showed mixed results.</strong> While they captured upside in successful scenarios, they also bore full losses in failures. Average ROI: 72.77x.</p>
 
-<p><strong>Rational actors</strong> achieved 7.66x average ROI. Their NPV-based exit decisions helped preserve capital in the majority of failing scenarios.</p>
+<p><strong>Rational actors</strong> achieved 7.69x average ROI. Their NPV-based exit decisions helped preserve capital in the majority of failing scenarios.</p>
 
-<p><strong>Trend followers</strong> achieved 5496.07x average ROI. Momentum-based decisions led to variable outcomes depending on price trajectory timing.</p>
+<p><strong>Trend followers</strong> achieved 87.21x average ROI. Momentum-based decisions led to variable outcomes depending on price trajectory timing.</p>
 
-<p><strong>Skeptics</strong> achieved 8.99x average ROI. Their caution was rewarded—early exits preserved capital when businesses failed to validate.</p>
+<p><strong>Skeptics</strong> achieved 12.19x average ROI. Their caution was rewarded—early exits preserved capital when businesses failed to validate.</p>
 
 <h3>Economic Observations</h3>
 
 <ul class="conditions">
-<li>Final price range: $1.42 - $3.41</li>
-<li>Coefficient of variation: 23.2%</li>
+<li>Final price range: $1.41 - $3.32</li>
+<li>Coefficient of variation: 24.2%</li>
 </ul>
 
-<p>The square root pricing function (P = k×√S) delivered relatively stable prices despite varying revenue conditions. A 23% coefficient of variation suggests the bonding curve effectively dampened volatility.</p>
+<p>The square root pricing function (P = k×√S) delivered relatively stable prices despite varying revenue conditions. A 24% coefficient of variation suggests the bonding curve effectively dampened volatility.</p>
 
 <p><strong>Supply Floor (S_min = 1000):</strong> The minimum supply floor prevented price collapse in failure scenarios. Floor price: $0.25. No simulation reached the floor, indicating adequate supply cushion.</p>
 
@@ -434,7 +436,7 @@
 
 <p>1. <strong>Mixed outcomes favor balanced strategies.</strong> Neither pure conviction nor pure caution dominated. Risk management mattered.</p>
 
-<p>2. <strong>Friend of Hustler #15</strong> achieved highest returns (254066.62x), while <strong>Early Exit Emily</strong> achieved lowest (7.63x).</p>
+<p>2. <strong>Friend of Hustler #8</strong> achieved highest returns (501.70x), while <strong>Early Exit Emily</strong> achieved lowest (7.28x).</p>
 
 <p>3. <strong>The tokenomics performed as designed.</strong> Supply-based pricing provided price discovery, distributions rewarded holders, and the exit queue enabled liquidity without secondary markets.</p>
 
@@ -442,7 +444,7 @@
         </section>
 
         <footer>
-            Generated 2026-01-15 03:25:08 | 100 simulations × 36 months
+            Generated 2026-01-15 22:40:02 | 100 simulations × 36 months
         </footer>
     </article>
 
@@ -450,245 +452,783 @@
     <script>
         const DATA = {
   "runs": 100,
-  "survivalRate": 0.42,
+  "survivalRate": 0.35,
   "priceStats": {
-    "mean": 2.3409500711855213,
-    "median": 2.1699769584030153,
-    "min": 1.4164519052901163,
-    "max": 3.413760389951234,
-    "stddev": 0.5433403024040309,
+    "mean": 2.308205683855827,
+    "median": 2.085132130105908,
+    "min": 1.4110648461357118,
+    "max": 3.3224472907782903,
+    "stddev": 0.5596795878140085,
     "count": 100
   },
   "revenueStats": {
-    "mean": 415399684.44089544,
-    "median": 54340.88665430471,
+    "mean": 5667562.808757824,
+    "median": 36171.60970216713,
     "min": 0,
-    "max": 40552467597.64032,
-    "stddev": 4034708082.801259,
+    "max": 156332498.5675519,
+    "stddev": 22007045.58415304,
     "count": 100
   },
   "participantStats": {
-    "Friend of Hustler #15": {
-      "mean": 254066.62422791298,
-      "median": 254066.62422791298,
-      "min": 254066.62422791298,
-      "max": 254066.62422791298,
-      "stddev": 0,
-      "count": 1
-    },
-    "Friend of Hustler #2": {
-      "mean": 76535.10507490943,
-      "median": 13.40014567085,
-      "min": 6.707445620502638,
-      "max": 1377062.5474758954,
-      "stddev": 315424.2425199568,
-      "count": 18
-    },
-    "Hype Chaser #14": {
-      "mean": 50849.82206413518,
-      "median": 51.50831857280264,
-      "min": 10.986952426628596,
-      "max": 254066.62422791298,
-      "stddev": 101608.40681740874,
-      "count": 5
+    "Friend of Hustler #8": {
+      "mean": 501.6955392826131,
+      "median": 53.6405781470811,
+      "min": 8.488815915308804,
+      "max": 2812.153234762877,
+      "stddev": 865.5801113847633,
+      "count": 12
     },
     "Friend of Hustler #7": {
-      "mean": 48383.921535843176,
-      "median": 17.0682040550077,
-      "min": 9.57869608161779,
-      "max": 870275.4348981795,
-      "stddev": 199337.9750693548,
-      "count": 18
+      "mean": 385.2136084280429,
+      "median": 36.3286022626784,
+      "min": 6.946725847476637,
+      "max": 3011.5503005168825,
+      "stddev": 763.259844015356,
+      "count": 20
     },
-    "Friend of Hustler #6": {
-      "mean": 43791.172156735716,
-      "median": 15.956216383090323,
-      "min": 7.445871339205373,
-      "max": 1309648.5178415538,
-      "stddev": 235064.25434564584,
-      "count": 30
+    "Friend of Hustler #5": {
+      "mean": 370.1749131828386,
+      "median": 23.46157037085307,
+      "min": 7.511726216404737,
+      "max": 3171.319558250376,
+      "stddev": 758.4602362307143,
+      "count": 23
     },
     "Friend of Hustler #12": {
-      "mean": 29835.150732790677,
-      "median": 35.75130839287422,
-      "min": 9.123869793020944,
-      "max": 374495.52231629216,
-      "stddev": 99551.22087100867,
-      "count": 13
-    },
-    "Hype Chaser #11": {
-      "mean": 21421.81628245513,
-      "median": 32.67045724859728,
-      "min": 10.578265873751036,
-      "max": 149725.61869391036,
-      "stddev": 52379.814311482696,
+      "mean": 314.54526372197245,
+      "median": 46.30196640316707,
+      "min": 18.198070112271996,
+      "max": 1337.3946653164373,
+      "stddev": 475.2053584326662,
       "count": 7
     },
-    "Hype Chaser #9": {
-      "mean": 18964.56937584508,
-      "median": 15.41999586071602,
-      "min": 9.135172003676232,
-      "max": 169991.08582818395,
-      "stddev": 53396.11582299702,
-      "count": 9
+    "Friend of Hustler #15": {
+      "mean": 278.1165920940733,
+      "median": 21.864969373718726,
+      "min": 9.305106125133664,
+      "max": 1151.1836745938099,
+      "stddev": 442.2356426233992,
+      "count": 5
+    },
+    "Friend of Hustler #10": {
+      "mean": 269.9818869824605,
+      "median": 25.60588079618303,
+      "min": 8.740823759806624,
+      "max": 1525.4011158967319,
+      "stddev": 472.71469478749134,
+      "count": 15
+    },
+    "Friend of Hustler #4": {
+      "mean": 267.97623711938525,
+      "median": 24.028592699527938,
+      "min": 7.4822456522089675,
+      "max": 1994.601301215215,
+      "stddev": 593.6655198889716,
+      "count": 15
+    },
+    "Hype Chaser #17": {
+      "mean": 254.87335995926796,
+      "median": 26.593882525740167,
+      "min": 12.095412353450378,
+      "max": 968.4029202889192,
+      "stddev": 411.998125456137,
+      "count": 4
+    },
+    "Friend of Hustler #3": {
+      "mean": 250.3141987383038,
+      "median": 9.719095185252586,
+      "min": 5.967243919934898,
+      "max": 3200.8831610593293,
+      "stddev": 736.9548314484073,
+      "count": 21
     },
     "Desperate Hustler": {
-      "mean": 17048.697147992378,
-      "median": 11.814528737277634,
-      "min": 5.179960581153102,
-      "max": 1667159.8358228435,
-      "stddev": 165866.28655303598,
+      "mean": 247.60209415768566,
+      "median": 9.819998813668226,
+      "min": 5.023844265557195,
+      "max": 7090.524065014337,
+      "stddev": 939.0375320881888,
       "count": 100
     },
-    "Hype Chaser #5": {
-      "mean": 13975.058681241599,
-      "median": 12.297590742130724,
-      "min": 7.652319909674452,
-      "max": 236876.9835421591,
-      "stddev": 55725.52945420842,
-      "count": 17
+    "Friend of Hustler #14": {
+      "mean": 221.53944619118326,
+      "median": 51.139064272837466,
+      "min": 9.615276329304786,
+      "max": 1510.9047820138107,
+      "stddev": 459.63969994785884,
+      "count": 9
     },
-    "FOMO Wave #8": {
-      "mean": 11456.867475330244,
-      "median": 8.638438548101927,
-      "min": 6.289117585162486,
-      "max": 513898.7291754686,
-      "stddev": 75746.08633266177,
-      "count": 45
-    },
-    "FOMO Wave #13": {
-      "mean": 9957.310982968467,
-      "median": 11.26048740595269,
-      "min": 8.502764256405092,
-      "max": 254066.62422791298,
-      "stddev": 48829.001753276214,
-      "count": 26
+    "Friend of Hustler #6": {
+      "mean": 201.360086058002,
+      "median": 23.02884280423278,
+      "min": 7.224594881375703,
+      "max": 1921.816491659194,
+      "stddev": 468.68245967684373,
+      "count": 24
     }
   },
   "priceBins": [
     {
-      "min": 1.4164519052901163,
-      "max": 1.582894279011876,
-      "count": 1
+      "min": 1.4110648461357118,
+      "max": 1.5703467165225933,
+      "count": 3
     },
     {
-      "min": 1.582894279011876,
-      "max": 1.749336652733636,
+      "min": 1.5703467165225933,
+      "max": 1.729628586909475,
       "count": 8
     },
     {
-      "min": 1.749336652733636,
-      "max": 1.9157790264553958,
+      "min": 1.729628586909475,
+      "max": 1.8889104572963564,
+      "count": 12
+    },
+    {
+      "min": 1.8889104572963564,
+      "max": 2.048192327683238,
       "count": 16
     },
     {
-      "min": 1.9157790264553958,
-      "max": 2.0822214001771555,
-      "count": 9
-    },
-    {
-      "min": 2.0822214001771555,
-      "max": 2.2486637738989153,
+      "min": 2.048192327683238,
+      "max": 2.20747419807012,
       "count": 22
     },
     {
-      "min": 2.2486637738989153,
-      "max": 2.415106147620675,
-      "count": 9
-    },
-    {
-      "min": 2.415106147620675,
-      "max": 2.5815485213424347,
-      "count": 11
-    },
-    {
-      "min": 2.5815485213424347,
-      "max": 2.747990895064195,
-      "count": 2
-    },
-    {
-      "min": 2.747990895064195,
-      "max": 2.914433268785954,
-      "count": 1
-    },
-    {
-      "min": 2.914433268785954,
-      "max": 3.0808756425077144,
-      "count": 1
-    },
-    {
-      "min": 3.0808756425077144,
-      "max": 3.247318016229474,
+      "min": 2.20747419807012,
+      "max": 2.366756068457001,
       "count": 6
     },
     {
-      "min": 3.247318016229474,
-      "max": 3.413760389951234,
-      "count": 14
+      "min": 2.366756068457001,
+      "max": 2.5260379388438827,
+      "count": 3
+    },
+    {
+      "min": 2.5260379388438827,
+      "max": 2.685319809230764,
+      "count": 4
+    },
+    {
+      "min": 2.685319809230764,
+      "max": 2.8446016796176457,
+      "count": 5
+    },
+    {
+      "min": 2.8446016796176457,
+      "max": 3.0038835500045273,
+      "count": 0
+    },
+    {
+      "min": 3.0038835500045273,
+      "max": 3.163165420391409,
+      "count": 3
+    },
+    {
+      "min": 3.163165420391409,
+      "max": 3.3224472907782903,
+      "count": 18
     }
   ],
   "revenueBins": [
     {
       "min": 0,
-      "max": 3379372299.80336,
-      "count": 99
+      "max": 13027708.21396266,
+      "count": 93
     },
     {
-      "min": 3379372299.80336,
-      "max": 6758744599.60672,
+      "min": 13027708.21396266,
+      "max": 26055416.42792532,
+      "count": 1
+    },
+    {
+      "min": 26055416.42792532,
+      "max": 39083124.64188798,
+      "count": 1
+    },
+    {
+      "min": 39083124.64188798,
+      "max": 52110832.85585064,
+      "count": 1
+    },
+    {
+      "min": 52110832.85585064,
+      "max": 65138541.069813296,
       "count": 0
     },
     {
-      "min": 6758744599.60672,
-      "max": 10138116899.41008,
+      "min": 65138541.069813296,
+      "max": 78166249.28377596,
+      "count": 2
+    },
+    {
+      "min": 78166249.28377596,
+      "max": 91193957.49773861,
       "count": 0
     },
     {
-      "min": 10138116899.41008,
-      "max": 13517489199.21344,
+      "min": 91193957.49773861,
+      "max": 104221665.71170127,
       "count": 0
     },
     {
-      "min": 13517489199.21344,
-      "max": 16896861499.0168,
+      "min": 104221665.71170127,
+      "max": 117249373.92566393,
       "count": 0
     },
     {
-      "min": 16896861499.0168,
-      "max": 20276233798.82016,
+      "min": 117249373.92566393,
+      "max": 130277082.13962659,
+      "count": 1
+    },
+    {
+      "min": 130277082.13962659,
+      "max": 143304790.35358924,
       "count": 0
     },
     {
-      "min": 20276233798.82016,
-      "max": 23655606098.62352,
-      "count": 0
-    },
-    {
-      "min": 23655606098.62352,
-      "max": 27034978398.42688,
-      "count": 0
-    },
-    {
-      "min": 27034978398.42688,
-      "max": 30414350698.23024,
-      "count": 0
-    },
-    {
-      "min": 30414350698.23024,
-      "max": 33793722998.0336,
-      "count": 0
-    },
-    {
-      "min": 33793722998.0336,
-      "max": 37173095297.83696,
-      "count": 0
-    },
-    {
-      "min": 37173095297.83696,
-      "max": 40552467597.64032,
+      "min": 143304790.35358924,
+      "max": 156332498.5675519,
       "count": 1
     }
-  ]
+  ],
+  "monthLabels": [
+    "M1",
+    "M2",
+    "M3",
+    "M4",
+    "M5",
+    "M6",
+    "M7",
+    "M8",
+    "M9",
+    "M10",
+    "M11",
+    "M12",
+    "M13",
+    "M14",
+    "M15",
+    "M16",
+    "M17",
+    "M18",
+    "M19",
+    "M20",
+    "M21",
+    "M22",
+    "M23",
+    "M24",
+    "M25",
+    "M26",
+    "M27",
+    "M28",
+    "M29",
+    "M30",
+    "M31",
+    "M32",
+    "M33",
+    "M34",
+    "M35",
+    "M36"
+  ],
+  "priceTimeSeries": {
+    "means": [
+      1.8721089330444354,
+      1.892765827447018,
+      1.824903882618245,
+      1.807029471706053,
+      1.8082204289708141,
+      1.751555228144413,
+      1.7627373970571503,
+      1.7882436553984777,
+      1.812135463487058,
+      1.8426620817440704,
+      1.8656788531871833,
+      1.899291372340778,
+      1.9322372437043316,
+      1.9706922293509244,
+      2.003449168095536,
+      2.0312001599958016,
+      2.0592895623266814,
+      2.0894484533678788,
+      2.1145912355403307,
+      2.1321857684551726,
+      2.1602541788948293,
+      2.1938513188924476,
+      2.210845348036859,
+      2.2171534845237635,
+      2.2242106164972064,
+      2.2324794918192494,
+      2.248218465435334,
+      2.2605074116832244,
+      2.268583965657169,
+      2.2751760659245504,
+      2.28263782932539,
+      2.2889074937530944,
+      2.292263794658086,
+      2.296731415850951,
+      2.3001296313717994,
+      2.308205683855827
+    ],
+    "p10": [
+      1.8590320061795602,
+      1.8595139149788582,
+      1.6845462297010434,
+      1.68268357096633,
+      1.6353690714942606,
+      1.5647517374970383,
+      1.585494244707309,
+      1.6039950124610738,
+      1.6039950124610738,
+      1.6069648409346111,
+      1.637305102905381,
+      1.6441897700691366,
+      1.6445205988372418,
+      1.664173067922925,
+      1.664173067922925,
+      1.664173067922925,
+      1.6831589348602822,
+      1.6831589348602822,
+      1.6831589348602822,
+      1.6831589348602822,
+      1.6831589348602822,
+      1.6831779466235886,
+      1.6831779466235886,
+      1.6831779466235886,
+      1.7025345811465915,
+      1.7204650534085253,
+      1.7204650534085253,
+      1.7204650534085253,
+      1.7204650534085253,
+      1.7204650534085253,
+      1.7209299811439163,
+      1.7209299811439163,
+      1.7209299811439163,
+      1.7209299811439163,
+      1.7209299811439163,
+      1.7209299811439163
+    ],
+    "p90": [
+      1.9120836801772039,
+      1.9623496120722221,
+      1.9656897008429384,
+      1.9680325200565159,
+      1.9810623412704609,
+      1.941298534486646,
+      1.9717362906839242,
+      1.9962685190124099,
+      2.031685014956797,
+      2.0450134473885497,
+      2.099112193285533,
+      2.130029107782333,
+      2.205694448467421,
+      2.379741162395608,
+      2.3974252855928584,
+      2.4734494132688467,
+      2.6343090175603927,
+      2.862032843976463,
+      2.906136954790672,
+      3.0012690649123748,
+      3.0902685967404193,
+      3.3111593135939565,
+      3.331104321392532,
+      3.331104321392532,
+      3.3046101131600985,
+      3.3046101131600985,
+      3.303273527881093,
+      3.3046101131600985,
+      3.295854365714602,
+      3.2824673646511706,
+      3.2776088845376288,
+      3.2776088845376288,
+      3.2722249311439455,
+      3.2745613446689315,
+      3.2745613446689315,
+      3.2721564754760735
+    ]
+  },
+  "revenueTimeSeries": {
+    "means": [
+      923.8344166292429,
+      1220.4312620783646,
+      1545.3519395320604,
+      1721.7261155974006,
+      2470.566172335251,
+      3502.500642237182,
+      4591.299720363634,
+      5460.2585334015175,
+      5726.277153908811,
+      8688.319148649596,
+      8127.398341765092,
+      10827.785345920405,
+      14035.429115708084,
+      19084.93148498207,
+      22779.849467046548,
+      41512.19104741721,
+      36531.31429427972,
+      49848.4109040996,
+      64692.689243425026,
+      67500.54665146863,
+      98801.09626142532,
+      112610.9300419029,
+      173240.8786786836,
+      121850.36874060117,
+      135164.80574763246,
+      85341.71589634492,
+      149123.7759673332,
+      96209.5597426344,
+      174128.71739603148,
+      111470.07541871771,
+      255318.33891889613,
+      314703.8218865996,
+      468881.4234135981,
+      509168.7852765293,
+      325518.3115227781,
+      2165239.092847271
+    ],
+    "p10": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "p90": [
+      1742.2103168335882,
+      3170.198841313226,
+      4582.120639094857,
+      6281.037531442653,
+      8211.970313660924,
+      12039.18769918251,
+      14675.515943289485,
+      14482.080659448882,
+      18386.8108455927,
+      23740.965525343647,
+      16827.526973934167,
+      35167.675074264036,
+      18359.149635100683,
+      42145.33437680451,
+      30167.728930751717,
+      44295.435859859055,
+      41940.20643686792,
+      68514.4943594536,
+      58566.31624357384,
+      44290.61948236524,
+      126509.64833733482,
+      180625.86479926945,
+      176413.63627373104,
+      85586.320341197,
+      108268.76815179654,
+      47643.092682129674,
+      238984.6360085811,
+      104926.16491086865,
+      169890.2906050923,
+      54089.168342781086,
+      47843.72193812477,
+      136489.86189176454,
+      73335.21707296366,
+      67839.73278984828,
+      61863.473919906864,
+      357330.51572465536
+    ]
+  },
+  "balancesByBehavior": {
+    "trend_follower": [
+      8435.209302325582,
+      7135.411764705882,
+      6510.8407960199,
+      5888.7692307692305,
+      5426.0036900369005,
+      5139.833333333333,
+      4813.431952662722,
+      4664.782369146005,
+      4563.6437994722955,
+      4515.715404699739,
+      4483.609452736318,
+      4461.901678657075,
+      4440.20399113082,
+      4470.549356223176,
+      4482.042194092827,
+      4529.174897119342,
+      4552.561368209255,
+      4648.0081799591,
+      4722.298969072165,
+      4734.901606425703,
+      4825.532803180915,
+      4947.743083003953,
+      5002.003921568627,
+      5009.698039215687,
+      4984.6821705426355,
+      4970.546666666667,
+      4985.034026465029,
+      5022.418560606061,
+      5130.209580838324,
+      5071.654690618762,
+      5007.057395143488,
+      5007.974943052392,
+      5052.396181384248,
+      5042.028235294118,
+      5052.803278688524,
+      5101.2307692307695
+    ],
+    "skeptic": [
+      8009.1,
+      8021.72,
+      3385.6,
+      2267.78,
+      1794.79,
+      1320.71,
+      998.78,
+      955.4020618556701,
+      662.2065217391304,
+      626.7241379310345,
+      460.25581395348837,
+      499.2439024390244,
+      333.9390243902439,
+      376.25,
+      398.15584415584414,
+      245.64,
+      252.36986301369862,
+      267,
+      274.97014925373134,
+      274.97014925373134,
+      283.4307692307692,
+      292.42857142857144,
+      297.14516129032256,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "speculator": [
+      5717.37,
+      5369.21568627451,
+      4726.186915887851,
+      3848.6306306306305,
+      3256.245614035088,
+      3014.891666666667,
+      2760.931818181818,
+      2423.6492537313434,
+      2366.6617647058824,
+      2275.608695652174,
+      2184.902777777778,
+      2154.622377622378,
+      2085.6666666666665,
+      2092.5576923076924,
+      2175.9545454545455,
+      2239.7032258064514,
+      2198.801324503311,
+      2279.201342281879,
+      2353.1381578947367,
+      2354.515923566879,
+      2322.88125,
+      2364.056603773585,
+      2407.89375,
+      2357.7080745341614,
+      2234.030674846626,
+      2121.327272727273,
+      2095.8192771084337,
+      1962.502994011976,
+      1953.3435582822085,
+      1788.3128834355828,
+      1730.0616438356165,
+      1712.8297872340424,
+      1674.6544117647059,
+      1638.625,
+      1628.6911764705883,
+      1629.4347826086957
+    ],
+    "hustler": [
+      4767.851851851852,
+      4551.478632478633,
+      4288.2307692307695,
+      4114.815602836879,
+      4091.7602739726026,
+      3895.25,
+      3767.8555555555554,
+      3626.060913705584,
+      3600.458128078818,
+      3526.3153153153153,
+      3586.3189655172414,
+      3720.222222222222,
+      3890.8971193415637,
+      4071.373493975904,
+      4283.595141700405,
+      4486.532258064516,
+      4730.277108433735,
+      5081.877118644068,
+      5360.8441558441555,
+      5438.31914893617,
+      5794.0742358078605,
+      6221.938325991189,
+      6392.493333333333,
+      6456.459821428572,
+      6434.119469026548,
+      6438.812227074236,
+      6508.2164502164505,
+      6706.764192139738,
+      6913.819004524887,
+      6857.353211009175,
+      6825.264864864865,
+      6820.876404494382,
+      6911.25,
+      6968.28488372093,
+      6997.236994219653,
+      7126.522988505747
+    ],
+    "life_event": [
+      4005.53,
+      4013.27,
+      4023.03,
+      4034.24,
+      4050.46,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "diamond_hands": [
+      20017.41,
+      20041.32,
+      20071.31,
+      20105.52,
+      20154.86,
+      20224.34,
+      20318.88,
+      20439.453608247422,
+      20580.260869565216,
+      20794.954022988506,
+      20963.802325581397,
+      21223.353658536584,
+      21490.646341463416,
+      21821.9625,
+      22153.2987012987,
+      22443.173333333332,
+      22788.23287671233,
+      23179.144927536232,
+      23559.417910447763,
+      23723.701492537315,
+      24155.646153846155,
+      24872.238095238095,
+      25209.1935483871,
+      25324.45901639344,
+      25460.25,
+      25541.366666666665,
+      25787.542372881355,
+      26177.44827586207,
+      26554.327272727274,
+      26368.24074074074,
+      26256.08510638298,
+      26307.8,
+      26515.04651162791,
+      26585.04651162791,
+      26653.720930232557,
+      26831.488372093023
+    ],
+    "rational": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  }
 };
 
         // Chart defaults
@@ -739,7 +1279,7 @@
         });
 
         // 2. Price Distribution Histogram
-        new Chart(document.getElementById('chart-price'), {
+        new Chart(document.getElementById('chart-price-dist'), {
             type: 'bar',
             data: {
                 labels: DATA.priceBins.map(b => '$' + b.min.toFixed(2)),
@@ -817,48 +1357,206 @@
             }
         });
 
-        // 4. Revenue Distribution Histogram
+        // 4. Token Price Over Time (with percentile bands)
+        if (DATA.priceTimeSeries && DATA.priceTimeSeries.means) {
+            new Chart(document.getElementById('chart-price-time'), {
+                type: 'line',
+                data: {
+                    labels: DATA.monthLabels,
+                    datasets: [
+                        {
+                            label: '90th percentile',
+                            data: DATA.priceTimeSeries.p90,
+                            borderColor: 'transparent',
+                            backgroundColor: 'rgba(245, 166, 35, 0.15)',
+                            fill: '+1',
+                            pointRadius: 0,
+                            tension: 0
+                        },
+                        {
+                            label: 'Mean Price',
+                            data: DATA.priceTimeSeries.means,
+                            borderColor: ORANGE,
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            tension: 0
+                        },
+                        {
+                            label: '10th percentile',
+                            data: DATA.priceTimeSeries.p10,
+                            borderColor: 'transparent',
+                            backgroundColor: 'transparent',
+                            fill: false,
+                            pointRadius: 0,
+                            tension: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'TOKEN PRICE OVER TIME',
+                            font: { size: 11, weight: 'normal' },
+                            padding: { bottom: 15 }
+                        },
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: '#222' },
+                            ticks: { font: { size: 9 }, maxTicksLimit: 12 }
+                        },
+                        y: {
+                            grid: { color: '#222' },
+                            ticks: {
+                                font: { size: 9 },
+                                callback: function(value) { return '$' + value.toFixed(2); }
+                            },
+                            title: { display: true, text: 'Price', font: { size: 9 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 5. Monthly Revenue Over Time (with percentile bands)
         function formatRevenue(n) {
             if (n >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M';
             if (n >= 1000) return '$' + (n / 1000).toFixed(0) + 'K';
             return '$' + n.toFixed(0);
         }
 
-        new Chart(document.getElementById('chart-revenue'), {
-            type: 'bar',
-            data: {
-                labels: DATA.revenueBins.map(b => formatRevenue(b.min)),
-                datasets: [{
-                    data: DATA.revenueBins.map(b => b.count),
-                    backgroundColor: ORANGE,
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'REVENUE DISTRIBUTION',
-                        font: { size: 11, weight: 'normal' },
-                        padding: { bottom: 15 }
-                    },
-                    legend: { display: false }
+        if (DATA.revenueTimeSeries && DATA.revenueTimeSeries.means) {
+            new Chart(document.getElementById('chart-revenue-time'), {
+                type: 'line',
+                data: {
+                    labels: DATA.monthLabels,
+                    datasets: [
+                        {
+                            label: '90th percentile',
+                            data: DATA.revenueTimeSeries.p90,
+                            borderColor: 'transparent',
+                            backgroundColor: 'rgba(78, 205, 196, 0.15)',
+                            fill: '+1',
+                            pointRadius: 0,
+                            tension: 0
+                        },
+                        {
+                            label: 'Mean Revenue',
+                            data: DATA.revenueTimeSeries.means,
+                            borderColor: TEAL,
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            tension: 0
+                        },
+                        {
+                            label: '10th percentile',
+                            data: DATA.revenueTimeSeries.p10,
+                            borderColor: 'transparent',
+                            backgroundColor: 'transparent',
+                            fill: false,
+                            pointRadius: 0,
+                            tension: 0
+                        }
+                    ]
                 },
-                scales: {
-                    x: {
-                        grid: { display: false },
-                        ticks: { font: { size: 9 }, maxRotation: 45 }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'MONTHLY REVENUE OVER TIME',
+                            font: { size: 11, weight: 'normal' },
+                            padding: { bottom: 15 }
+                        },
+                        legend: { display: false }
                     },
-                    y: {
-                        grid: { color: '#222' },
-                        ticks: { font: { size: 9 } },
-                        title: { display: true, text: 'Runs', font: { size: 9 } }
+                    scales: {
+                        x: {
+                            grid: { color: '#222' },
+                            ticks: { font: { size: 9 }, maxTicksLimit: 12 }
+                        },
+                        y: {
+                            grid: { color: '#222' },
+                            ticks: {
+                                font: { size: 9 },
+                                callback: function(value) { return formatRevenue(value); }
+                            },
+                            title: { display: true, text: 'Revenue', font: { size: 9 } }
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
+
+        // 6. Token Balances by Behavior Type
+        const BEHAVIOR_COLORS = {
+            'diamond_hands': '#f5a623',
+            'rational': '#4ecdc4',
+            'hustler': '#ff6b6b',
+            'skeptic': '#95e1d3',
+            'trend_follower': '#a8e6cf'
+        };
+
+        if (DATA.balancesByBehavior && Object.keys(DATA.balancesByBehavior).length > 0) {
+            const behaviorDatasets = Object.entries(DATA.balancesByBehavior).map(([behavior, balances]) => ({
+                label: behavior.replace('_', ' '),
+                data: balances,
+                borderColor: BEHAVIOR_COLORS[behavior] || '#888',
+                backgroundColor: 'transparent',
+                borderWidth: 2,
+                pointRadius: 0,
+                tension: 0
+            }));
+
+            new Chart(document.getElementById('chart-balances'), {
+                type: 'line',
+                data: {
+                    labels: DATA.monthLabels,
+                    datasets: behaviorDatasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'TOKEN BALANCES BY BEHAVIOR TYPE',
+                            font: { size: 11, weight: 'normal' },
+                            padding: { bottom: 15 }
+                        },
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 15,
+                                font: { size: 10 }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: '#222' },
+                            ticks: { font: { size: 9 }, maxTicksLimit: 12 }
+                        },
+                        y: {
+                            grid: { color: '#222' },
+                            ticks: {
+                                font: { size: 9 },
+                                callback: function(value) { return value.toLocaleString(); }
+                            },
+                            title: { display: true, text: 'Tokens', font: { size: 9 } }
+                        }
+                    }
+                }
+            });
+        }
     </script>
 </body>
 </html>

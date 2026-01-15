@@ -1,11 +1,11 @@
 {
   "meta": {
-    "name": "Micro Business + Rational Actors",
-    "description": "Small, spiky business with economically rational participants. Tests whether rational actors can navigate high-variance revenue.",
+    "name": "Micro Business + Diamond Hands",
+    "description": "Small, spiky business with committed holders who never exit. Tests whether patience pays off in high-variance environments.",
     "version": "1.0"
   },
   "simulation": {
-    "runs": 100,
+    "runs": 10,
     "duration_months": 36,
     "seed": null,
     "parallel_batches": 5
@@ -32,41 +32,34 @@
     {
       "id": "founder_friend",
       "name": "Founder's Friend",
-      "behavior": "rational",
+      "behavior": "diamond_hands",
       "grant": 8000,
       "referral_share": 0.15,
       "start_month": 1,
       "params": {
-        "discount_rate": 0.04,
-        "forecast_horizon": 18,
-        "confidence": 0.75
+        "labor_intensity": 0.3
       }
     },
     {
       "id": "early_adopter",
       "name": "Early Adopter",
-      "behavior": "rational",
+      "behavior": "diamond_hands",
       "grant": 5000,
       "referral_share": 0.2,
       "start_month": 1,
       "params": {
-        "discount_rate": 0.06,
-        "forecast_horizon": 12,
-        "confidence": 0.65
+        "labor_intensity": 0.4
       }
     },
     {
-      "id": "conservative_holder",
-      "name": "Conservative Holder",
-      "behavior": "rational",
+      "id": "committed_holder",
+      "name": "Committed Holder",
+      "behavior": "diamond_hands",
       "grant": 3000,
       "referral_share": 0.05,
       "start_month": 3,
       "params": {
-        "discount_rate": 0.08,
-        "forecast_horizon": 6,
-        "confidence": 0.5,
-        "exit_threshold": 0.9
+        "labor_intensity": 0.2
       }
     }
   ]

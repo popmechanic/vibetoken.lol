@@ -1,6 +1,6 @@
 ## Simulation Results: Growth to $1K MRR
 
-This analysis covers 100 simulations of a micro business model over 36 months.
+This analysis covers 10 simulations of a micro business model over 36 months.
 
 **Quick Summary:**
 - Business survival rate: 100%
@@ -13,41 +13,39 @@ This analysis covers 100 simulations of a micro business model over 36 months.
 Despite high revenue volatility, the micro business survived in 100% of cases. The square root pricing function helped dampen price swings during spiky revenue periods.
 
 **Revenue Distribution:**
-- Mean: $526,572
-- Median: $234,587
-- Range: $17,220 - $8,952,436
-
-The significant gap between mean and median revenue indicates a right-skewed distribution with occasional extreme successes.
+- Mean: $330,543
+- Median: $188,563
+- Range: $32,838 - $1,573,282
 
 ### Participant Performance
 
 **ROI Rankings (Mean):**
-- Part-Time Hustler: 47.18x ██████████
-- Word of Mouth #1: 44.73x ██████████
-- Word of Mouth #2: 42.57x ██████████
-- Early Believer: 40.98x ██████████
-- Word of Mouth #3: 37.13x ██████████
-- Founder's Friend: 34.56x ██████████
-- Word of Mouth #4: 28.11x ██████████
-- Word of Mouth #5: 20.73x ██████████
-- Skeptical Sam: 14.43x ██████████
-- Cautious Carl: 4.96x ████
+- Part-Time Hustler: 35.07x ██████████
+- Word of Mouth #1: 33.56x ██████████
+- Word of Mouth #2: 32.43x ██████████
+- Early Believer: 29.81x ██████████
+- Founder's Friend: 25.39x ██████████
+- Word of Mouth #3: 20.71x ██████████
+- Word of Mouth #4: 19.10x ██████████
+- Word of Mouth #5: 17.14x ██████████
+- Skeptical Sam: 9.47x █████████
+- Cautious Carl: 4.94x ████
 
 **Behavior Analysis:**
 
-**Diamond hands outperformed** in this scenario, achieving 37.77x average ROI. Their refusal to exit captured full upside when the business succeeded.
+**Diamond hands outperformed** in this scenario, achieving 27.60x average ROI. Their refusal to exit captured full upside when the business succeeded.
 
-**Rational actors** achieved 4.96x average ROI. Their conservative approach may have triggered premature exits in some successful scenarios.
+**Rational actors** achieved 4.94x average ROI. Their conservative approach may have triggered premature exits in some successful scenarios.
 
-**Skeptics** achieved 14.43x average ROI. Their early exits may have left money on the table in successful scenarios.
+**Skeptics** achieved 9.47x average ROI. Their early exits may have left money on the table in successful scenarios.
 
 
 
 ### Economic Observations
 
 **Token Price Dynamics:**
-- Final price range: $0.74 - $1.10
-- Coefficient of variation: 7.3%
+- Final price range: $0.87 - $1.09
+- Coefficient of variation: 6.6%
 
 The square root pricing function (P = k×√S) delivered relatively stable prices despite varying revenue conditions. A 7% coefficient of variation suggests the bonding curve effectively dampened volatility.
 
@@ -61,7 +59,7 @@ With high survival rate, exit queues typically cleared quickly. The FIFO queue p
 
 1. **High survival rate rewards patience.** Diamond hands and long-term holders outperformed reactive strategies in this scenario.
 
-2. **Part-Time Hustler** achieved highest returns (47.18x), while **Cautious Carl** achieved lowest (4.96x).
+2. **Part-Time Hustler** achieved highest returns (35.07x), while **Cautious Carl** achieved lowest (4.94x).
 
 3. **The tokenomics performed as designed.** Supply-based pricing provided price discovery, distributions rewarded holders, and the exit queue enabled liquidity without secondary markets.
 

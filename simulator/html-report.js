@@ -91,6 +91,87 @@ function formatCompact(n) {
 }
 
 /**
+ * Aggregate time-series data across all runs
+ * Returns mean and percentile bands for each month
+ */
+function aggregateTimeSeries(results, fieldExtractor) {
+    if (!results || results.length === 0) return null;
+
+    const duration = results[0].history?.length || 36;
+    const means = [];
+    const p10 = [];
+    const p90 = [];
+
+    for (let month = 0; month < duration; month++) {
+        const values = results
+            .map(r => r.history?.[month] ? fieldExtractor(r.history[month]) : null)
+            .filter(v => v !== null && isFinite(v));
+
+        if (values.length === 0) {
+            means.push(0);
+            p10.push(0);
+            p90.push(0);
+            continue;
+        }
+
+        values.sort((a, b) => a - b);
+        const sum = values.reduce((a, b) => a + b, 0);
+        means.push(sum / values.length);
+        p10.push(values[Math.floor(values.length * 0.1)] || values[0]);
+        p90.push(values[Math.floor(values.length * 0.9)] || values[values.length - 1]);
+    }
+
+    return { means, p10, p90 };
+}
+
+/**
+ * Aggregate participant balances by behavior type across all runs
+ * Returns mean balance per month for each behavior type
+ */
+function aggregateBalancesByBehavior(results) {
+    if (!results || results.length === 0) return null;
+
+    const duration = results[0].history?.length || 36;
+
+    // Collect all behavior types from first run's participant outcomes
+    const behaviorTypes = [...new Set(
+        results[0].participantOutcomes?.map(p => p.behaviorType) || []
+    )];
+
+    const balancesByBehavior = {};
+
+    for (const behaviorType of behaviorTypes) {
+        const monthlyMeans = [];
+
+        for (let month = 0; month < duration; month++) {
+            const balances = [];
+
+            for (const result of results) {
+                const snapshot = result.history?.[month];
+                if (!snapshot?.participantBalances) continue;
+
+                // Get balances for this behavior type
+                for (const [pid, balance] of Object.entries(snapshot.participantBalances)) {
+                    const participant = result.participantOutcomes?.find(p => p.id === pid);
+                    if (participant?.behaviorType === behaviorType) {
+                        balances.push(balance);
+                    }
+                }
+            }
+
+            const mean = balances.length > 0
+                ? balances.reduce((a, b) => a + b, 0) / balances.length
+                : 0;
+            monthlyMeans.push(mean);
+        }
+
+        balancesByBehavior[behaviorType] = monthlyMeans;
+    }
+
+    return balancesByBehavior;
+}
+
+/**
  * Generate the complete HTML report
  */
 function generateHTMLReport(batchResult, config, narrativeMd) {
@@ -114,6 +195,15 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
         .sort((a, b) => b[1].mean - a[1].mean)
         .slice(0, 12); // Top 12 participants
 
+    // Aggregate time-series data
+    const priceTimeSeries = aggregateTimeSeries(batchResult.results, h => h.P);
+    const revenueTimeSeries = aggregateTimeSeries(batchResult.results, h => h.revenue);
+    const balancesByBehavior = aggregateBalancesByBehavior(batchResult.results);
+
+    // Generate month labels
+    const duration = batchResult.results[0]?.history?.length || 36;
+    const monthLabels = Array.from({ length: duration }, (_, i) => `M${i + 1}`);
+
     // Embedded data object
     const embeddedData = {
         runs: batchResult.runs,
@@ -122,7 +212,12 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
         revenueStats: batchResult.revenueStats,
         participantStats: Object.fromEntries(participantStats),
         priceBins,
-        revenueBins
+        revenueBins,
+        // Time-series data
+        monthLabels,
+        priceTimeSeries,
+        revenueTimeSeries,
+        balancesByBehavior
     };
 
     return `<!DOCTYPE html>
@@ -420,13 +515,19 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
                 <canvas id="chart-survival"></canvas>
             </div>
             <div class="chart-container">
-                <canvas id="chart-price"></canvas>
+                <canvas id="chart-price-dist"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="chart-price-time"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="chart-revenue-time"></canvas>
             </div>
             <div class="chart-container full-width tall">
                 <canvas id="chart-roi"></canvas>
             </div>
-            <div class="chart-container">
-                <canvas id="chart-revenue"></canvas>
+            <div class="chart-container full-width tall">
+                <canvas id="chart-balances"></canvas>
             </div>
         </div>
 
@@ -494,7 +595,7 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
         });
 
         // 2. Price Distribution Histogram
-        new Chart(document.getElementById('chart-price'), {
+        new Chart(document.getElementById('chart-price-dist'), {
             type: 'bar',
             data: {
                 labels: DATA.priceBins.map(b => '$' + b.min.toFixed(2)),
@@ -572,48 +673,206 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
             }
         });
 
-        // 4. Revenue Distribution Histogram
+        // 4. Token Price Over Time (with percentile bands)
+        if (DATA.priceTimeSeries && DATA.priceTimeSeries.means) {
+            new Chart(document.getElementById('chart-price-time'), {
+                type: 'line',
+                data: {
+                    labels: DATA.monthLabels,
+                    datasets: [
+                        {
+                            label: '90th percentile',
+                            data: DATA.priceTimeSeries.p90,
+                            borderColor: 'transparent',
+                            backgroundColor: 'rgba(245, 166, 35, 0.15)',
+                            fill: '+1',
+                            pointRadius: 0,
+                            tension: 0
+                        },
+                        {
+                            label: 'Mean Price',
+                            data: DATA.priceTimeSeries.means,
+                            borderColor: ORANGE,
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            tension: 0
+                        },
+                        {
+                            label: '10th percentile',
+                            data: DATA.priceTimeSeries.p10,
+                            borderColor: 'transparent',
+                            backgroundColor: 'transparent',
+                            fill: false,
+                            pointRadius: 0,
+                            tension: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'TOKEN PRICE OVER TIME',
+                            font: { size: 11, weight: 'normal' },
+                            padding: { bottom: 15 }
+                        },
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: '#222' },
+                            ticks: { font: { size: 9 }, maxTicksLimit: 12 }
+                        },
+                        y: {
+                            grid: { color: '#222' },
+                            ticks: {
+                                font: { size: 9 },
+                                callback: function(value) { return '$' + value.toFixed(2); }
+                            },
+                            title: { display: true, text: 'Price', font: { size: 9 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 5. Monthly Revenue Over Time (with percentile bands)
         function formatRevenue(n) {
             if (n >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M';
             if (n >= 1000) return '$' + (n / 1000).toFixed(0) + 'K';
             return '$' + n.toFixed(0);
         }
 
-        new Chart(document.getElementById('chart-revenue'), {
-            type: 'bar',
-            data: {
-                labels: DATA.revenueBins.map(b => formatRevenue(b.min)),
-                datasets: [{
-                    data: DATA.revenueBins.map(b => b.count),
-                    backgroundColor: ORANGE,
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'REVENUE DISTRIBUTION',
-                        font: { size: 11, weight: 'normal' },
-                        padding: { bottom: 15 }
-                    },
-                    legend: { display: false }
+        if (DATA.revenueTimeSeries && DATA.revenueTimeSeries.means) {
+            new Chart(document.getElementById('chart-revenue-time'), {
+                type: 'line',
+                data: {
+                    labels: DATA.monthLabels,
+                    datasets: [
+                        {
+                            label: '90th percentile',
+                            data: DATA.revenueTimeSeries.p90,
+                            borderColor: 'transparent',
+                            backgroundColor: 'rgba(78, 205, 196, 0.15)',
+                            fill: '+1',
+                            pointRadius: 0,
+                            tension: 0
+                        },
+                        {
+                            label: 'Mean Revenue',
+                            data: DATA.revenueTimeSeries.means,
+                            borderColor: TEAL,
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            tension: 0
+                        },
+                        {
+                            label: '10th percentile',
+                            data: DATA.revenueTimeSeries.p10,
+                            borderColor: 'transparent',
+                            backgroundColor: 'transparent',
+                            fill: false,
+                            pointRadius: 0,
+                            tension: 0
+                        }
+                    ]
                 },
-                scales: {
-                    x: {
-                        grid: { display: false },
-                        ticks: { font: { size: 9 }, maxRotation: 45 }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'MONTHLY REVENUE OVER TIME',
+                            font: { size: 11, weight: 'normal' },
+                            padding: { bottom: 15 }
+                        },
+                        legend: { display: false }
                     },
-                    y: {
-                        grid: { color: '#222' },
-                        ticks: { font: { size: 9 } },
-                        title: { display: true, text: 'Runs', font: { size: 9 } }
+                    scales: {
+                        x: {
+                            grid: { color: '#222' },
+                            ticks: { font: { size: 9 }, maxTicksLimit: 12 }
+                        },
+                        y: {
+                            grid: { color: '#222' },
+                            ticks: {
+                                font: { size: 9 },
+                                callback: function(value) { return formatRevenue(value); }
+                            },
+                            title: { display: true, text: 'Revenue', font: { size: 9 } }
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
+
+        // 6. Token Balances by Behavior Type
+        const BEHAVIOR_COLORS = {
+            'diamond_hands': '#f5a623',
+            'rational': '#4ecdc4',
+            'hustler': '#ff6b6b',
+            'skeptic': '#95e1d3',
+            'trend_follower': '#a8e6cf'
+        };
+
+        if (DATA.balancesByBehavior && Object.keys(DATA.balancesByBehavior).length > 0) {
+            const behaviorDatasets = Object.entries(DATA.balancesByBehavior).map(([behavior, balances]) => ({
+                label: behavior.replace('_', ' '),
+                data: balances,
+                borderColor: BEHAVIOR_COLORS[behavior] || '#888',
+                backgroundColor: 'transparent',
+                borderWidth: 2,
+                pointRadius: 0,
+                tension: 0
+            }));
+
+            new Chart(document.getElementById('chart-balances'), {
+                type: 'line',
+                data: {
+                    labels: DATA.monthLabels,
+                    datasets: behaviorDatasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'TOKEN BALANCES BY BEHAVIOR TYPE',
+                            font: { size: 11, weight: 'normal' },
+                            padding: { bottom: 15 }
+                        },
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 15,
+                                font: { size: 10 }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: '#222' },
+                            ticks: { font: { size: 9 }, maxTicksLimit: 12 }
+                        },
+                        y: {
+                            grid: { color: '#222' },
+                            ticks: {
+                                font: { size: 9 },
+                                callback: function(value) { return value.toLocaleString(); }
+                            },
+                            title: { display: true, text: 'Tokens', font: { size: 9 } }
+                        }
+                    }
+                }
+            });
+        }
     </script>
 </body>
 </html>`;

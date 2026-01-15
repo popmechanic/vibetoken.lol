@@ -1,39 +1,41 @@
 ## Simulation Results: Enterprise + Sophisticated Actors
 
-This analysis covers 50 simulations of a enterprise business model over 36 months.
+This analysis covers 100 simulations of a enterprise business model over 36 months.
 
 **Quick Summary:**
 - Business survival rate: 100%
-- Mean final token price: $5.42
+- Mean final token price: $5.48
 - Revenue share (α): 15%
 - Initial participant count: 5
 
 ### Business Outcomes
 
-The enterprise business demonstrated stable growth, surviving in 100% of simulations. Compounding effects produced mean cumulative revenue of $2,045,279.
+The enterprise business demonstrated stable growth, surviving in 100% of simulations. Compounding effects produced mean cumulative revenue of $2,092,709.
 
 **Revenue Distribution:**
-- Mean: $2,045,279
-- Median: $2,021,922
-- Range: $1,630,628 - $2,533,551
+- Mean: $2,092,709
+- Median: $2,045,311
+- Range: $1,630,498 - $2,625,396
 
 ### Participant Performance
 
 **ROI Rankings (Mean):**
-- Growth Hustler: 33.98x ██████████
-- Growth Chaser #2: 18.64x ██████████
-- Growth Chaser #3: 17.24x ██████████
-- Patient Partner: 16.90x ██████████
-- Growth Chaser #5: 16.81x ██████████
-- Growth Chaser #4: 16.18x ██████████
-- Value Target Vince: 8.60x ████████
+- Growth Hustler: 35.14x ██████████
+- Growth Chaser #1: 29.81x ██████████
+- Growth Chaser #2: 20.07x ██████████
+- Growth Chaser #3: 17.52x ██████████
+- Patient Partner: 17.41x ██████████
+- Growth Chaser #4: 16.79x ██████████
+- Growth Chaser #5: 15.86x ██████████
+- Year 2 Partner #2: 8.85x ████████
+- Value Target Vince: 8.61x ████████
 - Institutional Holder: 8.20x ████████
-- Year 2 Partner #1: 8.15x ████████
-- Diversified Alice: 6.45x ██████
+- Year 2 Partner #1: 8.18x ████████
+- Diversified Alice: 6.46x ██████
 
 **Behavior Analysis:**
 
-**Diamond hands outperformed** in this scenario, achieving 16.90x average ROI. Their refusal to exit captured full upside when the business succeeded.
+**Diamond hands outperformed** in this scenario, achieving 17.41x average ROI. Their refusal to exit captured full upside when the business succeeded.
 
 **Rational actors** achieved 7.33x average ROI. Their conservative approach may have triggered premature exits in some successful scenarios.
 
@@ -42,8 +44,8 @@ The enterprise business demonstrated stable growth, surviving in 100% of simulat
 ### Economic Observations
 
 **Token Price Dynamics:**
-- Final price range: $4.84 - $6.04
-- Coefficient of variation: 6.4%
+- Final price range: $4.83 - $6.15
+- Coefficient of variation: 6.1%
 
 The square root pricing function (P = k×√S) delivered relatively stable prices despite varying revenue conditions. A 6% coefficient of variation suggests the bonding curve effectively dampened volatility.
 
@@ -57,7 +59,7 @@ With high survival rate, exit queues typically cleared quickly. The FIFO queue p
 
 1. **High survival rate rewards patience.** Diamond hands and long-term holders outperformed reactive strategies in this scenario.
 
-2. **Growth Hustler** achieved highest returns (33.98x), while **Diversified Alice** achieved lowest (6.45x).
+2. **Growth Hustler** achieved highest returns (35.14x), while **Diversified Alice** achieved lowest (6.46x).
 
 3. **The tokenomics performed as designed.** Supply-based pricing provided price discovery, distributions rewarded holders, and the exit queue enabled liquidity without secondary markets.
 

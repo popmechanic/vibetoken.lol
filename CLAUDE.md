@@ -39,7 +39,7 @@ The `simulator/` directory contains a Monte Carlo stress-testing harness for Vib
 node simulator/run.js --preset startup-mixed --runs 100
 ```
 
-**Available presets:** `startup-mixed`, `micro-rational`, `enterprise-sophisticated`, `stress-test`
+**Available presets:** `startup-mixed`, `micro-rational`, `micro-diamond`, `enterprise-sophisticated`, `stress-test`
 
 **Output:** Each run generates a timestamped folder in `simulator/output/` with:
 - `index.html` - Visual report with charts

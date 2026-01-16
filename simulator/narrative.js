@@ -105,25 +105,44 @@ function generateBusinessAnalysis(batchResult, config) {
  */
 function generateParticipantAnalysis(batchResult, config) {
     const stats = batchResult.participantStats;
+    const earnStats = batchResult.earnModeStats || {};
+
+    // Grant-mode participants (ROI-based ranking)
     const participants = Object.entries(stats)
         .map(([name, s]) => ({ name, ...s }))
         .sort((a, b) => b.mean - a.mean);
 
-    if (participants.length === 0) {
+    // Earn-mode participants (value-based ranking)
+    const earnParticipants = Object.entries(earnStats)
+        .map(([name, s]) => ({ name, ...s }))
+        .sort((a, b) => b.mean - a.mean);
+
+    if (participants.length === 0 && earnParticipants.length === 0) {
         return '### Participant Performance\n\nNo participant data available.';
     }
 
     let analysis = `### Participant Performance\n\n`;
 
-    // Find best and worst performers
+    // Find best and worst performers (grant-mode)
     const best = participants[0];
     const worst = participants[participants.length - 1];
 
-    // Overall ranking
-    analysis += `**ROI Rankings (Mean):**\n`;
-    for (const p of participants) {
-        const bar = '█'.repeat(Math.min(10, Math.floor(p.mean)));
-        analysis += `- ${p.name}: ${p.mean.toFixed(2)}x ${bar}\n`;
+    // ROI rankings for grant-mode participants
+    if (participants.length > 0) {
+        analysis += `**ROI Rankings (Mean):**\n`;
+        for (const p of participants) {
+            const bar = '█'.repeat(Math.min(10, Math.floor(p.mean)));
+            analysis += `- ${p.name}: ${p.mean.toFixed(2)}x ${bar}\n`;
+        }
+    }
+
+    // Value earned rankings for earn-mode participants
+    if (earnParticipants.length > 0) {
+        analysis += `\n**Earn-Mode Performers (Total Value):**\n`;
+        for (const p of earnParticipants) {
+            const bar = '█'.repeat(Math.min(10, Math.floor(p.mean / 50)));  // Scale by $50
+            analysis += `- ${p.name}: $${p.mean.toFixed(0)} ${bar}\n`;
+        }
     }
 
     // Analysis by behavior type
@@ -212,14 +231,13 @@ function generateEconomicObservations(batchResult, config) {
     analysis += `- Coefficient of variation: ${(cv * 100).toFixed(1)}%\n\n`;
 
     if (cv < 0.3) {
-        analysis += `The square root pricing function (P = k×√S) delivered relatively `;
-        analysis += `stable prices despite varying revenue conditions. `;
-        analysis += `A ${(cv * 100).toFixed(0)}% coefficient of variation suggests `;
-        analysis += `the bonding curve effectively dampened volatility.\n\n`;
+        analysis += `The √S pricing function dampened business volatility to ${(cv * 100).toFixed(0)}% `;
+        analysis += `price variation—achieving the design goal of bounded volatility `;
+        analysis += `while preserving price discovery.\n\n`;
     } else {
-        analysis += `Price variation of ${(cv * 100).toFixed(0)}% reflects the `;
-        analysis += `underlying business uncertainty. The bonding curve dampened `;
-        analysis += `but did not eliminate price swings.\n\n`;
+        analysis += `Price variation of ${(cv * 100).toFixed(0)}% tracked the underlying business risk. `;
+        analysis += `The bonding curve damped but didn't eliminate swings—appropriate for `;
+        analysis += `this volatility profile.\n\n`;
     }
 
     // Supply floor impact
@@ -279,10 +297,45 @@ function generateKeyFindings(batchResult, config) {
         }
     }
 
-    // Economic finding
-    findings += `3. **The tokenomics performed as designed.** Supply-based pricing `;
-    findings += `provided price discovery, distributions rewarded holders, and the exit `;
-    findings += `queue enabled liquidity without secondary markets.\n\n`;
+    // Design principle evaluation
+    findings += `### Design Principle Check\n\n`;
+
+    const designChecks = [];
+
+    // #1 - Early contributor rewards
+    const earlyAdvantage = calculateEarlyContributorAdvantage(batchResult.results);
+    if (earlyAdvantage.measurable) {
+        const symbol = earlyAdvantage.advantage > 1.2 ? '✓' : '✗';
+        designChecks.push(`${symbol} **Early contributor reward**: ${earlyAdvantage.earlyMean.toFixed(1)}x ROI for month 1-2 entrants vs ${earlyAdvantage.lateMean.toFixed(1)}x for later (${earlyAdvantage.advantage.toFixed(1)}x advantage)`);
+    }
+
+    // #9 - Bounded volatility
+    const volatility = calculateVolatilityDampening(batchResult.priceStats, batchResult.revenueStats);
+    if (volatility.dampening > 0.3) {
+        designChecks.push(`✓ **Bounded volatility**: Revenue CV ${(volatility.revenueCV * 100).toFixed(0)}% → Price CV ${(volatility.priceCV * 100).toFixed(0)}% (${(volatility.dampening * 100).toFixed(0)}% dampening)`);
+    } else if (volatility.dampening > 0) {
+        designChecks.push(`⚠ **Bounded volatility**: Modest dampening (${(volatility.dampening * 100).toFixed(0)}%)`);
+    }
+
+    // #10 - Floor protection
+    const floor = checkFloorProtection(batchResult.results, config);
+    if (floor.hits === 0) {
+        designChecks.push(`✓ **Floor protection**: No runs hit S_min${floor.approaches > 0 ? ` (${floor.approaches} approached)` : ''}`);
+    } else {
+        designChecks.push(`✗ **Floor protection**: ${floor.hits} runs hit S_min`);
+    }
+
+    // #5 - Liquidity (exit queue)
+    if (survivalRate > 0.7) {
+        designChecks.push(`✓ **Exit liquidity**: High survival enabled queue clearance without secondary markets`);
+    } else {
+        designChecks.push(`⚠ **Exit liquidity**: ${((1 - survivalRate) * 100).toFixed(0)}% failure rate risked queue freezes`);
+    }
+
+    for (const check of designChecks) {
+        findings += `- ${check}\n`;
+    }
+    findings += '\n';
 
     // Recommendation
     findings += `**Implication:** `;
@@ -302,6 +355,69 @@ function generateKeyFindings(batchResult, config) {
  */
 function fmt(n) {
     return n.toLocaleString(undefined, { maximumFractionDigits: 0 });
+}
+
+/**
+ * Calculate early contributor advantage (Design Objective #1)
+ * Groups participants by entry month, compares ROI
+ */
+function calculateEarlyContributorAdvantage(results) {
+    const earlyROIs = [];  // startMonth <= 2
+    const lateROIs = [];   // startMonth >= 3
+
+    for (const result of results) {
+        for (const p of (result.participantOutcomes || [])) {
+            if (!isFinite(p.roi) || p.isLateEntrant) continue;  // Skip dynamic entrants
+            if (p.startMonth <= 2) {
+                earlyROIs.push(p.roi);
+            } else {
+                lateROIs.push(p.roi);
+            }
+        }
+    }
+
+    const earlyMean = earlyROIs.length > 0 ? earlyROIs.reduce((a, b) => a + b, 0) / earlyROIs.length : 0;
+    const lateMean = lateROIs.length > 0 ? lateROIs.reduce((a, b) => a + b, 0) / lateROIs.length : 0;
+
+    return {
+        earlyMean,
+        lateMean,
+        advantage: lateMean > 0 ? earlyMean / lateMean : 0,
+        measurable: earlyROIs.length > 0 && lateROIs.length > 0
+    };
+}
+
+/**
+ * Check floor protection efficacy (Design Objective #10)
+ */
+function checkFloorProtection(results, config) {
+    const sMin = config.tokenomics.s_min || 1000;
+    const floorThreshold = sMin * 1.5;  // "approached" = within 50% of floor
+    let approaches = 0;
+    let hits = 0;
+
+    for (const result of results) {
+        const supplies = (result.history || []).map(h => h.S).filter(s => s > 0);
+        if (supplies.length === 0) continue;
+        const minSupply = Math.min(...supplies);
+        if (minSupply <= sMin) hits++;
+        else if (minSupply <= floorThreshold) approaches++;
+    }
+
+    return { approaches, hits, total: results.length };
+}
+
+/**
+ * Calculate bounded volatility ratio (Design Objective #9)
+ */
+function calculateVolatilityDampening(priceStats, revenueStats) {
+    const priceCV = priceStats.stddev / priceStats.mean;
+    const revenueCV = revenueStats.stddev / revenueStats.mean;
+    return {
+        priceCV,
+        revenueCV,
+        dampening: revenueCV > 0 ? (1 - priceCV / revenueCV) : 0  // % reduction
+    };
 }
 
 /**

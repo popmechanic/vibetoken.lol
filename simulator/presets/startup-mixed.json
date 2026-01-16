@@ -24,7 +24,7 @@
   "tokenomics": {
     "alpha": 0.20,
     "k": 0.01,
-    "treasury": 100000,
+    "treasury": 36000,
     "s_min": 1000
   },
   "participants": [
@@ -32,7 +32,8 @@
       "id": "true_believer",
       "name": "True Believer",
       "behavior": "diamond_hands",
-      "grant": 15000,
+      "grant": 6000,
+      "grant_month": 0,
       "referral_share": 0.15,
       "start_month": 1,
       "params": {
@@ -43,7 +44,8 @@
       "id": "angel_referrer",
       "name": "Angel Referrer",
       "behavior": "rational",
-      "grant": 8000,
+      "grant": 6000,
+      "grant_month": 0,
       "referral_share": 0.30,
       "start_month": 1,
       "params": {
@@ -56,7 +58,8 @@
       "id": "skeptical_tester",
       "name": "Skeptical Tester",
       "behavior": "skeptic",
-      "grant": 3000,
+      "grant": 4000,
+      "grant_month": 2,
       "referral_share": 0.05,
       "start_month": 2,
       "params": {
@@ -68,7 +71,8 @@
       "id": "life_event_lisa",
       "name": "Life Event Lisa",
       "behavior": "life_event",
-      "grant": 5000,
+      "grant": 6000,
+      "grant_month": 0,
       "referral_share": 0.10,
       "start_month": 1,
       "params": {
@@ -79,7 +83,8 @@
       "id": "momentum_trader",
       "name": "Momentum Trader",
       "behavior": "trend_follower",
-      "grant": 4000,
+      "grant": 3000,
+      "grant_month": 3,
       "referral_share": 0.08,
       "start_month": 3,
       "params": {
@@ -90,15 +95,16 @@
     }
   ],
   "entry_pool": {
-    "treasury": 25000,
+    "treasury": 12000,
     "templates": [
       {
         "id": "word_of_mouth_pool",
         "name": "WoM Entrant",
         "behavior": "trend_follower",
+        "entry_mode": "grant",
         "grant": 2000,
         "referral_share": 0.06,
-        "maxSpawns": 5,
+        "maxSpawns": 3,
         "entry_conditions": {
           "type": "word_of_mouth",
           "params": {
@@ -112,22 +118,23 @@
         }
       },
       {
-        "id": "price_signal_pool",
-        "name": "Price Chaser",
-        "behavior": "speculator",
-        "grant": 1500,
-        "referral_share": 0.04,
-        "maxSpawns": 3,
+        "id": "referral_hustler",
+        "name": "Referral Hustler",
+        "behavior": "hustler",
+        "entry_mode": "earn",
+        "grant": 0,
+        "referral_share": 0.10,
+        "maxSpawns": 5,
         "entry_conditions": {
-          "type": "price_signal",
+          "type": "word_of_mouth",
           "params": {
-            "price_threshold": 1.50,
-            "probability": 0.25
+            "revenue_threshold": 5000,
+            "probability_per_month": 0.25
           }
         },
         "params": {
-          "timing_skill": 0.40,
-          "trade_frequency": 0.15
+          "labor_intensity": 0.50,
+          "exit_aversion": 0.65
         }
       }
     ]

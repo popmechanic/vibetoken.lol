@@ -51,18 +51,24 @@ function initializeState(config, rng) {
     const participants = participantConfigs.map((p, idx) => {
         const behavior = createBehavior(p.behavior, p.params || {}, rng);
         const grant = p.grant || 0;
+        // grant_month defaults to 0 (immediate) if not specified
+        const grantMonth = p.grant_month !== undefined ? p.grant_month : 0;
 
-        // Issue grant from treasury
-        if (grant > 0 && grant <= state.treasuryRemaining) {
+        // Only issue grant immediately if grant_month is 0
+        let initialTokens = 0;
+        if (grant > 0 && grantMonth === 0 && grant <= state.treasuryRemaining) {
             state.S = mintTokens(state.S, grant);
             state.treasuryRemaining -= grant;
+            initialTokens = grant;
         }
 
         return {
             id: p.id || `participant-${idx}`,
             name: p.name || `Participant ${idx + 1}`,
-            tokens: grant,
+            tokens: initialTokens,
             grant,
+            grantMonth,  // Track when grant should be issued
+            grantIssued: grantMonth === 0 && initialTokens > 0,  // Track if grant was issued
             referralShare: p.referral_share || 0,
             startMonth: p.start_month || 1,
             behavior,
@@ -107,6 +113,36 @@ function runMonth(state, participants, business, entryPool, history, rng) {
         failed: revenueResult.failed || false
     });
 
+    // 1.5 Issue scheduled grants from treasury
+    for (const p of participants) {
+        if (!p.grantIssued && p.grant > 0 && p.grantMonth === month) {
+            if (p.grant <= state.treasuryRemaining) {
+                state.S = mintTokens(state.S, p.grant);
+                state.treasuryRemaining -= p.grant;
+                p.tokens += p.grant;
+                p.grantIssued = true;
+
+                events.push({
+                    type: 'grant_issued',
+                    participantId: p.id,
+                    grant: p.grant,
+                    treasuryRemaining: state.treasuryRemaining
+                });
+            } else {
+                // Treasury depleted - grant cannot be issued
+                events.push({
+                    type: 'grant_blocked',
+                    participantId: p.id,
+                    grantRequested: p.grant,
+                    treasuryRemaining: state.treasuryRemaining
+                });
+            }
+        }
+    }
+
+    // Update price after any grants
+    state.P = calculatePrice(state.S, state.k);
+
     // 2. Calculate Distribution Pool
     const distributionPool = calculateDistributionPool(revenue, state.alpha);
 
@@ -150,20 +186,18 @@ function runMonth(state, participants, business, entryPool, history, rng) {
             const tokensEarned = calculateTokensEarned(referralRevenue, state.alpha, state.P);
 
             if (tokensEarned > 0) {
-                // Check treasury for new tokens
-                if (state.treasuryRemaining >= tokensEarned) {
-                    state.S = mintTokens(state.S, tokensEarned);
-                    state.treasuryRemaining -= tokensEarned;
-                    p.tokens += tokensEarned;
-                    p.monthlyTokensEarned = tokensEarned;
+                // Earned tokens are MINTED - they increase supply (Rule 3)
+                // Treasury is only for founder grants (Rule 2), NOT for earning
+                state.S = mintTokens(state.S, tokensEarned);
+                p.tokens += tokensEarned;
+                p.monthlyTokensEarned = tokensEarned;
 
-                    events.push({
-                        type: 'tokens_earned',
-                        participantId: p.id,
-                        tokens: tokensEarned,
-                        referralRevenue
-                    });
-                }
+                events.push({
+                    type: 'tokens_earned',
+                    participantId: p.id,
+                    tokens: tokensEarned,
+                    referralRevenue
+                });
             }
         }
     }
@@ -262,21 +296,22 @@ function runMonth(state, participants, business, entryPool, history, rng) {
         );
 
         for (const newP of newParticipants) {
-            // Issue grant
-            if (newP.grant <= state.treasuryRemaining) {
+            // Entry pool manages its own treasury - just mint tokens for grant recipients
+            // For earn-mode entrants, grant is 0 (they build position through referral labor)
+            if (newP.grant > 0) {
                 state.S = mintTokens(state.S, newP.grant);
-                state.treasuryRemaining -= newP.grant;
-                participants.push(newP);
-
-                events.push({
-                    type: 'new_participant',
-                    participantId: newP.id,
-                    name: newP.name,
-                    grant: newP.grant,
-                    behavior: newP.behaviorType,
-                    entryReason: newP.entryReason
-                });
             }
+            participants.push(newP);
+
+            events.push({
+                type: 'new_participant',
+                participantId: newP.id,
+                name: newP.name,
+                grant: newP.grant,
+                behavior: newP.behaviorType,
+                entryReason: newP.entryReason,
+                entryMode: newP.entryMode || 'grant'
+            });
         }
 
         // Update price after any grants
@@ -369,7 +404,11 @@ function runSimulation(config, seed = null) {
         const pendingExit = state.queue.filter(e => e.id === p.id).reduce((sum, e) => sum + e.owed, 0);
         const totalValue = tokenValue + p.exitValue + pendingExit + p.distributions;
         const grantValue = p.grant * calculatePrice(config.tokenomics.s_min || 1000, config.tokenomics.k);
-        const roi = grantValue > 0 ? totalValue / grantValue : 0;
+
+        // For earn-mode participants (grant=0), ROI is undefined - they built from nothing
+        // Use a special marker to distinguish from actual 0x ROI
+        const isEarnMode = p.grant === 0 && p.entryMode === 'earn';
+        const roi = grantValue > 0 ? totalValue / grantValue : (isEarnMode ? null : 0);
 
         return {
             id: p.id,
@@ -378,6 +417,7 @@ function runSimulation(config, seed = null) {
             isLateEntrant: p.isLateEntrant,
             startMonth: p.startMonth,
             grant: p.grant,
+            entryMode: p.entryMode || 'grant',
             finalTokens: p.tokens,
             tokenValue,
             distributions: p.distributions,
@@ -450,16 +490,27 @@ function runBatch(config, runs = 100, baseSeed = null) {
     const totalRevenues = results.map(r => r.finalState.cumulativeRevenue);
     const revenueStats = calculateStats(totalRevenues);
 
-    // ROI by participant name (filter out NaN/invalid)
+    // ROI by participant name (filter out NaN/invalid and earn-mode)
     const roiByParticipant = {};
+    const earnModeByParticipant = {};  // Track earn-mode participants by totalValue
+
     for (const result of results) {
         for (const p of result.participantOutcomes) {
-            if (!roiByParticipant[p.name]) {
-                roiByParticipant[p.name] = [];
-            }
-            // Only include valid ROI values
-            if (isFinite(p.roi) && !isNaN(p.roi)) {
-                roiByParticipant[p.name].push(p.roi);
+            if (p.entryMode === 'earn') {
+                // Earn-mode: track by total value earned (ROI is meaningless)
+                if (!earnModeByParticipant[p.name]) {
+                    earnModeByParticipant[p.name] = [];
+                }
+                earnModeByParticipant[p.name].push(p.totalValue);
+            } else {
+                // Grant-mode: track by ROI
+                if (!roiByParticipant[p.name]) {
+                    roiByParticipant[p.name] = [];
+                }
+                // Only include valid ROI values
+                if (isFinite(p.roi) && !isNaN(p.roi)) {
+                    roiByParticipant[p.name].push(p.roi);
+                }
             }
         }
     }
@@ -471,6 +522,14 @@ function runBatch(config, runs = 100, baseSeed = null) {
         }
     }
 
+    // Earn-mode participants: stats based on total value earned
+    const earnModeStats = {};
+    for (const [name, values] of Object.entries(earnModeByParticipant)) {
+        if (values.length > 0) {
+            earnModeStats[name] = calculateStats(values);
+        }
+    }
+
     return {
         runs,
         baseSeed: startSeed,
@@ -478,6 +537,7 @@ function runBatch(config, runs = 100, baseSeed = null) {
         priceStats,
         revenueStats,
         participantStats,
+        earnModeStats,
         results  // Full results for detailed analysis
     };
 }

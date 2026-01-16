@@ -190,11 +190,14 @@ class EntryPool {
             );
 
             if (result.shouldEnter) {
-                // Check if we have enough treasury
+                const entryMode = template.entry_mode || 'grant';
                 const grant = template.grant || 1000;
-                if (grant > this.remainingTreasury) {
-                    continue; // Skip - not enough treasury
+
+                // For grant mode, check if we have enough treasury
+                if (entryMode === 'grant' && grant > this.remainingTreasury) {
+                    continue; // Skip - not enough treasury for grants
                 }
+                // For earn mode, no treasury check needed - they earn via Rule 3
 
                 // Spawn the new participant
                 const participant = this.spawnParticipant(template, state.month, result.reason);
@@ -210,15 +213,25 @@ class EntryPool {
 
     /**
      * Spawn a new participant from a template
+     *
+     * Entry modes:
+     * - "grant" (default): Participant receives grant from treasury
+     * - "earn": Participant enters with 0 tokens, earns via referral labor (Rule 3)
      */
     spawnParticipant(template, month, entryReason) {
-        const grant = template.grant || 1000;
+        const entryMode = template.entry_mode || 'grant';
+        const grantAmount = template.grant || 1000;
 
-        // Deduct from treasury
-        if (grant > this.remainingTreasury) {
-            return null;
+        let actualGrant = 0;
+        if (entryMode === 'grant') {
+            // Grant mode: deduct from treasury
+            if (grantAmount > this.remainingTreasury) {
+                return null;
+            }
+            this.remainingTreasury -= grantAmount;
+            actualGrant = grantAmount;
         }
-        this.remainingTreasury -= grant;
+        // Earn mode: no grant, participant builds position through referral labor
 
         this.spawnedCount++;
         const id = `${template.id || 'late'}-${this.spawnedCount}`;
@@ -233,8 +246,10 @@ class EntryPool {
         return {
             id,
             name: template.name ? `${template.name} #${this.spawnedCount}` : `Late Entrant #${this.spawnedCount}`,
-            tokens: grant,
-            grant,
+            tokens: actualGrant,
+            grant: actualGrant,
+            grantMonth: month,
+            grantIssued: actualGrant > 0,
             referralShare: template.referral_share || 0.08,
             startMonth: month,
             behavior,
@@ -247,6 +262,7 @@ class EntryPool {
             monthlyTokensEarned: 0,
             isLateEntrant: true,
             entryReason,
+            entryMode,
             templateId: template.id
         };
     }

@@ -8,23 +8,65 @@
 /**
  * Convert narrative markdown to HTML
  * Handles: ## headings, ### headings, **bold**, - lists, paragraphs
+ * Wraps ROI Rankings and Earn-Mode Performers in collapsible accordions
  */
 function markdownToHTML(md) {
     // Split into blocks by double newlines
     const blocks = md.split(/\n\n+/);
+    const result = [];
 
-    return blocks.map(block => {
-        block = block.trim();
-        if (!block) return '';
+    for (let i = 0; i < blocks.length; i++) {
+        let block = blocks[i].trim();
+        if (!block) continue;
 
         // H2 heading
         if (block.startsWith('## ')) {
-            return `<h2>${block.slice(3)}</h2>`;
+            result.push(`<h2>${block.slice(3)}</h2>`);
+            continue;
         }
 
         // H3 heading
         if (block.startsWith('### ')) {
-            return `<h3>${block.slice(4)}</h3>`;
+            result.push(`<h3>${block.slice(4)}</h3>`);
+            continue;
+        }
+
+        // ROI Rankings block (header + list in same block) - make collapsible
+        if (block.startsWith('**ROI Rankings')) {
+            const lines = block.split('\n');
+            const headerLine = lines[0];
+            const listLines = lines.slice(1).filter(line => line.startsWith('- '));
+
+            if (listLines.length > 0) {
+                const headerText = processBold(headerLine);
+                const items = listLines
+                    .map(line => `<li>${processBold(line.slice(2))}</li>`)
+                    .join('\n');
+                result.push(`<details class="participant-accordion">
+<summary><span class="accordion-icon">▸</span> ${headerText} <span class="accordion-count">(${listLines.length} participants)</span></summary>
+<ul class="conditions">\n${items}\n</ul>
+</details>`);
+                continue;
+            }
+        }
+
+        // Earn-Mode Performers block (header + list in same block) - make collapsible
+        if (block.startsWith('**Earn-Mode Performers')) {
+            const lines = block.split('\n');
+            const headerLine = lines[0];
+            const listLines = lines.slice(1).filter(line => line.startsWith('- '));
+
+            if (listLines.length > 0) {
+                const headerText = processBold(headerLine);
+                const items = listLines
+                    .map(line => `<li>${processBold(line.slice(2))}</li>`)
+                    .join('\n');
+                result.push(`<details class="participant-accordion">
+<summary><span class="accordion-icon">▸</span> ${headerText} <span class="accordion-count">(${listLines.length})</span></summary>
+<ul class="conditions">\n${items}\n</ul>
+</details>`);
+                continue;
+            }
         }
 
         // List block (consecutive lines starting with -)
@@ -33,13 +75,16 @@ function markdownToHTML(md) {
                 .filter(line => line.startsWith('- '))
                 .map(line => `<li>${processBold(line.slice(2))}</li>`)
                 .join('\n');
-            return `<ul class="conditions">\n${items}\n</ul>`;
+            result.push(`<ul class="conditions">\n${items}\n</ul>`);
+            continue;
         }
 
         // Regular paragraph
         const text = block.replace(/\n/g, ' ');
-        return `<p>${processBold(text)}</p>`;
-    }).filter(Boolean).join('\n\n');
+        result.push(`<p>${processBold(text)}</p>`);
+    }
+
+    return result.filter(Boolean).join('\n\n');
 }
 
 /**
@@ -562,6 +607,63 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
             position: absolute;
             left: 0;
             color: var(--text-secondary);
+        }
+
+        /* Participant accordion */
+        .participant-accordion {
+            margin: var(--space-sm) 0;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .participant-accordion summary {
+            cursor: pointer;
+            padding: var(--space-sm) var(--space-md);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            color: var(--text-primary);
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+        }
+
+        .participant-accordion summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .participant-accordion summary:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .participant-accordion .accordion-icon {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            transition: transform 0.2s;
+        }
+
+        .participant-accordion[open] .accordion-icon {
+            transform: rotate(90deg);
+        }
+
+        .participant-accordion .accordion-count {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-left: auto;
+        }
+
+        .participant-accordion .conditions {
+            padding: 0 var(--space-md) var(--space-md);
+            margin: 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .participant-accordion .conditions li {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
         }
 
         /* Narrative section */

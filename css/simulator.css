@@ -1,0 +1,334 @@
+/* Simulator styles - Shared by index and report pages */
+
+/* Page-specific max-width (wider than whitepaper) */
+.container {
+    max-width: 1100px;
+}
+
+/* For narrower report pages */
+.container.narrow {
+    max-width: 720px;
+}
+
+/* Typography */
+h1, h2, h3 {
+    font-family: var(--font-heading);
+    font-weight: bold;
+}
+
+h1 {
+    font-size: 2.4rem;
+    line-height: 1.1;
+    margin-bottom: 0.25rem;
+}
+
+h2 {
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: var(--space-lg);
+    margin-bottom: var(--space-sm);
+    color: var(--accent);
+}
+
+h3 {
+    font-size: 1rem;
+    margin-top: var(--space-md);
+    margin-bottom: var(--space-sm);
+    color: var(--text-primary);
+}
+
+strong {
+    color: var(--text-primary);
+}
+
+/* Header */
+header {
+    text-align: center;
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--border);
+}
+
+.subtitle {
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+/* Table styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+}
+
+th {
+    text-align: left;
+    padding: var(--space-sm);
+    border-bottom: 2px solid var(--border);
+    color: var(--accent);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+td {
+    padding: var(--space-sm);
+    border-bottom: 1px solid var(--border);
+}
+
+tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Tooltips */
+.has-tooltip {
+    position: relative;
+    cursor: help;
+}
+
+/* For inline tooltips (stats labels) */
+.stat-label.has-tooltip {
+    border-bottom: 1px dotted #666;
+}
+
+.has-tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 8px;
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px dashed #888;
+    color: #c8c8c8;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: normal;
+    text-transform: none;
+    letter-spacing: normal;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+    z-index: 100;
+}
+
+.has-tooltip:hover::after {
+    opacity: 1;
+}
+
+/* Chart tooltip (external/floating) */
+.chart-tooltip {
+    position: fixed;
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px dashed #888;
+    color: #c8c8c8;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 100;
+}
+
+/* Stats Grid (for report pages) */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+}
+
+.stat {
+    text-align: center;
+    padding: var(--space-md) var(--space-sm);
+    border: 1px solid var(--border);
+}
+
+.stat-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    margin-bottom: 0.5em;
+}
+
+.stat-value {
+    font-family: var(--font-mono);
+    font-size: 1.3rem;
+    color: var(--text-primary);
+}
+
+/* Chart Grid */
+.chart-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.chart-container {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: var(--space-md);
+    position: relative;
+}
+
+.chart-container canvas {
+    width: 100% !important;
+    height: 240px !important;
+}
+
+.chart-container.tall canvas {
+    height: 320px !important;
+}
+
+.chart-container.full-width {
+    grid-column: 1 / -1;
+}
+
+/* Conditions list */
+.conditions {
+    list-style: none;
+    margin: var(--space-sm) 0;
+}
+
+.conditions li {
+    padding-left: 1.5em;
+    position: relative;
+    margin-bottom: 0.5em;
+}
+
+.conditions li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--text-secondary);
+}
+
+/* Participant accordion */
+.participant-accordion {
+    margin: var(--space-sm) 0;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.01);
+}
+
+.participant-accordion summary {
+    cursor: pointer;
+    padding: var(--space-sm) var(--space-md);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--text-primary);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.participant-accordion summary::-webkit-details-marker {
+    display: none;
+}
+
+.participant-accordion summary:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.participant-accordion .accordion-icon {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    transition: transform 0.2s;
+}
+
+.participant-accordion[open] .accordion-icon {
+    transform: rotate(90deg);
+}
+
+.participant-accordion .accordion-count {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-left: auto;
+}
+
+.participant-accordion .conditions {
+    padding: 0 var(--space-md) var(--space-md);
+    margin: 0;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.participant-accordion .conditions li {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+}
+
+/* Narrative section */
+.narrative {
+    margin-top: var(--space-xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border);
+}
+
+.narrative p {
+    color: var(--text-secondary);
+}
+
+.narrative strong {
+    color: var(--text-primary);
+}
+
+/* Divider */
+.divider {
+    width: 50px;
+    height: 1px;
+    background: var(--border);
+    margin: var(--space-lg) auto;
+}
+
+/* Count text (simulation index) */
+.count {
+    margin-top: var(--space-lg);
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    table {
+        font-size: 0.75rem;
+    }
+
+    th, td {
+        padding: 0.5rem 0.25rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .chart-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-container canvas {
+        height: 200px !important;
+    }
+}
+
+@media (min-width: 768px) {
+    body {
+        padding: var(--space-xl) var(--space-lg);
+    }
+}

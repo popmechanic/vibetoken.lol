@@ -37,7 +37,15 @@ function createRNG(seed) {
         return random() < p;
     }
 
-    return { random, normal, bernoulli };
+    // Log-normal distribution (right-skewed, fat-tailed)
+    // Returns values with median exp(mu) and right tail controlled by sigma
+    // Useful for modeling business outcomes where most are modest but some break out
+    function logNormal(mu = 0, sigma = 1) {
+        const normalValue = normal(mu, sigma);
+        return Math.exp(normalValue);
+    }
+
+    return { random, normal, bernoulli, logNormal };
 }
 
 /**
@@ -47,6 +55,7 @@ const BusinessState = {
     BUILDING: 'building',      // Pre-revenue, burning runway
     LAUNCHED: 'launched',      // Product out, seeking traction
     GROWING: 'growing',        // Post-breakthrough, exponential
+    PLATEAUED: 'plateaued',    // Stable at ceiling, not growing or failing
     DECLINING: 'declining',    // Negative trend
     FAILED: 'failed'           // Terminal, zero revenue
 };
@@ -59,32 +68,53 @@ const BusinessState = {
  *
  * Characteristics:
  * - Base MRR: $500-$2,000
- * - High coefficient of variation (50-100%)
+ * - Log-normal growth distribution (right-skewed, fat-tailed)
  * - Common zero-revenue months
- * - Spike potential: 2-5x in good months
- * - Failure: 3+ consecutive zeros
+ * - Spike potential: 2-5x in good months (viral moments)
+ * - Failure: consecutive zeros
+ * - Plateau: most businesses stabilize at a ceiling (~70%)
+ * - Breakout: rare viral success possible at any time (~2-10%)
+ *
+ * State transitions:
+ * - LAUNCHED → PLATEAUED (after plateau_months with low growth)
+ * - LAUNCHED → FAILED (consecutive zeros)
+ * - PLATEAUED → GROWING (rare breakout)
+ * - PLATEAUED → FAILED (consecutive zeros)
+ * - Any state → spike month (viral moment)
  */
 function createMicroBusiness(config, rng) {
     const {
         base_mrr = 1000,
-        growth_mean = 0.02,         // 2% expected monthly growth
-        growth_stddev = 0.40,       // 40% standard deviation (very high)
-        spike_probability = 0.08,   // 8% chance of spike month
+        // Log-normal parameters: median growth near 0, but right tail allows big months
+        growth_mu = -0.02,          // Log-normal location (slightly negative median)
+        growth_sigma = 0.35,        // Log-normal scale (controls tail fatness)
+        spike_probability = 0.08,   // 8% chance of spike month (viral moment)
         spike_multiplier = 3.0,     // Spikes are 3x normal
-        zero_probability = 0.15,    // 15% chance of zero month
-        failure_threshold = 3       // 3 consecutive zeros = failure
+        zero_probability = 0.12,    // 12% chance of zero month
+        failure_threshold = 4,      // 4 consecutive zeros = failure (extended from 3)
+        // Plateau mechanics
+        plateau_months = 8,         // Months before plateau check begins
+        plateau_probability = 0.12, // Monthly probability of entering plateau
+        plateau_ceiling = null,     // If set, caps MRR at this value when plateaued
+        plateau_variance = 0.08,    // Low variance while plateaued (±8%)
+        // Breakout mechanics (fat tail)
+        breakout_probability = 0.02 // 2% monthly chance of breakout from plateau
     } = config.params || {};
 
     let currentMRR = base_mrr;
     let consecutiveZeros = 0;
     let state = BusinessState.LAUNCHED;
+    let monthsActive = 0;
+    let plateauCeiling = plateau_ceiling || base_mrr * (1.5 + rng.random() * 2); // Random ceiling 1.5-3.5x base
 
     function generateRevenue(month) {
+        monthsActive++;
+
         if (state === BusinessState.FAILED) {
             return { revenue: 0, state, failed: true };
         }
 
-        // Check for zero month
+        // Check for zero month (applies to all non-failed states)
         if (rng.bernoulli(zero_probability)) {
             consecutiveZeros++;
             if (consecutiveZeros >= failure_threshold) {
@@ -96,21 +126,84 @@ function createMicroBusiness(config, rng) {
 
         consecutiveZeros = 0;
 
-        // Check for spike
+        // Check for viral spike (can happen in any state - this is the fat tail)
         let multiplier = 1;
+        let isSpike = false;
         if (rng.bernoulli(spike_probability)) {
-            multiplier = spike_multiplier * (0.8 + rng.random() * 0.4); // 80-120% of spike
+            // Log-normal spike magnitude: usually 2-4x, occasionally 5-10x
+            multiplier = spike_multiplier * rng.logNormal(0, 0.3);
+            isSpike = true;
+            // Viral success can break out of plateau
+            if (state === BusinessState.PLATEAUED && multiplier > 4) {
+                state = BusinessState.GROWING;
+            }
         }
 
-        // Apply growth with high variance
-        const growth = rng.normal(growth_mean, growth_stddev);
-        currentMRR = Math.max(0, currentMRR * (1 + growth) * multiplier);
+        // PLATEAUED state: stable with low variance, occasional breakout
+        if (state === BusinessState.PLATEAUED) {
+            // Check for breakout (rare but possible)
+            if (rng.bernoulli(breakout_probability)) {
+                state = BusinessState.GROWING;
+                multiplier = Math.max(multiplier, 2.0 + rng.random()); // At least 2-3x boost
+                return {
+                    revenue: currentMRR * multiplier,
+                    state,
+                    failed: false,
+                    isSpike: true,
+                    breakout: true
+                };
+            }
+
+            // Otherwise, stable revenue with low variance around ceiling
+            const noise = rng.normal(0, plateau_variance);
+            currentMRR = plateauCeiling * (1 + noise) * multiplier;
+            currentMRR = Math.max(base_mrr * 0.1, currentMRR); // Floor at 10% of base
+
+            return {
+                revenue: currentMRR,
+                state,
+                failed: false,
+                isSpike
+            };
+        }
+
+        // GROWING state: post-breakout, strong growth
+        if (state === BusinessState.GROWING) {
+            // Growth with lower variance than LAUNCHED
+            const growth = rng.logNormal(0.08, 0.15) - 1; // ~8% median growth
+            currentMRR = currentMRR * (1 + growth) * multiplier;
+
+            return {
+                revenue: currentMRR,
+                state,
+                failed: false,
+                isSpike
+            };
+        }
+
+        // LAUNCHED state: high variance, seeking product-market fit
+        // Use log-normal for right-skewed growth (most months modest, some big)
+        const growthMultiplier = rng.logNormal(growth_mu, growth_sigma);
+        currentMRR = Math.max(0, currentMRR * growthMultiplier * multiplier);
+
+        // Check for plateau transition (after initial months)
+        if (monthsActive >= plateau_months) {
+            // More likely to plateau if revenue is near or below ceiling
+            const atCeiling = currentMRR >= plateauCeiling * 0.8;
+            const plateauChance = atCeiling ? plateau_probability * 1.5 : plateau_probability;
+
+            if (rng.bernoulli(plateauChance)) {
+                state = BusinessState.PLATEAUED;
+                // Snap to ceiling when plateauing
+                currentMRR = Math.min(currentMRR, plateauCeiling);
+            }
+        }
 
         return {
             revenue: currentMRR,
             state,
             failed: false,
-            isSpike: multiplier > 1
+            isSpike
         };
     }
 

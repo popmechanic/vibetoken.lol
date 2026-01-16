@@ -14,7 +14,7 @@
     "archetype": "startup",
     "base_mrr": 300,
     "params": {
-      "runway_months": 15,
+      "runway_months": 18,
       "breakthrough_prob": 0.08,
       "hockey_stick_multiplier": 5.0,
       "post_breakthrough_growth": 0.12,

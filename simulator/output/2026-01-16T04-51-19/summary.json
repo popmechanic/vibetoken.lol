@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "name": "Micro Business + Diamond Hands",
+    "description": "Small, spiky business with committed holders who never exit. Tests whether patience pays off in high-variance environments.",
+    "version": "1.0"
+  },
+  "runs": 2,
+  "survivalRate": 1,
+  "priceStats": {
+    "mean": 2.8902509961821883,
+    "median": 4.393384117056009,
+    "min": 1.3871178753083675,
+    "max": 4.393384117056009,
+    "stddev": 1.5031331208738206,
+    "count": 2
+  },
+  "revenueStats": {
+    "mean": 5378647.484197489,
+    "median": 10558016.54439592,
+    "min": 199278.42399905727,
+    "max": 10558016.54439592,
+    "stddev": 5179369.060198431,
+    "count": 2
+  },
+  "participantStats": {
+    "Founder's Friend": {
+      "mean": 431.88178221803713,
+      "median": 844.3209394742372,
+      "min": 19.44262496183708,
+      "max": 844.3209394742372,
+      "stddev": 412.4391572562001,
+      "count": 2
+    },
+    "Early Adopter": {
+      "mean": 561.0258334162864,
+      "median": 1100.1917767918026,
+      "min": 21.859890040770402,
+      "max": 1100.1917767918026,
+      "stddev": 539.165943375516,
+      "count": 2
+    },
+    "Committed Holder": {
+      "mean": 237.8372565223771,
+      "median": 460.0891248791627,
+      "min": 15.585388165591509,
+      "max": 460.0891248791627,
+      "stddev": 222.2518683567856,
+      "count": 2
+    }
+  },
+  "engagementMetrics": {
+    "totalExitRequests": 0,
+    "partialExits": 0,
+    "fullExits": 0,
+    "exitRate": 0,
+    "decisionDensity": "95.5",
+    "roiStdDev": "433.25",
+    "timingSpread": "410.25",
+    "highVariance": true,
+    "timingMatters": true
+  }
+}

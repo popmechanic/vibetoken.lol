@@ -1,0 +1,142 @@
+{
+  "meta": {
+    "name": "Startup + Mixed Behaviors",
+    "description": "Classic startup with boom-or-bust trajectory and diverse participant behaviors. Tests how different strategies perform in high-uncertainty environments.",
+    "version": "1.0"
+  },
+  "runs": 10,
+  "survivalRate": 0.8,
+  "priceStats": {
+    "mean": 1.5812799874014636,
+    "median": 1.554991961394013,
+    "min": 1.0154801819828883,
+    "max": 2.025117280554388,
+    "stddev": 0.3325110546186802,
+    "count": 10
+  },
+  "revenueStats": {
+    "mean": 125476.70419344465,
+    "median": 124832.6373326631,
+    "min": 1176.7214998787676,
+    "max": 257876.33435049374,
+    "stddev": 97738.48984462928,
+    "count": 10
+  },
+  "participantStats": {
+    "True Believer": {
+      "mean": 9.025203635018116,
+      "median": 8.25416631379242,
+      "min": 3.3242165293259816,
+      "max": 15.919890939851344,
+      "stddev": 4.753752382212074,
+      "count": 10
+    },
+    "Angel Referrer": {
+      "mean": 4.373580738737038,
+      "median": 4.374817261084643,
+      "min": 4.362359777933802,
+      "max": 4.383038728473806,
+      "stddev": 0.007808471080603741,
+      "count": 10
+    },
+    "Skeptical Tester": {
+      "mean": 7.693725623742824,
+      "median": 6.982728774012786,
+      "min": 4.472806725088845,
+      "max": 12.65573318687165,
+      "stddev": 3.3709753981428188,
+      "count": 10
+    },
+    "Life Event Lisa": {
+      "mean": 5.707465915843699,
+      "median": 5.108649820920031,
+      "min": 4.0229456748041645,
+      "max": 8.154697572901418,
+      "stddev": 1.618898627283691,
+      "count": 10
+    },
+    "Momentum Trader": {
+      "mean": 9.184034531851925,
+      "median": 8.389138727224578,
+      "min": 3.3225529440142525,
+      "max": 16.29451435643288,
+      "stddev": 4.906057381165845,
+      "count": 10
+    },
+    "WoM Entrant #3": {
+      "mean": 9.569582579813108,
+      "median": 13.182213346203,
+      "min": 5.327912255752715,
+      "max": 14.295726702265501,
+      "stddev": 4.188244628517696,
+      "count": 4
+    },
+    "WoM Entrant #6": {
+      "mean": 6.365801805491385,
+      "median": 8.044800862839852,
+      "min": 4.6868027481429175,
+      "max": 8.044800862839852,
+      "stddev": 1.678999057348467,
+      "count": 2
+    },
+    "WoM Entrant #1": {
+      "mean": 11.13641388607737,
+      "median": 10.706316097773414,
+      "min": 5.989291303651877,
+      "max": 16.17343181471525,
+      "stddev": 4.100824038913865,
+      "count": 5
+    },
+    "WoM Entrant #2": {
+      "mean": 5.522146251232395,
+      "median": 5.522146251232395,
+      "min": 5.522146251232395,
+      "max": 5.522146251232395,
+      "stddev": 0,
+      "count": 1
+    },
+    "WoM Entrant #4": {
+      "mean": 10.502275875304065,
+      "median": 12.274624654402649,
+      "min": 8.72992709620548,
+      "max": 12.274624654402649,
+      "stddev": 1.7723487790985848,
+      "count": 2
+    },
+    "WoM Entrant #7": {
+      "mean": 6.303729055091121,
+      "median": 6.303729055091121,
+      "min": 6.303729055091121,
+      "max": 6.303729055091121,
+      "stddev": 0,
+      "count": 1
+    },
+    "WoM Entrant #5": {
+      "mean": 12.330584383835717,
+      "median": 12.330584383835717,
+      "min": 12.330584383835717,
+      "max": 12.330584383835717,
+      "stddev": 0,
+      "count": 1
+    },
+    "WoM Entrant #8": {
+      "mean": 6.4039831355180805,
+      "median": 6.4039831355180805,
+      "min": 6.4039831355180805,
+      "max": 6.4039831355180805,
+      "stddev": 0,
+      "count": 1
+    }
+  },
+  "engagementMetrics": {
+    "totalExitRequests": 22,
+    "partialExits": 0,
+    "fullExits": 22,
+    "exitRate": "0",
+    "decisionDensity": "147.1",
+    "roiStdDev": "4.86",
+    "timingSpread": "1.45",
+    "highVariance": false,
+    "timingMatters": false
+  }
+}

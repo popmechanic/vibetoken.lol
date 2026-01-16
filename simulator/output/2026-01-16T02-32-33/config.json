@@ -1,0 +1,145 @@
+{
+  "meta": {
+    "name": "Startup + Mixed Behaviors",
+    "description": "Classic startup with boom-or-bust trajectory and diverse participant behaviors. Tests how different strategies perform in high-uncertainty environments.",
+    "version": "1.0"
+  },
+  "simulation": {
+    "runs": 12,
+    "duration_months": 36,
+    "seed": null,
+    "parallel_batches": 5
+  },
+  "business": {
+    "archetype": "startup",
+    "base_mrr": 300,
+    "params": {
+      "runway_months": 18,
+      "breakthrough_prob": 0.08,
+      "hockey_stick_multiplier": 5,
+      "post_breakthrough_growth": 0.12,
+      "building_revenue_range": [
+        0,
+        400
+      ]
+    }
+  },
+  "tokenomics": {
+    "alpha": 0.2,
+    "k": 0.01,
+    "treasury": 36000,
+    "s_min": 1000
+  },
+  "participants": [
+    {
+      "id": "true_believer",
+      "name": "True Believer",
+      "behavior": "diamond_hands",
+      "grant": 6000,
+      "grant_month": 0,
+      "referral_share": 0.15,
+      "start_month": 1,
+      "params": {
+        "labor_intensity": 0.25
+      }
+    },
+    {
+      "id": "angel_referrer",
+      "name": "Angel Referrer",
+      "behavior": "rational",
+      "grant": 6000,
+      "grant_month": 0,
+      "referral_share": 0.3,
+      "start_month": 1,
+      "params": {
+        "discount_rate": 0.05,
+        "forecast_horizon": 12,
+        "confidence": 0.7
+      }
+    },
+    {
+      "id": "skeptical_tester",
+      "name": "Skeptical Tester",
+      "behavior": "skeptic",
+      "grant": 4000,
+      "grant_month": 2,
+      "referral_share": 0.05,
+      "start_month": 2,
+      "params": {
+        "patience": 8,
+        "validation_threshold": 0.15
+      }
+    },
+    {
+      "id": "life_event_lisa",
+      "name": "Life Event Lisa",
+      "behavior": "life_event",
+      "grant": 6000,
+      "grant_month": 0,
+      "referral_share": 0.1,
+      "start_month": 1,
+      "params": {
+        "trigger_month": 24
+      }
+    },
+    {
+      "id": "momentum_trader",
+      "name": "Momentum Trader",
+      "behavior": "trend_follower",
+      "grant": 3000,
+      "grant_month": 3,
+      "referral_share": 0.08,
+      "start_month": 3,
+      "params": {
+        "lookback_window": 4,
+        "panic_threshold": -0.25,
+        "fomo_threshold": 0.3
+      }
+    }
+  ],
+  "entry_pool": {
+    "treasury": 12000,
+    "templates": [
+      {
+        "id": "word_of_mouth_pool",
+        "name": "WoM Entrant",
+        "behavior": "trend_follower",
+        "entry_mode": "grant",
+        "grant": 2000,
+        "referral_share": 0.06,
+        "maxSpawns": 3,
+        "entry_conditions": {
+          "type": "word_of_mouth",
+          "params": {
+            "revenue_threshold": 3000,
+            "probability_per_month": 0.2
+          }
+        },
+        "params": {
+          "lookback_window": 3,
+          "panic_threshold": -0.2
+        }
+      },
+      {
+        "id": "referral_hustler",
+        "name": "Referral Hustler",
+        "behavior": "hustler",
+        "entry_mode": "earn",
+        "grant": 0,
+        "referral_share": 0.1,
+        "maxSpawns": 5,
+        "entry_conditions": {
+          "type": "word_of_mouth",
+          "params": {
+            "revenue_threshold": 5000,
+            "probability_per_month": 0.25
+          }
+        },
+        "params": {
+          "labor_intensity": 0.5,
+          "exit_aversion": 0.65
+        }
+      }
+    ]
+  }
+}

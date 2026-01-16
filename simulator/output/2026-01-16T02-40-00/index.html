@@ -1,392 +1,9 @@
-/**
- * HTML Report Generator
- *
- * Generates a self-contained HTML visualization page from simulation output.
- * Styled to match the main Vibe Token website aesthetic.
- */
-
-/**
- * Convert narrative markdown to HTML
- * Handles: ## headings, ### headings, **bold**, - lists, paragraphs
- * Wraps ROI Rankings and Earn-Mode Performers in collapsible accordions
- */
-function markdownToHTML(md) {
-    // Split into blocks by double newlines
-    const blocks = md.split(/\n\n+/);
-    const result = [];
-
-    for (let i = 0; i < blocks.length; i++) {
-        let block = blocks[i].trim();
-        if (!block) continue;
-
-        // H2 heading
-        if (block.startsWith('## ')) {
-            result.push(`<h2>${block.slice(3)}</h2>`);
-            continue;
-        }
-
-        // H3 heading
-        if (block.startsWith('### ')) {
-            result.push(`<h3>${block.slice(4)}</h3>`);
-            continue;
-        }
-
-        // ROI Rankings block (header + list in same block) - make collapsible
-        if (block.startsWith('**ROI Rankings')) {
-            const lines = block.split('\n');
-            const headerLine = lines[0];
-            const listLines = lines.slice(1).filter(line => line.startsWith('- '));
-
-            if (listLines.length > 0) {
-                const headerText = processBold(headerLine);
-                const items = listLines
-                    .map(line => `<li>${processBold(line.slice(2))}</li>`)
-                    .join('\n');
-                result.push(`<details class="participant-accordion">
-<summary><span class="accordion-icon">▸</span> ${headerText} <span class="accordion-count">(${listLines.length} participants)</span></summary>
-<ul class="conditions">\n${items}\n</ul>
-</details>`);
-                continue;
-            }
-        }
-
-        // Earn-Mode Performers block (header + list in same block) - make collapsible
-        if (block.startsWith('**Earn-Mode Performers')) {
-            const lines = block.split('\n');
-            const headerLine = lines[0];
-            const listLines = lines.slice(1).filter(line => line.startsWith('- '));
-
-            if (listLines.length > 0) {
-                const headerText = processBold(headerLine);
-                const items = listLines
-                    .map(line => `<li>${processBold(line.slice(2))}</li>`)
-                    .join('\n');
-                result.push(`<details class="participant-accordion">
-<summary><span class="accordion-icon">▸</span> ${headerText} <span class="accordion-count">(${listLines.length})</span></summary>
-<ul class="conditions">\n${items}\n</ul>
-</details>`);
-                continue;
-            }
-        }
-
-        // All Business Stories block (header + list in same block) - make collapsible
-        if (block.startsWith('**All Business Stories')) {
-            const lines = block.split('\n');
-            const headerLine = lines[0];
-            const listLines = lines.slice(1).filter(line => line.startsWith('- '));
-
-            if (listLines.length > 0) {
-                const headerText = processBold(headerLine);
-                const items = listLines
-                    .map(line => `<li>${processBold(line.slice(2))}</li>`)
-                    .join('\n');
-                result.push(`<details class="participant-accordion">
-<summary><span class="accordion-icon">▸</span> ${headerText} <span class="accordion-count">(${listLines.length} stories)</span></summary>
-<ul class="conditions">\n${items}\n</ul>
-</details>`);
-                continue;
-            }
-        }
-
-        // List block (consecutive lines starting with -)
-        if (block.match(/^- /m)) {
-            const items = block.split('\n')
-                .filter(line => line.startsWith('- '))
-                .map(line => `<li>${processBold(line.slice(2))}</li>`)
-                .join('\n');
-            result.push(`<ul class="conditions">\n${items}\n</ul>`);
-            continue;
-        }
-
-        // Regular paragraph
-        const text = block.replace(/\n/g, ' ');
-        result.push(`<p>${processBold(text)}</p>`);
-    }
-
-    return result.filter(Boolean).join('\n\n');
-}
-
-/**
- * Process **bold** markdown syntax
- */
-function processBold(text) {
-    return text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-}
-
-/**
- * Build histogram bins from an array of values
- */
-function buildHistogramBins(values, binCount = 15) {
-    if (!values || values.length === 0) return [];
-
-    const min = Math.min(...values);
-    const max = Math.max(...values);
-    const binWidth = (max - min) / binCount || 1;
-
-    const bins = [];
-    for (let i = 0; i < binCount; i++) {
-        bins.push({
-            min: min + i * binWidth,
-            max: min + (i + 1) * binWidth,
-            count: 0
-        });
-    }
-
-    for (const value of values) {
-        const binIndex = Math.min(
-            Math.floor((value - min) / binWidth),
-            binCount - 1
-        );
-        if (binIndex >= 0 && binIndex < binCount) {
-            bins[binIndex].count++;
-        }
-    }
-
-    return bins;
-}
-
-/**
- * Format large numbers with K/M suffixes
- */
-function formatCompact(n) {
-    if (n >= 1000000) return `$${(n / 1000000).toFixed(1)}M`;
-    if (n >= 1000) return `$${(n / 1000).toFixed(0)}K`;
-    return `$${n.toFixed(0)}`;
-}
-
-/**
- * Aggregate time-series data across all runs
- * Returns mean and percentile bands for each month
- */
-function aggregateTimeSeries(results, fieldExtractor) {
-    if (!results || results.length === 0) return null;
-
-    const duration = results[0].history?.length || 36;
-    const means = [];
-    const p10 = [];
-    const p90 = [];
-
-    for (let month = 0; month < duration; month++) {
-        const values = results
-            .map(r => r.history?.[month] ? fieldExtractor(r.history[month]) : null)
-            .filter(v => v !== null && isFinite(v));
-
-        if (values.length === 0) {
-            means.push(0);
-            p10.push(0);
-            p90.push(0);
-            continue;
-        }
-
-        values.sort((a, b) => a - b);
-        const sum = values.reduce((a, b) => a + b, 0);
-        means.push(sum / values.length);
-        p10.push(values[Math.floor(values.length * 0.1)] || values[0]);
-        p90.push(values[Math.floor(values.length * 0.9)] || values[values.length - 1]);
-    }
-
-    return { means, p10, p90 };
-}
-
-/**
- * Calculate "fun" engagement proxy metrics from simulation results
- * Measures decision activity, outcome variance, and timing rewards
- */
-function calculateEngagementMetrics(results) {
-    if (!results || results.length === 0) return null;
-
-    let totalExitRequests = 0;
-    let partialExits = 0;
-    let fullExits = 0;
-    let totalDecisions = 0;  // Non-HOLD decisions
-    const roiValues = [];
-    const earlyExiterROIs = [];  // Exited in first half
-    const lateExiterROIs = [];   // Exited in second half or held
-
-    for (const result of results) {
-        const duration = result.history?.length || 36;
-        const midpoint = Math.floor(duration / 2);
-
-        // Count exit events from history
-        for (const snapshot of (result.history || [])) {
-            for (const event of (snapshot.events || [])) {
-                if (event.type === 'exit_request') {
-                    totalExitRequests++;
-                    totalDecisions++;
-
-                    // Track partial vs full by comparing to participant's grant
-                    const participant = result.participantOutcomes?.find(p => p.id === event.participantId);
-                    if (participant) {
-                        if (event.tokens < participant.grant) {
-                            partialExits++;
-                        } else {
-                            fullExits++;
-                        }
-                    }
-                }
-                if (event.type === 'tokens_earned') {
-                    totalDecisions++;  // Earning tokens = active participation
-                }
-            }
-        }
-
-        // Collect ROI values for variance calculation
-        for (const p of (result.participantOutcomes || [])) {
-            if (isFinite(p.roi) && !isNaN(p.roi)) {
-                roiValues.push(p.roi);
-
-                // Categorize by exit timing
-                if (p.hasExited && p.exitMonth && p.exitMonth <= midpoint) {
-                    earlyExiterROIs.push(p.roi);
-                } else {
-                    lateExiterROIs.push(p.roi);
-                }
-            }
-        }
-    }
-
-    // Calculate ROI variance (outcome spread = excitement)
-    const roiMean = roiValues.length > 0
-        ? roiValues.reduce((a, b) => a + b, 0) / roiValues.length
-        : 0;
-    const roiVariance = roiValues.length > 0
-        ? roiValues.reduce((acc, v) => acc + (v - roiMean) ** 2, 0) / roiValues.length
-        : 0;
-    const roiStdDev = Math.sqrt(roiVariance);
-
-    // Calculate timing spread (does exit timing matter?)
-    const earlyMeanROI = earlyExiterROIs.length > 0
-        ? earlyExiterROIs.reduce((a, b) => a + b, 0) / earlyExiterROIs.length
-        : 0;
-    const lateMeanROI = lateExiterROIs.length > 0
-        ? lateExiterROIs.reduce((a, b) => a + b, 0) / lateExiterROIs.length
-        : 0;
-    const timingSpread = lateMeanROI - earlyMeanROI;
-
-    // Decision density (decisions per run)
-    const decisionDensity = totalDecisions / results.length;
-
-    return {
-        totalExitRequests,
-        partialExits,
-        fullExits,
-        exitRate: totalExitRequests > 0 ? (partialExits / totalExitRequests * 100).toFixed(0) : 0,
-        decisionDensity: decisionDensity.toFixed(1),
-        roiStdDev: roiStdDev.toFixed(2),
-        timingSpread: timingSpread.toFixed(2),
-        // Interpretation flags
-        highVariance: roiStdDev > 50,  // Exciting outcome spread
-        timingMatters: Math.abs(timingSpread) > 5  // Exit timing affects ROI significantly
-    };
-}
-
-/**
- * Aggregate participant balances by behavior type across all runs
- * Returns mean balance per month for each behavior type
- */
-function aggregateBalancesByBehavior(results) {
-    if (!results || results.length === 0) return null;
-
-    const duration = results[0].history?.length || 36;
-
-    // Collect all behavior types from first run's participant outcomes
-    const behaviorTypes = [...new Set(
-        results[0].participantOutcomes?.map(p => p.behaviorType) || []
-    )];
-
-    const balancesByBehavior = {};
-
-    for (const behaviorType of behaviorTypes) {
-        const monthlyMeans = [];
-
-        for (let month = 0; month < duration; month++) {
-            const balances = [];
-
-            for (const result of results) {
-                const snapshot = result.history?.[month];
-                if (!snapshot?.participantBalances) continue;
-
-                // Get balances for this behavior type
-                for (const [pid, balance] of Object.entries(snapshot.participantBalances)) {
-                    const participant = result.participantOutcomes?.find(p => p.id === pid);
-                    if (participant?.behaviorType === behaviorType) {
-                        balances.push(balance);
-                    }
-                }
-            }
-
-            const mean = balances.length > 0
-                ? balances.reduce((a, b) => a + b, 0) / balances.length
-                : 0;
-            monthlyMeans.push(mean);
-        }
-
-        balancesByBehavior[behaviorType] = monthlyMeans;
-    }
-
-    return balancesByBehavior;
-}
-
-/**
- * Generate the complete HTML report
- */
-function generateHTMLReport(batchResult, config, narrativeMd) {
-    const meta = config.meta || { name: 'Simulation Results' };
-    const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19);
-
-    // Convert narrative markdown to HTML
-    const narrativeHTML = markdownToHTML(narrativeMd);
-
-    // Prepare data for embedding
-    const priceDistribution = batchResult.results.map(r => r.finalState.P);
-    const revenueDistribution = batchResult.results.map(r => r.finalState.cumulativeRevenue);
-
-    // Build histogram data
-    const priceBins = buildHistogramBins(priceDistribution, 12);
-    const revenueBins = buildHistogramBins(revenueDistribution, 12);
-
-    // Get participant stats sorted by ROI
-    const participantStats = Object.entries(batchResult.participantStats || {})
-        .filter(([_, stats]) => stats && stats.mean !== undefined && !isNaN(stats.mean))
-        .sort((a, b) => b[1].mean - a[1].mean)
-        .slice(0, 12); // Top 12 participants
-
-    // Aggregate time-series data
-    const priceTimeSeries = aggregateTimeSeries(batchResult.results, h => h.P);
-    const revenueTimeSeries = aggregateTimeSeries(batchResult.results, h => h.revenue);
-    const balancesByBehavior = aggregateBalancesByBehavior(batchResult.results);
-
-    // Calculate engagement/"fun" metrics
-    const engagementMetrics = calculateEngagementMetrics(batchResult.results);
-
-    // Generate month labels
-    const duration = batchResult.results[0]?.history?.length || 36;
-    const monthLabels = Array.from({ length: duration }, (_, i) => `M${i + 1}`);
-
-    // Embedded data object
-    const embeddedData = {
-        runs: batchResult.runs,
-        survivalRate: batchResult.survivalRate,
-        priceStats: batchResult.priceStats,
-        revenueStats: batchResult.revenueStats,
-        participantStats: Object.fromEntries(participantStats),
-        priceBins,
-        revenueBins,
-        // Time-series data
-        monthLabels,
-        priceTimeSeries,
-        revenueTimeSeries,
-        balancesByBehavior,
-        // Engagement/"fun" metrics
-        engagementMetrics
-    };
-
-    return `<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulation Report: ${meta.name}</title>
+    <title>Simulation Report: Micro Business + Diamond Hands</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -748,7 +365,7 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
 <body>
     <article class="container">
         <header>
-            <h1>${meta.name}</h1>
+            <h1>Micro Business + Diamond Hands</h1>
             <p class="subtitle">Monte Carlo Simulation Report</p>
         </header>
 
@@ -756,19 +373,19 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
         <div class="stats-grid">
             <div class="stat">
                 <div class="stat-label has-tooltip" data-tooltip="Monte Carlo run count">Simulations</div>
-                <div class="stat-value">${batchResult.runs}</div>
+                <div class="stat-value">1</div>
             </div>
             <div class="stat">
                 <div class="stat-label has-tooltip" data-tooltip="% where business survived">Survival Rate</div>
-                <div class="stat-value">${(batchResult.survivalRate * 100).toFixed(0)}%</div>
+                <div class="stat-value">100%</div>
             </div>
             <div class="stat">
                 <div class="stat-label has-tooltip" data-tooltip="Average final token price">Mean Price</div>
-                <div class="stat-value">$${batchResult.priceStats.mean.toFixed(2)}</div>
+                <div class="stat-value">$1.17</div>
             </div>
             <div class="stat">
                 <div class="stat-label has-tooltip" data-tooltip="Average cumulative revenue">Mean Revenue</div>
-                <div class="stat-value">${formatCompact(batchResult.revenueStats.mean)}</div>
+                <div class="stat-value">$62K</div>
             </div>
         </div>
 
@@ -776,19 +393,19 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
         <div class="stats-grid">
             <div class="stat">
                 <div class="stat-label has-tooltip" data-tooltip="Non-HOLD actions per simulation">Decisions/Run</div>
-                <div class="stat-value">${engagementMetrics?.decisionDensity || '—'}</div>
+                <div class="stat-value">94.0</div>
             </div>
             <div class="stat">
                 <div class="stat-label has-tooltip" data-tooltip="StdDev of returns — higher = more variance">ROI Spread</div>
-                <div class="stat-value">${engagementMetrics?.roiStdDev || '—'}x</div>
+                <div class="stat-value">0.65x</div>
             </div>
             <div class="stat">
                 <div class="stat-label has-tooltip" data-tooltip="Total exit requests across all runs">Exit Events</div>
-                <div class="stat-value">${engagementMetrics?.totalExitRequests || 0}</div>
+                <div class="stat-value">0</div>
             </div>
             <div class="stat">
                 <div class="stat-label has-tooltip" data-tooltip="ROI advantage of holding vs early exit">Timing Edge</div>
-                <div class="stat-value">${engagementMetrics?.timingSpread > 0 ? '+' : ''}${engagementMetrics?.timingSpread || '—'}x</div>
+                <div class="stat-value">+8.68x</div>
             </div>
         </div>
 
@@ -818,17 +435,597 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
 
         <!-- Narrative Content -->
         <section class="narrative">
-            ${narrativeHTML}
+            <h2>Simulation Results: Micro Business + Diamond Hands</h2>
+
+<p>This analysis covers 1 simulations of a micro business model over 36 months.</p>
+
+<ul class="conditions">
+<li>Business survival rate: 100%</li>
+<li>Mean final token price: $1.17</li>
+<li>Revenue share (α): 20%</li>
+<li>Initial participant count: 3</li>
+</ul>
+
+<h3>Business Outcomes</h3>
+
+<p>Despite high revenue volatility, the micro business survived in 100% of cases. The square root pricing function helped dampen price swings during spiky revenue periods.</p>
+
+<ul class="conditions">
+<li>Mean: $61,610</li>
+<li>Median: $61,610</li>
+<li>Range: $61,610 - $61,610</li>
+</ul>
+
+<h3>Participant Performance</h3>
+
+<details class="participant-accordion">
+<summary><span class="accordion-icon">▸</span> <strong>ROI Rankings (Mean):</strong> <span class="accordion-count">(3 participants)</span></summary>
+<ul class="conditions">
+<li>Early Adopter: 9.39x █████████</li>
+<li>Founder's Friend: 8.84x ████████</li>
+<li>Committed Holder: 7.82x ███████</li>
+</ul>
+</details>
+
+<p><strong>Behavior Analysis:</strong></p>
+
+<p><strong>Diamond hands outperformed</strong> in this scenario, achieving 8.68x average ROI. Their refusal to exit captured full upside when the business succeeded.</p>
+
+<h3>Sample Narrative</h3>
+
+<p>So Leo started <strong>Leo's Chill Sounds</strong> back in Jan 2024, creating lo-fi beat packs for content creators. They kicked off at around $857 a month—not bad for a side project.</p>
+
+<p>Things got rough early though. Payment processor audit froze payouts. Revenue tanked, and honestly? Most people would've given up right there.</p>
+
+<p>But here's the crazy part: in Mar 2025, competitor went offline, redirecting their customers. We're talking a 3.9x spike. The kind of month that makes you think maybe this thing could actually work.</p>
+
+<p>Leo's Chill Sounds is still going—about $61,610 in total revenue so far. It's not going to make anyone rich, but Leo's built something real.</p>
+
+<ul class="conditions">
+<li>Jan 2024: LAUNCHED at $857 MRR</li>
+<li>Jun 2024: Payment processor audit froze payouts (revenue crashed)</li>
+<li>Jun 2024: Website migration disaster</li>
+<li>Sep 2024: Stabilized at a comfortable revenue level</li>
+<li>Mar 2025: Competitor went offline, redirecting their customers (3.9x spike)</li>
+<li>Apr 2025: Key supplier delayed shipments (revenue crashed)</li>
+<li>Apr 2025: Legal issue required temporary shutdown</li>
+<li>Jan 2026: Server migration went sideways for a week (revenue crashed)</li>
+<li>Oct 2026: Negative review from a popular tech blogger hurt conversions (revenue crashed)</li>
+<li>Dec 2026: Stabilized at $1,932/month</li>
+</ul>
+
+<ul class="conditions">
+<li><strong>Leo's Chill Sounds</strong>: payment processor audit froze payouts (survived, $61,610 total)</li>
+</ul>
+
+<h3>Economic Observations</h3>
+
+<ul class="conditions">
+<li>Final price range: $1.17 - $1.17</li>
+<li>Coefficient of variation: 0.0%</li>
+</ul>
+
+<p>The √S pricing function dampened business volatility to 0% price variation—achieving the design goal of bounded volatility while preserving price discovery.</p>
+
+<p><strong>Supply Floor (S_min = 1000):</strong> The minimum supply floor prevented price collapse in failure scenarios. Floor price: $0.25. No simulation reached the floor, indicating adequate supply cushion.</p>
+
+<p><strong>Exit Queue Mechanism:</strong> With high survival rate, exit queues typically cleared quickly. The FIFO queue processed exits from ongoing revenue without delays.</p>
+
+<h3>Key Findings</h3>
+
+<p>1. <strong>High survival rate rewards patience.</strong> Diamond hands and long-term holders outperformed reactive strategies in this scenario.</p>
+
+<p>2. <strong>Early Adopter</strong> achieved highest returns (9.39x), while <strong>Committed Holder</strong> achieved lowest (7.82x).</p>
+
+<h3>Design Principle Check</h3>
+
+<ul class="conditions">
+<li>✗ <strong>Early contributor reward</strong>: 9.1x ROI for month 1-2 entrants vs 7.8x for later (1.2x advantage)</li>
+<li>✓ <strong>Floor protection</strong>: No runs hit S_min</li>
+<li>✓ <strong>Exit liquidity</strong>: High survival enabled queue clearance without secondary markets</li>
+</ul>
+
+<p><strong>Implication:</strong> For micro businesses with similar parameters, the token system creates meaningful value for early contributors.</p>
         </section>
 
         <footer>
-            Generated ${timestamp} | ${batchResult.runs} simulations × ${config.simulation.duration_months} months
+            Generated 2026-01-16 02:40:00 | 1 simulations × 36 months
         </footer>
     </article>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const DATA = ${JSON.stringify(embeddedData, null, 2)};
+        const DATA = {
+  "runs": 1,
+  "survivalRate": 1,
+  "priceStats": {
+    "mean": 1.17073652031531,
+    "median": 1.17073652031531,
+    "min": 1.17073652031531,
+    "max": 1.17073652031531,
+    "stddev": 0,
+    "count": 1
+  },
+  "revenueStats": {
+    "mean": 61610.3806412252,
+    "median": 61610.3806412252,
+    "min": 61610.3806412252,
+    "max": 61610.3806412252,
+    "stddev": 0,
+    "count": 1
+  },
+  "participantStats": {
+    "Early Adopter": {
+      "mean": 9.387246331248825,
+      "median": 9.387246331248825,
+      "min": 9.387246331248825,
+      "max": 9.387246331248825,
+      "stddev": 0,
+      "count": 1
+    },
+    "Founder's Friend": {
+      "mean": 8.835893564895358,
+      "median": 8.835893564895358,
+      "min": 8.835893564895358,
+      "max": 8.835893564895358,
+      "stddev": 0,
+      "count": 1
+    },
+    "Committed Holder": {
+      "mean": 7.822052084565458,
+      "median": 7.822052084565458,
+      "min": 7.822052084565458,
+      "max": 7.822052084565458,
+      "stddev": 0,
+      "count": 1
+    }
+  },
+  "priceBins": [
+    {
+      "min": 1.17073652031531,
+      "max": 2.1707365203153097,
+      "count": 1
+    },
+    {
+      "min": 2.1707365203153097,
+      "max": 3.1707365203153097,
+      "count": 0
+    },
+    {
+      "min": 3.1707365203153097,
+      "max": 4.17073652031531,
+      "count": 0
+    },
+    {
+      "min": 4.17073652031531,
+      "max": 5.17073652031531,
+      "count": 0
+    },
+    {
+      "min": 5.17073652031531,
+      "max": 6.17073652031531,
+      "count": 0
+    },
+    {
+      "min": 6.17073652031531,
+      "max": 7.17073652031531,
+      "count": 0
+    },
+    {
+      "min": 7.17073652031531,
+      "max": 8.17073652031531,
+      "count": 0
+    },
+    {
+      "min": 8.17073652031531,
+      "max": 9.17073652031531,
+      "count": 0
+    },
+    {
+      "min": 9.17073652031531,
+      "max": 10.17073652031531,
+      "count": 0
+    },
+    {
+      "min": 10.17073652031531,
+      "max": 11.17073652031531,
+      "count": 0
+    },
+    {
+      "min": 11.17073652031531,
+      "max": 12.17073652031531,
+      "count": 0
+    },
+    {
+      "min": 12.17073652031531,
+      "max": 13.17073652031531,
+      "count": 0
+    }
+  ],
+  "revenueBins": [
+    {
+      "min": 61610.3806412252,
+      "max": 61611.3806412252,
+      "count": 1
+    },
+    {
+      "min": 61611.3806412252,
+      "max": 61612.3806412252,
+      "count": 0
+    },
+    {
+      "min": 61612.3806412252,
+      "max": 61613.3806412252,
+      "count": 0
+    },
+    {
+      "min": 61613.3806412252,
+      "max": 61614.3806412252,
+      "count": 0
+    },
+    {
+      "min": 61614.3806412252,
+      "max": 61615.3806412252,
+      "count": 0
+    },
+    {
+      "min": 61615.3806412252,
+      "max": 61616.3806412252,
+      "count": 0
+    },
+    {
+      "min": 61616.3806412252,
+      "max": 61617.3806412252,
+      "count": 0
+    },
+    {
+      "min": 61617.3806412252,
+      "max": 61618.3806412252,
+      "count": 0
+    },
+    {
+      "min": 61618.3806412252,
+      "max": 61619.3806412252,
+      "count": 0
+    },
+    {
+      "min": 61619.3806412252,
+      "max": 61620.3806412252,
+      "count": 0
+    },
+    {
+      "min": 61620.3806412252,
+      "max": 61621.3806412252,
+      "count": 0
+    },
+    {
+      "min": 61621.3806412252,
+      "max": 61622.3806412252,
+      "count": 0
+    }
+  ],
+  "monthLabels": [
+    "M1",
+    "M2",
+    "M3",
+    "M4",
+    "M5",
+    "M6",
+    "M7",
+    "M8",
+    "M9",
+    "M10",
+    "M11",
+    "M12",
+    "M13",
+    "M14",
+    "M15",
+    "M16",
+    "M17",
+    "M18",
+    "M19",
+    "M20",
+    "M21",
+    "M22",
+    "M23",
+    "M24",
+    "M25",
+    "M26",
+    "M27",
+    "M28",
+    "M29",
+    "M30",
+    "M31",
+    "M32",
+    "M33",
+    "M34",
+    "M35",
+    "M36"
+  ],
+  "priceTimeSeries": {
+    "means": [
+      0.914417847594851,
+      0.9179455321531883,
+      1.0508967599150738,
+      1.0539677414418336,
+      1.0564544476691837,
+      1.0564544476691837,
+      1.0589353143606082,
+      1.0604753651075542,
+      1.0619830507122043,
+      1.0665533273118601,
+      1.0702074565242012,
+      1.0745938767739187,
+      1.0783988130557265,
+      1.0825155888023046,
+      1.0983624174196784,
+      1.0983624174196784,
+      1.1026368395804669,
+      1.1065767031706386,
+      1.110877130919527,
+      1.1165375049679254,
+      1.1205712828731602,
+      1.1243060081668157,
+      1.1284538094224326,
+      1.1325299113047742,
+      1.1325299113047742,
+      1.1364224566594943,
+      1.1400210524371908,
+      1.1441957874419921,
+      1.1476863683079974,
+      1.1514721012686326,
+      1.1555223926865286,
+      1.1593929446050637,
+      1.1633606491539932,
+      1.1633606491539932,
+      1.1671503759156314,
+      1.17073652031531
+    ],
+    "p10": [
+      0.914417847594851,
+      0.9179455321531883,
+      1.0508967599150738,
+      1.0539677414418336,
+      1.0564544476691837,
+      1.0564544476691837,
+      1.0589353143606082,
+      1.0604753651075542,
+      1.0619830507122043,
+      1.0665533273118601,
+      1.0702074565242012,
+      1.0745938767739187,
+      1.0783988130557265,
+      1.0825155888023046,
+      1.0983624174196784,
+      1.0983624174196784,
+      1.1026368395804669,
+      1.1065767031706386,
+      1.110877130919527,
+      1.1165375049679254,
+      1.1205712828731602,
+      1.1243060081668157,
+      1.1284538094224326,
+      1.1325299113047742,
+      1.1325299113047742,
+      1.1364224566594943,
+      1.1400210524371908,
+      1.1441957874419921,
+      1.1476863683079974,
+      1.1514721012686326,
+      1.1555223926865286,
+      1.1593929446050637,
+      1.1633606491539932,
+      1.1633606491539932,
+      1.1671503759156314,
+      1.17073652031531
+    ],
+    "p90": [
+      0.914417847594851,
+      0.9179455321531883,
+      1.0508967599150738,
+      1.0539677414418336,
+      1.0564544476691837,
+      1.0564544476691837,
+      1.0589353143606082,
+      1.0604753651075542,
+      1.0619830507122043,
+      1.0665533273118601,
+      1.0702074565242012,
+      1.0745938767739187,
+      1.0783988130557265,
+      1.0825155888023046,
+      1.0983624174196784,
+      1.0983624174196784,
+      1.1026368395804669,
+      1.1065767031706386,
+      1.110877130919527,
+      1.1165375049679254,
+      1.1205712828731602,
+      1.1243060081668157,
+      1.1284538094224326,
+      1.1325299113047742,
+      1.1325299113047742,
+      1.1364224566594943,
+      1.1400210524371908,
+      1.1441957874419921,
+      1.1476863683079974,
+      1.1514721012686326,
+      1.1555223926865286,
+      1.1593929446050637,
+      1.1633606491539932,
+      1.1633606491539932,
+      1.1671503759156314,
+      1.17073652031531
+    ]
+  },
+  "revenueTimeSeries": {
+    "means": [
+      857.0599642239334,
+      1338.4861639505957,
+      1205.221002055509,
+      1343.281843716118,
+      1090.656715964234,
+      0,
+      1094.8992460127301,
+      699.3498781114571,
+      688.5717514691224,
+      2020.1942439705592,
+      1636.2618062473223,
+      1988.7032054868935,
+      1719.9987807119596,
+      1891.9640084450498,
+      7332.740652984361,
+      0,
+      2043.0541096615254,
+      1893.8617425843202,
+      2088.3064829724563,
+      2761.1022726987994,
+      1988.0497970574165,
+      1851.9938991675806,
+      2072.565478387193,
+      2043.744009154977,
+      0,
+      1965.7220758634187,
+      1830.943793244493,
+      2161.042281310133,
+      1816.6361940715478,
+      1972.999770058794,
+      2114.230548772526,
+      2047.5256698086207,
+      2094.318385433236,
+      0,
+      2025.0563745110646,
+      1931.838493117249
+    ],
+    "p10": [
+      857.0599642239334,
+      1338.4861639505957,
+      1205.221002055509,
+      1343.281843716118,
+      1090.656715964234,
+      0,
+      1094.8992460127301,
+      699.3498781114571,
+      688.5717514691224,
+      2020.1942439705592,
+      1636.2618062473223,
+      1988.7032054868935,
+      1719.9987807119596,
+      1891.9640084450498,
+      7332.740652984361,
+      0,
+      2043.0541096615254,
+      1893.8617425843202,
+      2088.3064829724563,
+      2761.1022726987994,
+      1988.0497970574165,
+      1851.9938991675806,
+      2072.565478387193,
+      2043.744009154977,
+      0,
+      1965.7220758634187,
+      1830.943793244493,
+      2161.042281310133,
+      1816.6361940715478,
+      1972.999770058794,
+      2114.230548772526,
+      2047.5256698086207,
+      2094.318385433236,
+      0,
+      2025.0563745110646,
+      1931.838493117249
+    ],
+    "p90": [
+      857.0599642239334,
+      1338.4861639505957,
+      1205.221002055509,
+      1343.281843716118,
+      1090.656715964234,
+      0,
+      1094.8992460127301,
+      699.3498781114571,
+      688.5717514691224,
+      2020.1942439705592,
+      1636.2618062473223,
+      1988.7032054868935,
+      1719.9987807119596,
+      1891.9640084450498,
+      7332.740652984361,
+      0,
+      2043.0541096615254,
+      1893.8617425843202,
+      2088.3064829724563,
+      2761.1022726987994,
+      1988.0497970574165,
+      1851.9938991675806,
+      2072.565478387193,
+      2043.744009154977,
+      0,
+      1965.7220758634187,
+      1830.943793244493,
+      2161.042281310133,
+      1816.6361940715478,
+      1972.999770058794,
+      2114.230548772526,
+      2047.5256698086207,
+      2094.318385433236,
+      0,
+      2025.0563745110646,
+      1931.838493117249
+    ]
+  },
+  "balancesByBehavior": {
+    "diamond_hands": [
+      4021.6666666666665,
+      4055.3333333333335,
+      5418.666666666667,
+      5452.333333333333,
+      5479.666666666667,
+      5479.666666666667,
+      5507,
+      5524,
+      5540.666666666667,
+      5591.333333333333,
+      5632,
+      5681,
+      5723.666666666667,
+      5770,
+      5950,
+      5950,
+      5999,
+      6044.333333333333,
+      6094,
+      6159.666666666667,
+      6206.666666666667,
+      6250.333333333333,
+      6299,
+      6347,
+      6347,
+      6393,
+      6435.666666666667,
+      6485.333333333333,
+      6527,
+      6572.333333333333,
+      6621,
+      6667.666666666667,
+      6715.666666666667,
+      6715.666666666667,
+      6761.666666666667,
+      6805.333333333333
+    ]
+  },
+  "engagementMetrics": {
+    "totalExitRequests": 0,
+    "partialExits": 0,
+    "fullExits": 0,
+    "exitRate": 0,
+    "decisionDensity": "94.0",
+    "roiStdDev": "0.65",
+    "timingSpread": "8.68",
+    "highVariance": false,
+    "timingMatters": true
+  }
+};
 
         // Chart defaults
         Chart.defaults.color = '#888';
@@ -1256,276 +1453,4 @@ function generateHTMLReport(batchResult, config, narrativeMd) {
     </script>
     <div id="chart-tooltip" class="chart-tooltip"></div>
 </body>
-</html>`;
-}
-
-/**
- * Generate an index page listing all simulation runs
- */
-function generateIndexPage(outputDir) {
-    const fs = require('fs');
-    const path = require('path');
-
-    // Scan for simulation directories
-    const entries = fs.readdirSync(outputDir, { withFileTypes: true });
-    const simulations = [];
-
-    for (const entry of entries) {
-        if (!entry.isDirectory()) continue;
-
-        const summaryPath = path.join(outputDir, entry.name, 'summary.json');
-        const indexPath = path.join(outputDir, entry.name, 'index.html');
-
-        // Only include simulations that have both summary.json and index.html
-        if (!fs.existsSync(summaryPath) || !fs.existsSync(indexPath)) continue;
-
-        try {
-            const summary = JSON.parse(fs.readFileSync(summaryPath, 'utf-8'));
-            const engagement = summary.engagementMetrics || {};
-            simulations.push({
-                dirname: entry.name,
-                timestamp: entry.name.replace('T', ' ').replace(/-/g, ':').slice(0, 16),
-                name: summary.meta?.name || 'Unnamed',
-                runs: summary.runs,
-                survivalRate: summary.survivalRate,
-                meanPrice: summary.priceStats?.mean || 0,
-                meanRevenue: summary.revenueStats?.mean || 0,
-                // Engagement metrics
-                roiSpread: engagement.roiStdDev || '—',
-                timingEdge: engagement.timingSpread || '—',
-                decisions: engagement.decisionDensity || '—'
-            });
-        } catch (e) {
-            // Skip invalid directories
-        }
-    }
-
-    // Sort by timestamp descending (most recent first)
-    simulations.sort((a, b) => b.dirname.localeCompare(a.dirname));
-
-    // Generate table rows
-    const rows = simulations.map(sim => {
-        const timing = sim.timingEdge !== '—' ? (parseFloat(sim.timingEdge) > 0 ? '+' : '') + sim.timingEdge : '—';
-        return `
-            <tr>
-                <td><a href="output/${sim.dirname}/index.html">${sim.timestamp}</a></td>
-                <td>${sim.name}</td>
-                <td>${sim.runs}</td>
-                <td>${(sim.survivalRate * 100).toFixed(0)}%</td>
-                <td>$${sim.meanPrice.toFixed(2)}</td>
-                <td>${formatCompact(sim.meanRevenue)}</td>
-                <td>${sim.roiSpread}x</td>
-                <td>${timing}x</td>
-                <td>${sim.decisions}</td>
-            </tr>`;
-    }).join('\n');
-
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulation Index | Vibe Token</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --font-heading: Georgia, serif;
-            --font-body: 'Crimson Pro', Georgia, serif;
-            --font-mono: 'JetBrains Mono', monospace;
-            --text-primary: #e8e8e8;
-            --text-secondary: #a0a0a0;
-            --bg: #0a0a0a;
-            --border: #222;
-            --accent: #c8c8c8;
-            --space-sm: 0.75rem;
-            --space-md: 1.5rem;
-            --space-lg: 2.5rem;
-            --space-xl: 4rem;
-            --max-width: 1100px;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        html { font-size: 18px; -webkit-font-smoothing: antialiased; }
-
-        body {
-            font-family: var(--font-body);
-            color: var(--text-primary);
-            background: var(--bg);
-            line-height: 1.65;
-            padding: var(--space-lg) var(--space-md);
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            opacity: 0.03;
-            pointer-events: none;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-        }
-
-        .container {
-            max-width: var(--max-width);
-            margin: 0 auto;
-            position: relative;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: var(--space-lg);
-            padding-bottom: var(--space-md);
-            border-bottom: 1px solid var(--border);
-        }
-
-        h1 {
-            font-family: var(--font-heading);
-            font-size: 2.4rem;
-            font-weight: bold;
-            margin-bottom: 0.25rem;
-        }
-
-        .subtitle {
-            font-style: italic;
-            color: var(--text-secondary);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-family: var(--font-mono);
-            font-size: 0.85rem;
-        }
-
-        th {
-            text-align: left;
-            padding: var(--space-sm);
-            border-bottom: 2px solid var(--border);
-            color: var(--accent);
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        td {
-            padding: var(--space-sm);
-            border-bottom: 1px solid var(--border);
-        }
-
-        tr:hover {
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        a {
-            color: var(--text-primary);
-            text-decoration: none;
-        }
-
-        a:hover {
-            color: #f5a623;
-        }
-
-        /* Tooltips */
-        .has-tooltip {
-            position: relative;
-            cursor: help;
-        }
-
-        .has-tooltip::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 4px 8px;
-            background: rgba(0, 0, 0, 0.9);
-            border: 1px dashed #888;
-            color: #c8c8c8;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 10px;
-            font-weight: normal;
-            text-transform: none;
-            letter-spacing: normal;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.15s;
-            z-index: 100;
-        }
-
-        .has-tooltip:hover::after {
-            opacity: 1;
-        }
-
-        .count {
-            margin-top: var(--space-lg);
-            text-align: center;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        footer {
-            margin-top: var(--space-xl);
-            padding-top: var(--space-md);
-            border-top: 1px solid var(--border);
-            text-align: center;
-            font-family: var(--font-mono);
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-
-        @media (max-width: 600px) {
-            h1 { font-size: 1.8rem; }
-            table { font-size: 0.75rem; }
-            th, td { padding: 0.5rem 0.25rem; }
-        }
-    </style>
-</head>
-<body>
-    <article class="container">
-        <header>
-            <h1>Simulation Index</h1>
-            <p class="subtitle">Vibe Token Economic Stress-Testing</p>
-        </header>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Name</th>
-                    <th class="has-tooltip" data-tooltip="Monte Carlo run count">Runs</th>
-                    <th class="has-tooltip" data-tooltip="% where business survived">Survival</th>
-                    <th class="has-tooltip" data-tooltip="Average final token price">Price</th>
-                    <th class="has-tooltip" data-tooltip="Average cumulative revenue">Revenue</th>
-                    <th class="has-tooltip" data-tooltip="StdDev of returns — higher = more variance">ROI Spread</th>
-                    <th class="has-tooltip" data-tooltip="ROI advantage of holding vs early exit">Timing</th>
-                    <th class="has-tooltip" data-tooltip="Non-HOLD actions per simulation">Decisions</th>
-                </tr>
-            </thead>
-            <tbody>
-${rows}
-            </tbody>
-        </table>
-
-        <p class="count">${simulations.length} simulation${simulations.length !== 1 ? 's' : ''} recorded</p>
-
-        <footer>
-            <a href="../index.html">← Back to Vibe Token</a>
-        </footer>
-    </article>
-</body>
-</html>`;
-}
-
-module.exports = {
-    generateHTMLReport,
-    generateIndexPage,
-    markdownToHTML,
-    buildHistogramBins,
-    calculateEngagementMetrics
-};
+</html>

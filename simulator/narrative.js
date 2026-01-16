@@ -5,6 +5,8 @@
  * Designed to be used post-hoc with LLM enhancement.
  */
 
+const { generateSampleNarrativesSection } = require('./story-generator');
+
 /**
  * Generate a complete narrative report from batch results
  */
@@ -19,6 +21,9 @@ function generateNarrative(batchResult, config) {
 
     // Participant performance
     sections.push(generateParticipantAnalysis(batchResult, config));
+
+    // Sample narrative (dramatic storytelling)
+    sections.push(generateSampleNarrativesSection(batchResult, config));
 
     // Economic observations
     sections.push(generateEconomicObservations(batchResult, config));

@@ -1,0 +1,240 @@
+{
+  "config": {
+    "meta": {
+      "name": "Startup + Mixed Behaviors",
+      "description": "Classic startup with boom-or-bust trajectory and diverse participant behaviors. Tests how different strategies perform in high-uncertainty environments.",
+      "version": "1.0"
+    },
+    "simulation": {
+      "runs": 12,
+      "duration_months": 36,
+      "seed": null,
+      "parallel_batches": 5
+    },
+    "business": {
+      "archetype": "startup",
+      "base_mrr": 300,
+      "params": {
+        "runway_months": 18,
+        "breakthrough_prob": 0.08,
+        "hockey_stick_multiplier": 5,
+        "post_breakthrough_growth": 0.12,
+        "building_revenue_range": [
+          0,
+          400
+        ]
+      }
+    },
+    "tokenomics": {
+      "alpha": 0.2,
+      "k": 0.01,
+      "treasury": 36000,
+      "s_min": 1000
+    },
+    "participants": [
+      {
+        "id": "true_believer",
+        "name": "True Believer",
+        "behavior": "diamond_hands",
+        "grant": 6000,
+        "grant_month": 0,
+        "referral_share": 0.15,
+        "start_month": 1,
+        "params": {
+          "labor_intensity": 0.25
+        }
+      },
+      {
+        "id": "angel_referrer",
+        "name": "Angel Referrer",
+        "behavior": "rational",
+        "grant": 6000,
+        "grant_month": 0,
+        "referral_share": 0.3,
+        "start_month": 1,
+        "params": {
+          "discount_rate": 0.05,
+          "forecast_horizon": 12,
+          "confidence": 0.7
+        }
+      },
+      {
+        "id": "skeptical_tester",
+        "name": "Skeptical Tester",
+        "behavior": "skeptic",
+        "grant": 4000,
+        "grant_month": 2,
+        "referral_share": 0.05,
+        "start_month": 2,
+        "params": {
+          "patience": 8,
+          "validation_threshold": 0.15
+        }
+      },
+      {
+        "id": "life_event_lisa",
+        "name": "Life Event Lisa",
+        "behavior": "life_event",
+        "grant": 6000,
+        "grant_month": 0,
+        "referral_share": 0.1,
+        "start_month": 1,
+        "params": {
+          "trigger_month": 24
+        }
+      },
+      {
+        "id": "momentum_trader",
+        "name": "Momentum Trader",
+        "behavior": "trend_follower",
+        "grant": 3000,
+        "grant_month": 3,
+        "referral_share": 0.08,
+        "start_month": 3,
+        "params": {
+          "lookback_window": 4,
+          "panic_threshold": -0.25,
+          "fomo_threshold": 0.3
+        }
+      }
+    ],
+    "entry_pool": {
+      "treasury": 12000,
+      "templates": [
+        {
+          "id": "word_of_mouth_pool",
+          "name": "WoM Entrant",
+          "behavior": "trend_follower",
+          "entry_mode": "grant",
+          "grant": 2000,
+          "referral_share": 0.06,
+          "maxSpawns": 3,
+          "entry_conditions": {
+            "type": "word_of_mouth",
+            "params": {
+              "revenue_threshold": 3000,
+              "probability_per_month": 0.2
+            }
+          },
+          "params": {
+            "lookback_window": 3,
+            "panic_threshold": -0.2
+          }
+        },
+        {
+          "id": "referral_hustler",
+          "name": "Referral Hustler",
+          "behavior": "hustler",
+          "entry_mode": "earn",
+          "grant": 0,
+          "referral_share": 0.1,
+          "maxSpawns": 5,
+          "entry_conditions": {
+            "type": "word_of_mouth",
+            "params": {
+              "revenue_threshold": 5000,
+              "probability_per_month": 0.25
+            }
+          },
+          "params": {
+            "labor_intensity": 0.5,
+            "exit_aversion": 0.65
+          }
+        }
+      ]
+    }
+  },
+  "baseSeed": 1768530753560,
+  "runs": 12,
+  "survivalRate": 0.75,
+  "priceStats": {
+    "mean": 1.3375903068735635,
+    "median": 1.2671227249165726,
+    "min": 1.0103464752252072,
+    "max": 2.0697101246309835,
+    "stddev": 0.3340067428828641,
+    "count": 12
+  },
+  "revenueStats": {
+    "mean": 72490.8913834686,
+    "median": 61696.037307640894,
+    "min": 527.6647542246574,
+    "max": 293909.558396287,
+    "stddev": 92315.25692921538,
+    "count": 12
+  },
+  "participantStats": {
+    "True Believer": {
+      "mean": 6.3522365003188535,
+      "median": 4.519383960135124,
+      "min": 3.2744876361900856,
+      "max": 17.633534480358126,
+      "stddev": 4.392433645868413,
+      "count": 12
+    },
+    "Angel Referrer": {
+      "mean": 4.372268430405669,
+      "median": 4.372815314216093,
+      "min": 4.359278250830823,
+      "max": 4.386574967240496,
+      "stddev": 0.009001799183864324,
+      "count": 12
+    },
+    "Skeptical Tester": {
+      "mean": 6.006621662032951,
+      "median": 4.491824649891734,
+      "min": 4.474036739951684,
+      "max": 13.83336799479746,
+      "stddev": 2.9896395787516075,
+      "count": 12
+    },
+    "Life Event Lisa": {
+      "mean": 4.870697680930067,
+      "median": 4.371161536382943,
+      "min": 4.003895819750845,
+      "max": 8.00378157387283,
+      "stddev": 1.4044191862370592,
+      "count": 12
+    },
+    "Momentum Trader": {
+      "mean": 6.4326986833182636,
+      "median": 4.5542277967352,
+      "min": 3.2674159989542537,
+      "max": 18.08528810406477,
+      "stddev": 4.536242479923727,
+      "count": 12
+    },
+    "WoM Entrant #2": {
+      "mean": 11.801602371621856,
+      "median": 13.91970280508693,
+      "min": 4.557056581610546,
+      "max": 16.928047728168096,
+      "stddev": 5.267834316031274,
+      "count": 3
+    },
+    "WoM Entrant #3": {
+      "mean": 8.128060622369093,
+      "median": 6.69773909715615,
+      "min": 4.451958413215468,
+      "max": 13.234484356735663,
+      "stddev": 3.725368459295173,
+      "count": 3
+    },
+    "WoM Entrant #1": {
+      "mean": 11.837862741513733,
+      "median": 14.050824853845505,
+      "min": 3.800131576669418,
+      "max": 17.66263179402628,
+      "stddev": 5.871690787272815,
+      "count": 3
+    },
+    "WoM Entrant #5": {
+      "mean": 13.880417558039694,
+      "median": 13.880417558039694,
+      "min": 13.880417558039694,
+      "max": 13.880417558039694,
+      "stddev": 0,
+      "count": 1
+    }
+  }
+}
